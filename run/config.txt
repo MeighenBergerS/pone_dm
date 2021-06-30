@@ -1,0 +1,130 @@
+!!python/object/new:pone_dm.config.ConfigClass
+dictitems:
+  atmospheric showers:
+    atmosphere: !!python/tuple
+    - CORSIKA
+    - !!python/tuple
+      - Karlsruhe
+      - null
+    interaction model: SIBYLL2.3c
+    native mceq: false
+    particles of interest:
+    - numu
+    - nue
+    - nutau
+    path to mceq: C:\Users\steph\Documents\MCEq\
+    primary model: H4a
+    theta angles: !!python/object/apply:numpy.core.multiarray._reconstruct
+      args:
+      - &id001 !!python/name:numpy.ndarray ''
+      - !!python/tuple
+        - 0
+      - !!binary |
+        Yg==
+      state: !!python/tuple
+      - 1
+      - !!python/tuple
+        - 1
+      - !!python/object/apply:numpy.dtype
+        args:
+        - f8
+        - false
+        - true
+        state: !!python/tuple
+        - 3
+        - <
+        - null
+        - null
+        - null
+        - -1
+        - -1
+        - 0
+      - false
+      - !!binary |
+        AAAAAAAAAAA=
+  general:
+    config location: ../run/config.txt
+    debug level: 40
+    log file handler: ../run/pdm.log
+    random state seed: 1337
+  runtime:
+    random state: !!python/object/apply:numpy.random._pickle.__randomstate_ctor
+      args:
+      - MT19937
+      state:
+        bit_generator: MT19937
+        gauss: 0.0
+        has_gauss: 0
+        state:
+          key: !!python/object/apply:numpy.core.multiarray._reconstruct
+            args:
+            - *id001
+            - !!python/tuple
+              - 0
+            - !!binary |
+              Yg==
+            state: !!python/tuple
+            - 1
+            - !!python/tuple
+              - 624
+            - !!python/object/apply:numpy.dtype
+              args:
+              - u4
+              - false
+              - true
+              state: !!python/tuple
+              - 3
+              - <
+              - null
+              - null
+              - null
+              - -1
+              - -1
+              - 0
+            - false
+            - !!binary |
+              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
+          pos: 624
