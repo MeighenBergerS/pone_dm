@@ -26,9 +26,10 @@ _baseconfig = {
     },
     "simulation parameters": {
         "mass grid": np.logspace(3, 6, 5),
-        "snu grid": np.logspace(-26, -23, 5),
+        "sv grid": np.logspace(-26, -23, 5),
         "uptime": 5 * 365 * 24 * 60 * 60,
-        "low enery cutoff": 5e2  # GeV
+        "low enery cutoff": 5e2,  # GeV
+        "DM type k": 2
     },
     ###########################################################################
     # Atmospheric showers input
@@ -37,7 +38,7 @@ _baseconfig = {
         # native mceq or built one
         'native mceq': False,
         # Path to the built version
-        'path to mceq': 'C:\\Users\\steph\\Documents\\MCEq\\',
+        'path to mceq': 'C:\\Users\\steph\\OneDrive\\Documents\\MCEq\\',
         # The atmosphere
         'atmosphere' : ('CORSIKA', ("Karlsruhe", None)),
         # The interaction model
@@ -54,6 +55,12 @@ _baseconfig = {
     ###########################################################################
     "pone": {
         'aeff location' : '..\\data\\'
+    },
+    ###########################################################################
+    # Advanced
+    ###########################################################################
+    "advanced": {
+        "integration grid lopez" : np.logspace(-2, 17, 151)
     }
 }
 

@@ -60,7 +60,7 @@ class Atm_Shower(object):
             theta_deg=0,
         )
         self._egrid = self._mceq_instance.e_grid
-        self._ewidth = self._mceq_instance.e_width
+        self._ewidth = self._mceq_instance.e_widths
         self._mceq_instance.set_density_model(self._atmosphere)
         # Running simulations
         self._run_mceq()
@@ -113,6 +113,9 @@ class Atm_Shower(object):
         # Storing simulation results here
         self._particle_fluxes = {}
         _log.info('Running MCEq simulations')
+        _log.debug('Running %d simulations for the angles' % (
+            len(config['atmospheric showers']['theta angles']))
+        )
         for angle in config['atmospheric showers']['theta angles']:
             # Temporary storage
             tmp_particle_store = {}

@@ -6,6 +6,7 @@
 # Imports
 # Native modules
 import logging
+from pone_dm.limit_calc import Limits
 import sys
 import numpy as np
 import yaml
@@ -15,6 +16,7 @@ from .config import config
 from .atm_shower import Atm_Shower
 from .dm2nu import DM2Nu
 from .pone_aeff import Aeff
+from .limit_calc import Limits
 
 # unless we put this class in __init__, __name__ will be contagion.contagion
 _log = logging.getLogger("pone_dm")
@@ -99,6 +101,42 @@ class PDM(object):
         # Fetching the effective areas
         self._aeff = Aeff()
         _log.info('Finished loading the effective ares')
+        # --------------------------------------------------------------
+        # Setting up the limit calculations
+        self._limit_calc = Limits(self._aeff, self._dm_nu, self._shower_sim)
+        _log.info('Finished loading the limit object')
+
+    @property
+    def results(self):
+        """ Fetches the results from the limit calculation
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        return self._results
+
+    def limit_calc(self,
+        mass_grid=config["simulation parameters"]["mass grid"],
+        sv_grid=config["simulation parameters"]["sv grid"]):
+        """ Calculates the limits for the given setup. Results can be
+        found in self.results
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        self._results = self._limit_calc.limit_calc(
+            mass_grid=mass_grid, sv_grid=sv_grid
+        )
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         _log.debug(

@@ -29,20 +29,23 @@ class DM2Nu(object):
         self._const = pdm_constants()
 
 
-    def galactic_flux(self, E: np.array, m_x: float) -> np.array:
+    def galactic_flux(self, E: np.array,
+                      m_x: float, sv: float,
+                      k: float, J: float) -> np.array:
         """ Fetches the galactic flux
         Add description
         """
         return self._dphi_dE_g(
-            sigma, k, m_x, E
+            sv, k, m_x, E, J
         )
 
-    def extra_galactic_flux(self, E: np.array, m_x: float) -> np.array:
+    def extra_galactic_flux(self, E: np.array,
+                            m_x: float, sv: float) -> np.array:
         """ Fetches the extra-galactic flux
         Add description
         """
         return self._dphide_lopez(
-            E, m_x, snu
+            E, m_x, sv
         )
     #---------------------------------------------------------------------------
     # Galactic
@@ -61,10 +64,11 @@ class DM2Nu(object):
         np.array
             An array of the same shape as E
         """
-        return np.array([
-            1 / E if E == m_x
-            else 0
-        ])
+        tmp = np.zeros_like(E)
+        # Since we work on a grid, the delta function is the closest val
+        idE = self._find_nearest(E, m_x)
+        tmp[idE] = 1 / E[idE]
+        return tmp
 
     def _dphi_dE_g(self, sigma: float, k: float,
                    m: float, E: np.array, J: float) -> np.array:
@@ -310,13 +314,12 @@ class DM2Nu(object):
 
         def c_200(x):
             return B_1(x) * C(x)
-        if c_200(x) >= 100:
-            a = 100
-        else:
-            a = c_200(x)
+        a_arr = c_200(x)
+        # Removing too high values
+        a_arr[a_arr > 100] = 100 
         return (
-            (a**3) * (1 - (1 + a)**(-3)) / 
-            (3 * (np.log(1 + a) - a * (1 + a)**(-1)))**2
+            (a_arr**3) * (1 - (1 + a_arr)**(-3)) / 
+            (3 * (np.log(1 + a_arr) - a_arr * (1 + a_arr)**(-1)))**2
         )
 
     def _dln_sigma_1(self, M: float) -> float:
@@ -327,7 +330,7 @@ class DM2Nu(object):
             2.6 * 0.001745 * M**(0.001745 - 1)
         )
 
-    def _G_lopez(self, z: np.array, omega_m: float, omega_L: float) -> np.array:
+    def _G_lopez(self, z: float, omega_m: float, omega_L: float) -> np.array:
         """ Add description
         """
         def integrand(M):
@@ -340,11 +343,21 @@ class DM2Nu(object):
             ((omega_m / self._const.omega_DM)**2) *
             self._const.Delta / (3 * self._omega_mz(z, omega_m, omega_L))
         )
-        bb = (
-            quad(integrand, 1e-2, 1e1)[0] +
-            quad(integrand, 1e1, 1e10)[0] +
-            quad(integrand, 1e10, 1e17)[0]
+        # Using splines to integrate
+        function_vals = np.array([
+            integrand(M)
+            for M in config["advanced"]["integration grid lopez"]
+        ])
+        bb = np.trapz(
+            function_vals,
+            x=config["advanced"]["integration grid lopez"],
+            axis=0
         )
+        # bb = (
+        #     quad(integrand, 1e-2, 1e1)[0] +
+        #     quad(integrand, 1e1, 1e10)[0] +
+        #     quad(integrand, 1e10, 1e17)[0]
+        # )
         return aa * bb
 
     def _dphide_lopez(self, E: np.array, m_x: float, snu: float) -> np.array:
@@ -355,7 +368,7 @@ class DM2Nu(object):
         omega_m = self._const.omega_m
         omega_L = self._const.omega_L
         a_t = (
-            (1 + self._G_lopez(z_tmp, omega_m, omega_L)) * 
+            (1 + self._G_lopez(z_tmp, omega_m, omega_L)) *
             (1 + z_tmp)**3
         )
         b_t = self._H(self._a_z(z_tmp), self._const.H_0, omega_m, omega_L)
@@ -366,4 +379,11 @@ class DM2Nu(object):
         # Padding with zeros
         result = np.zeros_like(E)
         result[0:len(res)] = res
-        return res
+        return result
+
+    def _find_nearest(self, array, value):
+        """ Add description
+        """
+        array = np.asarray(array)
+        idx = (np.abs(array - value)).argmin()
+        return idx

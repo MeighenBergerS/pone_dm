@@ -81,4 +81,4 @@ class pdm_constants(object):
         self.sigma_nu = 5e-29
         # ----------------------------------------------------------------------
         # Not sure where to put these
-        self._Delta = 200  # Lopez et al. ---------- M_min=10e-5------
+        self.Delta = 200  # Lopez et al. ---------- M_min=10e-5------

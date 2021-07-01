@@ -1,20 +1,7 @@
 !!python/object/new:pone_dm.config.ConfigClass
 dictitems:
-  atmospheric showers:
-    atmosphere: !!python/tuple
-    - CORSIKA
-    - !!python/tuple
-      - Karlsruhe
-      - null
-    interaction model: SIBYLL2.3c
-    native mceq: false
-    particles of interest:
-    - numu
-    - nue
-    - nutau
-    path to mceq: C:\Users\steph\Documents\MCEq\
-    primary model: H4a
-    theta angles: !!python/object/apply:numpy.core.multiarray._reconstruct
+  advanced:
+    integration grid lopez: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - &id001 !!python/name:numpy.ndarray ''
       - !!python/tuple
@@ -24,8 +11,8 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 1
-      - !!python/object/apply:numpy.dtype
+        - 151
+      - &id002 !!python/object/apply:numpy.dtype
         args:
         - f8
         - false
@@ -41,12 +28,65 @@ dictitems:
         - 0
       - false
       - !!binary |
-        AAAAAAAAAAA=
+        exSuR+F6hD/XL80PYGqLP6sV6OeRWZI/oiZuhWWQmD/RCFY2+nCgPyf/8btXAqY/hcdVBmh2rT/5
+        8kIXUbizP81XE2PsZbo/qH6ePz6rwT9/d2TCCKfHP2R01oWQqc8/byddlkAx1T9Htr74gV7cP2xI
+        hEj5/OI/NsTNCyNr6T/8YyK5YgPxP49ACvpUxvY/82+3YMR8/j/lYiTV62cEQPOr/f/+UAtAdFmH
+        Q5VIEkAZeGw3qHkYQBWZ797BYSBAtz245vftJUBFlybbIVstQH/bPcEPpjNADBBhbnxNOkCOZwf8
+        4ppBQP+Fs3sjkUdAAazBBkGMT0CMNGBQoh1VQMtyROk+RFxAp5TtX2XrYkD4X60/m1NpQNDtNtmi
+        83BAJM5btj+xdkCmtAlWi2B+QMOmi+8HVYRA/qCmbrU3i0A8a8hYqDeSQE0nU/b/YphA4pp2npdS
+        oEDIRuftqtmlQBTQgu/0P61AeBJuUd+Ts0A91fQYIzW6QFL6rdyWisFAmXjveVJ7x0A3A9OpDG/P
+        QCBlnTMWCtVATOZ4KRQq3EC6hQC94dniQMkE6TspPOlAxzqwjfHj8EBUowr3PZz2QH2VvGtsRP5A
+        mqmkhjVCBEFGVQhGgx4LQZitHBnLJhJBfJOlrmxMGEF6C+Bne0MgQQVXCcBwxSVBdAALLOEkLUGW
+        ui64v4EzQfWL3U3gHDpBBOWN01l6QUFWz1SqlWVHQbhG7FXzUU9BUNVEL5z2VEHzqtqiARBcQULd
+        rFBuyGJBh4pW7MwkaUGLIg/JTtRwQQWCBapPh3ZBL3+giWcofkEfPz+KdC+EQSMxd3BoBYtBEv0C
+        dv0VkkHOJflM7jWYQRH7LC5tNKBB3NS4S0mxpUEPWnV55gmtQdtx6eWwb7NBjns9+LMEukF2z6/S
+        K2rBQZloMfrsT8dB/IMG8vQ0z0GQMZYyNOPUQYIw/T4H9ttBf07wCwu34kHEc948hg3pQUb74H26
+        xPBBwuVLvXRy9kExQpyXfAz+QZQ3OurEHARCm6xb2GTsCkJfowdhPwUSQsxA9b2EHxhCqIFq5Gwl
+        IEJ+QaB/NJ0lQpWdjcAE7yxCdkQWy7JdM0KVPEoDnuw5QlRPKcwMWkFCs3HkVlg6R0IV8zFlERhP
+        QtWn4Czez1RC9qiI5yTcW0LOcdbft6ViQr3cexlV9mhCJY6/njS1cEJj9O0erV12QoL9rH2r8H1C
+        ZVGDliYKhEK1PDJoeNOKQk5LxMuQ9JFC9y9T7i8JmEIEtLF9ehagQhUqekoyiaVCWQY16jvUrELp
+        njtYxUuzQkGmTFqe1LlCJNwcsvxJwUKTVt6t1yTHQhzilZZI+85CytmCDZq81EL89DmGWsLbQkm3
+        eL10lOJCZmk8bjnf6ELPC1EevaXwQnluDL34SPZC+ArmI/TU/ULsKxd/mfcDQ7FAiwqjugpD7fPf
+        p/HjEUN8Ft7K7/IXQ4WYJ+2VByBDxhgRm0J1JUNUN2Lfi7ksQ0lB7n3oOTNDfr2g6LS8OUMPw7l2
+        +zlBQ12xoOxqD0dDZZ9wbZreTkMozurDZ6lUQxCR4gSoqFtDhFr+lUGDYkOoNUAnM8hoQ58ASO9T
+        lnBDAKDYhVc0dkM=
+  atmospheric showers:
+    atmosphere: !!python/tuple
+    - CORSIKA
+    - !!python/tuple
+      - Karlsruhe
+      - null
+    interaction model: SIBYLL2.3c
+    native mceq: false
+    particles of interest:
+    - numu
+    - nue
+    - nutau
+    path to mceq: C:\Users\steph\OneDrive\Documents\MCEq\
+    primary model: H4a
+    theta angles: !!python/object/apply:numpy.core.multiarray._reconstruct
+      args:
+      - *id001
+      - !!python/tuple
+        - 0
+      - !!binary |
+        Yg==
+      state: !!python/tuple
+      - 1
+      - !!python/tuple
+        - 9
+      - *id002
+      - false
+      - !!binary |
+        AAAAAAAAAAAAAAAAAAAUQAAAAAAAACRAAAAAAAAANEAAAAAAAAA+QAAAAAAAgEZAAAAAAAAATkAA
+        AAAAAIBRQAAAAAAAgFZA
   general:
     config location: ../run/config.txt
     debug level: 40
     log file handler: ../run/pdm.log
     random state seed: 1337
+  pone:
+    aeff location: ..\data\
   runtime:
     random state: !!python/object/apply:numpy.random._pickle.__randomstate_ctor
       args:
@@ -128,3 +168,37 @@ dictitems:
               XwdpwckixYH5R60YPiibU2/EU1XQfLaNGKlhPnGqbZrFUfu6jcs4fsHkqGKBJKrWbzd1raZPKIXB
               TZJ8uy0ASqBgzL3eWEmZDvCbFtHuYkS927Dl6sULbX6W+td5z6t4dQPmIJmr
           pos: 624
+  simulation parameters:
+    DM type k: 2
+    low enery cutoff: 500.0
+    mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
+      args:
+      - *id001
+      - !!python/tuple
+        - 0
+      - !!binary |
+        Yg==
+      state: !!python/tuple
+      - 1
+      - !!python/tuple
+        - 5
+      - *id002
+      - false
+      - !!binary |
+        AAAAAABAj0CBcuDKafe1QHqM17Ox4d5Adgwthx+1BUEAAAAAgIQuQQ==
+    sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
+      args:
+      - *id001
+      - !!python/tuple
+        - 0
+      - !!binary |
+        Yg==
+      state: !!python/tuple
+      - 1
+      - !!python/tuple
+        - 5
+      - *id002
+      - false
+      - !!binary |
+        FMuuxEDCiDrq+p61U2exOpWGBEWJd9g69rwSe84yATtRshJAsy0oOw==
+    uptime: 157680000
