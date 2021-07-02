@@ -60,7 +60,11 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez" : np.logspace(-2, 17, 151)
+        "integration grid lopez" : np.logspace(-2, 17, 151),
+        "construction grid _d" : np.logspace(-13, 16, 291),
+        "_d storage" : "..\\data\\",
+        "atmospheric storage" : "..\\data\\",
+        "scaling correction" : 1e3
     }
 }
 

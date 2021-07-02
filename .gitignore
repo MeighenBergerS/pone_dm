@@ -1,5 +1,7 @@
 .*.sw*
 
+*.p
+
 pdm.log
 
 *.pyc

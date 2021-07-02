@@ -6,7 +6,9 @@
 # Imports
 import logging
 import numpy as np
+import pickle
 from scipy.integrate import quad
+from scipy.interpolate import UnivariateSpline
 from .config import config
 from .constants import pdm_constants
 
@@ -27,6 +29,7 @@ class DM2Nu(object):
     def __init__(self):
         _log.info('Initializing DM to Neutrino methods')
         self._const = pdm_constants()
+        self._d_constructor()
 
 
     def galactic_flux(self, E: np.array,
@@ -140,7 +143,8 @@ class DM2Nu(object):
         -------
         Add
         """
-        return H_0 * ((Omega_m / a**3) + Omega_L)**(1/2)
+        # The H0 was removed since it cancels later
+        return ((Omega_m / a**3) + Omega_L)**(1/2)
 
     def _D_to_inte(self, a: np.array, H_0: float,
                    Omega_m: float, Omega_L: float) -> np.array:
@@ -159,7 +163,7 @@ class DM2Nu(object):
         ])
         return  prefac * integral
 
-    def _d(self, a: np.array, H_0: float,
+    def _d_func(self, a: np.array, H_0: float,
           Omega_m: float,Omega_L: float) -> np.array:
         """ Add description
         """
@@ -240,7 +244,7 @@ class DM2Nu(object):
         gamma = self._const.gamma
         sigma = (
             self._sigma_lopez(M) *
-            self._d(self._a_z(z), self._const.H_0, omega_m, omega_L)
+            self._d(z)
         )
         return (
             A * ((sigma / beta)**(-al) + 1) * np.exp(-gamma / sigma**2)
@@ -253,7 +257,7 @@ class DM2Nu(object):
         """
         sigma = (
             self._sigma_lopez(M) *
-            self._d(self._a_z(z), self._const.H_0, omega_m, omega_L)
+            self._d(z)
         )
         delta = 200  # TODO: Add this to constants
         b_t = (
@@ -285,7 +289,7 @@ class DM2Nu(object):
         
         sigma = (
             self._sigma_lopez(M) *
-            self._d(self._a_z(z), self._const.H_0, omega_m, omega_L)
+            self._d(z)
         )
 
         x = (1 / (1 + z)) * (omega_L / omega_m)**(1/3)
@@ -387,3 +391,41 @@ class DM2Nu(object):
         array = np.asarray(array)
         idx = (np.abs(array - value)).argmin()
         return idx
+
+    def _d_constructor(self):
+        """ Constructs tables for _d to avoid costly intgeration
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        load_str = config["advanced"]["_d storage"] + "d_store.p"
+        try:
+            _log.debug("Loading pickle file for d spline")
+            _log.debug("Searching for " + load_str)
+            loaded_d = pickle.load(open(load_str, "rb"))
+            self._d = loaded_d[1]
+        except:
+            _log.debug("Failed to load d data")
+            _log.debug("Constructing it, this may take a while")
+            z_grid = config["advanced"]["construction grid _d"]
+            a_grid = self._a_z(z_grid)
+            d_grid = self._d_func(a_grid,
+                self._const.H_0, self._const.omega_m,
+                self._const.omega_L
+            )
+            self._d = UnivariateSpline(z_grid,
+                d_grid, k=1, s=0, ext=3
+            )
+            _log.debug("Finished construction")
+            _log.debug("Dumping the data")
+            pickle.dump([d_grid, self._d],
+                open(load_str, "wb" )
+            )
+
+
+

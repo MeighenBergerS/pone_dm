@@ -82,3 +82,4 @@ class pdm_constants(object):
         # ----------------------------------------------------------------------
         # Not sure where to put these
         self.Delta = 200  # Lopez et al. ---------- M_min=10e-5------
+        self.msq2cmsq = 1e4  # Converts m^2 to cm^2

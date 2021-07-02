@@ -8,6 +8,7 @@ import logging
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 from .config import config
+from .constants import pdm_constants
 
 _log = logging.getLogger(__name__)
 
@@ -23,6 +24,7 @@ class Aeff(object):
     None
     """
     def __init__(self):
+        self._const = pdm_constants()
         _log.info('Loading the effective area data')
         location = config['pone']['aeff location']
         _log.debug('Fetching them from ' + location)
@@ -39,9 +41,12 @@ class Aeff(object):
         A_15 = np.concatenate((np.array([[100, 0]]), A_15), axis=0)
         A_51 = np.concatenate((np.array([[100, 0]]), A_51), axis=0)
         
-        self._A_15 = UnivariateSpline(A_15[:,0], A_15[:,1], k=1, s=0, ext=3)
-        self._A_51 = UnivariateSpline(A_51[:,0], A_51[:,1], k=1, s=0, ext=3)
-        self._A_55 = UnivariateSpline(A_55[:,0], A_55[:,1], k=1, s=0, ext=3)
+        self._A_15 = UnivariateSpline(A_15[:,0], A_15[:,1] *
+            self._const.msq2cmsq, k=1, s=0, ext=3)
+        self._A_51 = UnivariateSpline(A_51[:,0], A_51[:,1] *
+            self._const.msq2cmsq, k=1, s=0, ext=3)
+        self._A_55 = UnivariateSpline(A_55[:,0], A_55[:,1] *
+            self._const.msq2cmsq, k=1, s=0, ext=3)
 
     @property
     def spl_A15(self):

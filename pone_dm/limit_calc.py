@@ -44,20 +44,23 @@ class Limits(object):
         down_angles = []
         self._numu_bkgrd_horizon = []
         horizon_angles = []
+        # Astrophysical is the same everywhere
         for angle in config['atmospheric showers']['theta angles']:
             rad = np.deg2rad(np.abs(angle - 90.))
             # Downgoing
             if np.pi / 3 <= rad <= np.pi / 2:
                 down_angles.append(rad)
                 self._numu_bkgrd_down.append(
-                    self._shower.flux_results[angle]['numu'] * self._uptime *
+                    (self._shower.flux_results[angle]['numu'] +
+                     self._dphi_astro(self._egrid)) * self._uptime *
                     self._ewidth * self._aeff.spl_A15(self._egrid)
                 )
             # Horizon
             else:
                 horizon_angles.append(rad)
                 self._numu_bkgrd_horizon.append(
-                    self._shower.flux_results[angle]['numu'] * self._uptime *
+                    (self._shower.flux_results[angle]['numu'] +
+                     self._dphi_astro(self._egrid)) * self._uptime *
                     self._ewidth * self._aeff.spl_A55(self._egrid)
                 )
         # Converting to numpy arrays
@@ -78,7 +81,8 @@ class Limits(object):
         # Upgoing we assume the same flux for all
         self._numu_bkgrd += (
             (np.pi / 2 - np.pi / 3) *
-            self._shower.flux_results[0.]['numu'] * self._uptime *
+            (self._shower.flux_results[0.]['numu'] +
+             self._dphi_astro(self._egrid)) * self._uptime *
             self._ewidth * self._aeff.spl_A51(self._egrid)
         )
 
@@ -100,13 +104,20 @@ class Limits(object):
         list
             The resulting chi values
         """
+        # Storage for the new signal fluxes
+        self._signal_flux = {}
+        self._signal_counts = {}
+        for m in mass_grid:
+            self._signal_flux[m] = {}
+            self._signal_counts[m] = {}
         _log.info('Starting the limit calculation')
         # The low energy cut off
-        t_d = self._find_nearest(self._egrid, 5e2)
+        self._t_d = self._find_nearest(self._egrid, 5e2)
         self._limit_scan_grid_base = np.array([[
             (self._signal_calc(self._egrid, mass,
                 sv, config['atmospheric showers']['theta angles']
-            )**2.)[:t_d] / self._numu_bkgrd[:t_d]
+            )**2.)[self._t_d:] /
+            self._numu_bkgrd[self._t_d:]
             for mass in mass_grid] for sv in tqdm(sv_grid)])
         y = np.array([[
             chi2.sf(np.sum(np.nan_to_num(x)), 2)
@@ -136,11 +147,8 @@ class Limits(object):
             The total new counts
         """
         # Extra galactic
-        _log.debug('The energy grid used for the new' +
-                    ' flux calculation has shape ' + str(egrid.shape))
         extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
         self._extra_flux = extra
-        _log.debug('The extra galactic component has shape ' + str(extra.shape))
         # Galactic
         ours_15 = self._dmnu.galactic_flux(
             egrid, mass, sv,
@@ -157,6 +165,7 @@ class Limits(object):
             config['simulation parameters']["DM type k"],
             self._const.J_d3 + self._const.J_p3 + self._const.J_s3
         )
+        self._signal_flux[mass][sv] = self._extra_flux
         # Convolving
         down_angles = []
         horizon_angles = []
@@ -228,7 +237,11 @@ class Limits(object):
             ours_51 * self._uptime *
             self._ewidth * self._aeff.spl_A51(self._egrid)
         )
-        total_new_counts = self._extra + self._ours
+        total_new_counts = (
+            (self._extra + self._ours) /
+            config["advanced"]["scaling correction"]  # Some unknown error
+        )
+        self._signal_counts[mass][sv] = total_new_counts
         return total_new_counts
 
     def _find_nearest(self, array, value):
@@ -237,3 +250,12 @@ class Limits(object):
         array = np.asarray(array)
         idx = (np.abs(array - value)).argmin()
         return idx
+
+    def _dphi_astro(self, E):
+        """
+        Astrophysical flux because of muon background as per the power
+        law described in https://arxiv.org/pdf/1907.11266.pdf
+
+        Add description
+        """
+        return 1e-18 * 6.45 * (E / 1e5)**(-2.89)
