@@ -36,9 +36,9 @@ _baseconfig = {
     ###########################################################################
     "atmospheric showers": {
         # native mceq or built one
-        'native mceq': False,
+        'native mceq': True,
         # Path to the built version
-        'path to mceq': 'C:\\Users\\steph\\OneDrive\\Documents\\MCEq\\',
+        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/',
         # The atmosphere
         'atmosphere' : ('CORSIKA', ("Karlsruhe", None)),
         # The interaction model
@@ -54,17 +54,23 @@ _baseconfig = {
     # P-ONE
     ###########################################################################
     "pone": {
-        'aeff location' : '..\\data\\'
+            'aeff location' : '/home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_dm-main/data/',
+            "specific particle scaling": {
+                "numu": 1.,
+                "nue": 1.,
+                "nutau": 1.,
+            },  # Entries: numu, nue, nutau
     },
     ###########################################################################
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez" : np.logspace(-2, 17, 151),
-        "construction grid _d" : np.logspace(-13, 16, 291),
-        "_d storage" : "..\\data\\",
-        "atmospheric storage" : "..\\data\\",
-        "scaling correction" : 1e3
+        "integration grid lopez" : np.logspace(-3, 17, 151),
+        "construction grid _d" : np.logspace(-13, 16, 600),
+        "_d storage" : "../data/",
+        "atmospheric storage" : "../data/",
+        "scaling correction" : 4.5e1
+
     }
 }
 

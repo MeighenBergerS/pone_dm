@@ -15,9 +15,6 @@ class pdm_constants(object):
         # Galactic centre 
         # thermally averaged cross section to neutrinos
         # 300 GeV to 3 TeV from Fermi-LAT and HESS 
-        self.sigma_nu_theo = 10**(-23)  # cm^3/s
-        self.sigma_nu1 = 5 * 10**(-26)  # 1 MeV/c^2
-        self.sigma_nu2 = 10**(-17)  # 10^11 GeV/c^2
         self.Kappa_m = 2  # majorana DM  ----- This is used for the paper--------
         self.Kappa_d = 4  # Dirac DM
 
@@ -78,7 +75,7 @@ class pdm_constants(object):
         # DM
         self.m_dm = np.array([1, 1e2, 1e4, 1e6])
         self.k = 2
-        self.sigma_nu = 5e-29
+        self.sigma_nu = 5e-29 # cm^3 s 
         # ----------------------------------------------------------------------
         # Not sure where to put these
         self.Delta = 200  # Lopez et al. ---------- M_min=10e-5------

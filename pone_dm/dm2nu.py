@@ -156,12 +156,27 @@ class DM2Nu(object):
            Omega_m: float, Omega_L: float) -> np.array:
         """ Add description
         """
-        prefac = 5 * Omega_m * self._H(a, H_0, Omega_m, Omega_L) / (2 * H_0)
+        
+        prefac = 5 * Omega_m * self._H(a, H_0, Omega_m, Omega_L) / (2 )
         integral = np.array([
             quad(self._D_to_inte, 0, a_loc, args=(H_0, Omega_m, Omega_L))[0]
             for a_loc in a
         ])
         return  prefac * integral
+    
+    
+    def _D_approx(self, a: np.array, Omega_m: float, Omega_L: float) -> np.array:
+        
+        """
+        Lopez approximation 
+        """
+        x= a * (Omega_L/Omega_m)**(1/3)
+        return ( (5/2) * ( self._omega_mz()    )
+    
+    
+    
+    )
+    
 
     def _d_func(self, a: np.array, H_0: float,
           Omega_m: float,Omega_L: float) -> np.array:
@@ -175,9 +190,10 @@ class DM2Nu(object):
         """ I have neglected omega_re and omega_k couldn't find proper values
         Add description
         """
+        a=self._a_z(z)
         return (
-            (omega_m * (1 + z)**3) /
-            (omega_L + (omega_m * (1 + z)**3))
+            (omega_m /a**3) /
+            ( omega_L + (omega_m / (a)**3) )
         )
 
     def _A_z(self, z: np.array,
@@ -261,8 +277,8 @@ class DM2Nu(object):
         )
         delta = 200  # TODO: Add this to constants
         b_t = (
-            np.exp(((delta / 178) - 1) * (0.023 - (0.072 / sigma**2.13))) *
-            (delta / 178)**((-0.456 * self._omega_mz(z, omega_m, omega_L)) -
+            np.exp( ( (delta / 178) - 1) * (0.023 - (0.072 / sigma**2.13) ) ) *
+            (delta / 178)**( (-0.456 * self._omega_mz(z, omega_m, omega_L)) -
                             0.139)
         )
         return self._f_178(M, z, omega_m, omega_L) * b_t
@@ -293,6 +309,10 @@ class DM2Nu(object):
         )
 
         x = (1 / (1 + z)) * (omega_L / omega_m)**(1/3)
+        
+        
+        
+        
         # TODO: All of these need descriptions
         def c_min(x):
             return (
@@ -344,7 +364,7 @@ class DM2Nu(object):
                 self._g_tild(M, z, omega_m, omega_L)
             )
         aa=(
-            ((omega_m / self._const.omega_DM)**2) *
+            (( omega_m / self._const.omega_DM )**2) *
             self._const.Delta / (3 * self._omega_mz(z, omega_m, omega_L))
         )
         # Using splines to integrate
@@ -375,7 +395,10 @@ class DM2Nu(object):
             (1 + self._G_lopez(z_tmp, omega_m, omega_L)) *
             (1 + z_tmp)**3
         )
-        b_t = self._H(self._a_z(z_tmp), self._const.H_0, omega_m, omega_L)
+        
+        # multiplide the H_0 ------
+        b_t = self._H(self._a_z(z_tmp), self._const.H_0, omega_m, omega_L) * self._const.H_0 
+        
         a_g = a_t / b_t
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 8 * np.pi * m_x**2

@@ -31,13 +31,17 @@ class Atm_Shower(object):
 
     def __init__(self):
         self._load_str = config["advanced"]["atmospheric storage"] + "shower.p"
+        self.particle_name=["numu","nue","nutau"]
         try:
             _log.info("Trying to load pre-calculated tables")
             _log.debug("Searching for " + self._load_str)
+            
             loaded_atm = pickle.load(open(self._load_str, "rb"))
+            print("ayay")
             self._egrid = loaded_atm[0]
             self._ewidth = loaded_atm[1]
             self._particle_fluxes = loaded_atm[2]
+            
         except:
             _log.info("Failed to load data. Generating..")
             # Importing the primary flux models
@@ -75,7 +79,7 @@ class Atm_Shower(object):
             self._mceq_instance.set_density_model(self._atmosphere)
             # Running simulations
             self._run_mceq()
-
+    
     @property
     def egrid(self):
         """ Fetches the calculation egrid
@@ -112,11 +116,9 @@ class Atm_Shower(object):
 
     def _run_mceq(self):
         """ Runs the mceq simulation with the set parameters
-
         Parameters
         ----------
         None
-
         Returns
         -------
         None
