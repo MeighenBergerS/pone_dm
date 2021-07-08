@@ -161,8 +161,10 @@ dictitems:
     interaction model: SIBYLL2.3c
     native mceq: true
     particles of interest:
+    - numu
     - nue
-    path to mceq: C:\Users\steph\OneDrive\Documents\MCEq\
+    - nutau
+    path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
     primary model: H4a
     theta angles: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
@@ -197,7 +199,11 @@ dictitems:
     log file handler: ../run/pdm.log
     random state seed: 1337
   pone:
-    aeff location: ../data/
+    aeff location: /home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_dm-main/data/
+    specific particle scaling:
+      nue: 1.0
+      numu: 1.0
+      nutau: 1.0
   runtime:
     random state: !!python/object/apply:numpy.random._pickle.__randomstate_ctor
       args:

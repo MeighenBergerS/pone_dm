@@ -45,10 +45,13 @@ class Limits(object):
         
         self.bkgrd_horizon = {}
         
+        # backgorund dictionary repositioned
+        self._bkgrd={}
+        
         for i in (config['atmospheric showers']['particles of interest']):
-            self.bkgrd_down[i]=[]
+            self.bkgrd_down[i] = []
             down_angles = []
-            self.bkgrd_horizon[i]=[]
+            self.bkgrd_horizon[i] = []
             horizon_angles = []
         # Astrophysical is the same everywhere
             for angle in config['atmospheric showers']['theta angles']:
@@ -80,7 +83,7 @@ class Limits(object):
             horizon_angles = np.array(horizon_angles)
             
             # Integrating
-            self._bkgrd={}
+                        
             self._bkgrd[i] = np.zeros_like(self._egrid)
             sorted_ids = np.argsort(down_angles)
             
@@ -123,6 +126,8 @@ class Limits(object):
         # Storage for the new signal fluxes
         self._signal_flux = {}
         self._signal_counts = {}
+        
+        y = {}
         
         #for more generations adding the loop ----
         for i in (config['atmospheric showers']['particles of interest']):
@@ -303,4 +308,4 @@ class Limits(object):
 
         Add description
         """
-        return 1e-18 * 6.45 * (E / 1e5)**(-2.89)
+        return 1e-18*1.66* ((E/1e5)**(-2.53))     # 1e-18 * 6.45 * (E / 1e5)**(-2.89)
