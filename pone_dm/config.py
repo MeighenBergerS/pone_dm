@@ -69,7 +69,7 @@ _baseconfig = {
         "construction grid _d" : np.logspace(-13, 16, 600),
         "_d storage" : "../data/",
         "atmospheric storage" : "../data/",
-        "scaling correction" : 50
+        "scaling correction" : 1
 
     }
 }
