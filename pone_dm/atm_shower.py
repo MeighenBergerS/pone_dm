@@ -11,6 +11,7 @@ from .config import config
 
 _log = logging.getLogger(__name__)
 
+
 class Atm_Shower(object):
     """ Class to interface with the MCEq package. This is just
     a quick and dirty approach

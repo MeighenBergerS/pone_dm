@@ -57,7 +57,7 @@ class pdm_constants(object):
         self.E = np.logspace(-1, 8, 100, 10)
         self.Z = np.linspace(0, 60, 60)
 
-        self.H_0 = 71  # km/(Mpc*s) hubble time --- 
+        self.H_0 = self.h * 100.  # km/(Mpc*s) hubble time --- 
         #rho_s scale density 
         self.r_s = 20  # kpc scale radius ----
         self.rho_0 = 0.4  # GeV cm^(-3) 

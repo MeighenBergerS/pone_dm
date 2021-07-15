@@ -31,7 +31,6 @@ class DM2Nu(object):
         self._const = pdm_constants()
         self._d_constructor()
 
-
     def galactic_flux(self, E: np.array,
                       m_x: float, sv: float,
                       k: float, J: float) -> np.array:
@@ -50,7 +49,8 @@ class DM2Nu(object):
         return self._dphide_lopez(
             E, m_x, sv
         )
-    #---------------------------------------------------------------------------
+
+    # ---------------------------------------------------------------------------
     # Galactic
     def _dN_nu_E_nu(self, m_x: float, E: np.array) -> np.array:
         """ implements a delta function for the decay
@@ -361,10 +361,12 @@ class DM2Nu(object):
             return (
                 self._dln_sigma_1(M) *
                 self._f_delta(M, z, omega_m, omega_L) *
-                self._g_tild(M, z, omega_m, omega_L)
+                self._g_tild(M, z, omega_m, omega_L) 
             )
-        aa=(
-            (( omega_m / self._const.omega_DM )**2) *
+            # TODO: Check the density dependence
+            # multiplied the rho_c and  the omeg_m**2 -> omega_m
+        aa = (
+            ((omega_m / (self._const.omega_DM) ** 2)) * self._const.rho_c_mpc *
             self._const.Delta / (3 * self._omega_mz(z, omega_m, omega_L))
         )
         # Using splines to integrate
@@ -388,7 +390,7 @@ class DM2Nu(object):
         """ Add description
         """
         z = m_x / E - 1
-        z_tmp  = z[z > 0]
+        z_tmp = z[z > 0]
         omega_m = self._const.omega_m
         omega_L = self._const.omega_L
         a_t = (
