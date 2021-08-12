@@ -9,7 +9,7 @@ import sys
 import pickle
 from .config import config
 
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("pone_dm")
 
 class Atm_Shower(object):
     """ Class to interface with the MCEq package. This is just

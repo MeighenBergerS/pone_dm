@@ -199,7 +199,7 @@ dictitems:
     log file handler: ../run/pdm.log
     random state seed: 1337
   pone:
-    aeff location: /home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_dm-main/data/
+    aeff location: /home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_work/data/
     specific particle scaling:
       nue: 1.0
       numu: 1.0

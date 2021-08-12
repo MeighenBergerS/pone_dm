@@ -54,7 +54,7 @@ _baseconfig = {
     # P-ONE
     ###########################################################################
     "pone": {
-            'aeff location' : '/home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_dm-main/data/',
+            'aeff location' : '/home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_work/data/',
             "specific particle scaling": {
                 "numu": 1.,
                 "nue": 1.,
