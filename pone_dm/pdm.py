@@ -16,10 +16,11 @@ from .config import config
 from .atm_shower import Atm_Shower
 from .dm2nu import DM2Nu
 from .pone_aeff import Aeff
-from .limit_calc import Limits
+# from .limit_calc import Limits
 
 # unless we put this class in __init__, __name__ will be contagion.contagion
 _log = logging.getLogger("pone_dm")
+
 
 class PDM(object):
     """
@@ -31,7 +32,7 @@ class PDM(object):
     ----------
     config : dic
         Configuration dictionary for the simulation
-    
+
     Returns
     -------
     None
@@ -121,13 +122,13 @@ class PDM(object):
         return self._results
 
     def limit_calc(self,
-        mass_grid=config["simulation parameters"]["mass grid"],
-        sv_grid=config["simulation parameters"]["sv grid"]):
+                   mass_grid=config["simulation parameters"]["mass grid"],
+                   sv_grid=config["simulation parameters"]["sv grid"]):
         """ Calculates the limits for the given setup. Results can be
         found in self.results
 
         Parameters
-        ----------
+        ---------
         None
 
         Returns
@@ -152,6 +153,6 @@ class PDM(object):
         _log.info('          /"*._         _')
         _log.info("      .-*'`    `*-.._.-'/")
         _log.info('    < * ))     ,       ( ')
-        _log.info('     `*-._`._(__.--*"`.\ ')
+        _log.info('     `*-._`._(__.--*"`./ ')
         _log.info('---------------------------------------------------')
         _log.info('---------------------------------------------------')

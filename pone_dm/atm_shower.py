@@ -11,6 +11,7 @@ from .config import config
 
 _log = logging.getLogger("pone_dm")
 
+
 class Atm_Shower(object):
     """ Class to interface with the MCEq package. This is just
     a quick and dirty approach
@@ -31,17 +32,17 @@ class Atm_Shower(object):
 
     def __init__(self):
         self._load_str = config["advanced"]["atmospheric storage"] + "shower.p"
-        self.particle_name=["numu","nue","nutau"]
+        self.particle_name = ["numu", "nue", "nutau"]
         try:
             _log.info("Trying to load pre-calculated tables")
             _log.debug("Searching for " + self._load_str)
-            
+
             loaded_atm = pickle.load(open(self._load_str, "rb"))
             print("ayay")
             self._egrid = loaded_atm[0]
             self._ewidth = loaded_atm[1]
             self._particle_fluxes = loaded_atm[2]
-            
+
         except:
             _log.info("Failed to load data. Generating..")
             # Importing the primary flux models
@@ -55,18 +56,17 @@ class Atm_Shower(object):
             else:
                 _log.debug('Using a custom MCEq')
                 sys.path.insert(0,
-                    config['atmospheric showers']['path to mceq']
-                )
+                                config['atmospheric showers']['path to mceq'])
                 from MCEq.core import MCEqRun
             # Setting options
             _log.info('Setting MCEq options')
             self._atmosphere = config['atmospheric showers']['atmosphere']
             self._i_model = config['atmospheric showers']['interaction model']
             if config['atmospheric showers']['primary model'] == 'H4a':
-                self._p_model = (pm.HillasGaisser2012,'H4a')
+                self._p_model = (pm.HillasGaisser2012, 'H4a')
             else:
                 ValueError('Unsupported primary model!' +
-                        ' Please check the config file')
+                           ' Please check the config file')
                 sys.exit()
             _log.info('initializing a MCEq instance')
             self._mceq_instance = MCEqRun(
@@ -79,7 +79,7 @@ class Atm_Shower(object):
             self._mceq_instance.set_density_model(self._atmosphere)
             # Running simulations
             self._run_mceq()
-    
+
     @property
     def egrid(self):
         """ Fetches the calculation egrid
@@ -90,7 +90,7 @@ class Atm_Shower(object):
             The energy grid
         """
         return self._egrid
-    
+
     @property
     def ewidth(self):
         """ Fetches the calculation e widths
@@ -132,7 +132,7 @@ class Atm_Shower(object):
         for angle in config['atmospheric showers']['theta angles']:
             # Temporary storage
             tmp_particle_store = {}
-            _log.debug('Currently at angle %.2f' %angle)
+            _log.debug('Currently at angle %.2f' % angle)
             # Setting the angles
             _log.debug('Setting the angle')
             self._mceq_instance.set_theta_deg(angle)
@@ -140,11 +140,13 @@ class Atm_Shower(object):
             self._mceq_instance.solve()
             # Fetching totals. If not using the explicit version
             for particle in (
-                config['atmospheric showers']['particles of interest']):
+                             config['atmospheric' +
+                                    ' showers']['particles of interest']):
                 # Trying totals
                 try:
                     tmp_particle_store[particle] = (
-                        self._mceq_instance.get_solution('total_' + particle, 0)
+                        self._mceq_instance.get_solution('total_' + particle,
+                                                         0)
                     )
                 # Falling back to explicit version
                 except:
@@ -155,5 +157,4 @@ class Atm_Shower(object):
             self._particle_fluxes[angle] = tmp_particle_store
         # Dumping for later usage
         pickle.dump([self._egrid, self._ewidth, self._particle_fluxes],
-            open(self._load_str, "wb" )
-        )
+                    open(self._load_str, "wb"))

@@ -38,23 +38,25 @@ _baseconfig = {
         # native mceq or built one
         'native mceq': True,
         # Path to the built version
-        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/',
+        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/lib/python3.9' +
+        '/site-packages/MCEq/',
         # The atmosphere
-        'atmosphere' : ('CORSIKA', ("Karlsruhe", None)),
+        'atmosphere': ('CORSIKA', ("Karlsruhe", None)),
         # The interaction model
-        'interaction model' : 'SIBYLL2.3c',
+        'interaction model': 'SIBYLL2.3c',
         # Primary model
-        'primary model' : 'H4a',
+        'primary model': 'H4a',
         # Angles of interest currently not custom
-        'theta angles' : np.array([0., 5., 10., 20., 30., 45., 60., 70., 90.]),
+        'theta angles': np.array([0., 5., 10., 20., 30., 45., 60., 70., 90.]),
         # Particles of interest
-        'particles of interest' : ['numu', 'nue', 'nutau']
+        'particles of interest': ['numu', 'nue', 'nutau']
     },
     ###########################################################################
     # P-ONE
     ###########################################################################
     "pone": {
-            'aeff location' : '/home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_work/data/',
+            'aeff location': '/home/kruteesh/Desktop/DM_nu_simulation_P-One/' +
+            'PONE_git/pone_work/data/',
             "specific particle scaling": {
                 "numu": 1.,
                 "nue": 1.,
@@ -65,11 +67,11 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez" : np.logspace(-3, 17, 151),
-        "construction grid _d" : np.logspace(-13, 16, 600),
-        "_d storage" : "../data/",
-        "atmospheric storage" : "../data/",
-        "scaling correction" : 4.5e1
+        "integration grid lopez": np.logspace(-3, 17, 151),
+        "construction grid _d": np.logspace(-13, 16, 600),
+        "_d storage": "../data/",
+        "atmospheric storage": "../data/",
+        "scaling correction": 4.5e1
 
     }
 }
