@@ -23,12 +23,13 @@ _baseconfig = {
         "log file handler": "../run/pdm.log",
         # Dump experiment config to this location
         "config location": "../run/config.txt",
+        "detector": ["IceCube",   "POne"],
     },
     "simulation parameters": {
         "mass grid": np.logspace(3, 6, 5),
         "sv grid": np.logspace(-26, -23, 5),
         "uptime": 5 * 365 * 24 * 60 * 60,
-        "low enery cutoff": 5e2,  # GeV
+        "low enery cutoff": 10e3,  # GeV
         "DM type k": 2
     },
     ###########################################################################
@@ -49,7 +50,7 @@ _baseconfig = {
         # Angles of interest currently not custom
         'theta angles': np.array([0., 5., 10., 20., 30., 45., 60., 70., 90.]),
         # Particles of interest
-        'particles of interest': ['numu', 'nue', 'nutau']
+        'particles of interest': ['numu', 'nue', 'nutau']  # should I just take numu here?-----
     },
     ###########################################################################
     # P-ONE
@@ -63,6 +64,13 @@ _baseconfig = {
                 "nutau": 1.,
             },  # Entries: numu, nue, nutau
     },
+    "IceCube": {
+        'aeff location':
+
+
+
+
+    }
     ###########################################################################
     # Advanced
     ###########################################################################
@@ -71,7 +79,7 @@ _baseconfig = {
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 4.5e1
+        "scaling correction": 1
 
     }
 }
