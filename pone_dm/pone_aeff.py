@@ -33,9 +33,9 @@ class Aeff(object):
             A_55 = np.loadtxt(location + "A_55.csv", delimiter=",")
             A_15 = np.loadtxt(location + "A_15.csv", delimiter=",")
             A_51 = np.loadtxt(location + "A_51.csv", delimiter=",")
-        except:
-            ValueError('Could not find the effective areas!' +
-                       ' Check the location')
+        except FileNotFoundError:
+            FileNotFoundError('Could not find the effective areas!' +
+                              ' Check the location')
         A_55 = A_55[A_55[:, 0].argsort()]
         A_15 = A_15[A_15[:, 0].argsort()]
         A_51 = A_51[A_51[:, 0].argsort()]

@@ -59,7 +59,7 @@ class pdm_constants(object):
         self.H_0 = 71  # km/(Mpc*s) hubble time ---
         # rho_s scale density
         self.r_s = 20  # kpc scale radius ----
-        self.rho_0 = 0.4  # GeV cm^(-3)
+        self.rho_0 = 0.478e-5  # GeV cm^(-3) pdg.gov
         self.R_0 = 8.127  # kpc
         self.omega_k = -0.09
         self.omega_m = 0.27
@@ -68,7 +68,7 @@ class pdm_constants(object):
         self.omega_L = 0.721  # dark energy density
         self.omega_B = 0.046
         self.omega_re = 9.8e-5
-        self.rho_B = self.omega_B * self.rho_c_mpc  # baryonic mass density
+        self.rho_B = self.omega_B * self.rho_0  # baryonic mass density changed rho_c_mpc to rho_0 '16.08.21'
         # radiation density of these the most accurately measured ---------
         # ----------------------------------------------------------------------
         # DM

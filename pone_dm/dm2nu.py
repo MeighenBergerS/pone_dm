@@ -400,7 +400,8 @@ class DM2Nu(object):
                self._const.H_0)
 
         a_g = a_t / b_t
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2 # changed 
+        
         b = 8 * np.pi * m_x**2
         res = aaa * a_g / (3 * E[E <= m_x] * b)
         # Padding with zeros

@@ -105,6 +105,7 @@ class Limits(object):
                  self._dphi_astro(self._egrid)) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
+            self._bkgrd[i] = self._bkgrd[i] * 46
 
     def limit_calc(self,
                    mass_grid=config["simulation parameters"]["mass grid"],
@@ -210,88 +211,92 @@ class Limits(object):
         extra_hor = []
         ours_down = []
         ours_hor = []
-        for angle in angle_grid:
-            rad = np.deg2rad(np.abs(angle - 90.))
+        if config["general"]["detector"]=="POne":
+            for angle in angle_grid:
+                rad = np.deg2rad(np.abs(angle - 90.))
+
+                # Downgoing
+                if np.pi / 3 <= rad <= np.pi / 2:
+                    down_angles.append(rad)
+                    extra_down.append(
+                        extra * self._uptime *
+                        self._ewidth * self._aeff.spl_A15(self._egrid)
+                    )
+                    ours_down.append(
+                        ours_15 * self._uptime *
+                        self._ewidth * self._aeff.spl_A15(self._egrid)
+                    )
+
+                # Horizon
+                else:
+                    horizon_angles.append(rad)
+                    extra_hor.append(
+                        extra * self._uptime *
+                        self._ewidth * self._aeff.spl_A55(self._egrid)
+                    )
+                    ours_hor.append(
+                        ours_55 * self._uptime *
+                        self._ewidth * self._aeff.spl_A55(self._egrid)
+                    )
+
+            # Converting to numpy arrays
+
+            extra_down = np.array(extra_down)
+            extra_hor = np.array(extra_hor)
+            ours_down = np.array(ours_down)
+            ours_hor = np.array(ours_hor)
+            down_angles = np.array(down_angles)
+            horizon_angles = np.array(horizon_angles)
+
+            # Integrating
+            # Extra
+
+            self._extra = np.zeros_like(self._egrid)
 
             # Downgoing
-            if np.pi / 3 <= rad <= np.pi / 2:
-                down_angles.append(rad)
-                extra_down.append(
-                    extra * self._uptime *
-                    self._ewidth * self._aeff.spl_A15(self._egrid)
-                )
-                ours_down.append(
-                    ours_15 * self._uptime *
-                    self._ewidth * self._aeff.spl_A15(self._egrid)
-                )
 
-            # Horizon
-            else:
-                horizon_angles.append(rad)
-                extra_hor.append(
-                    extra * self._uptime *
-                    self._ewidth * self._aeff.spl_A55(self._egrid)
-                )
-                ours_hor.append(
-                    ours_55 * self._uptime *
-                    self._ewidth * self._aeff.spl_A55(self._egrid)
-                )
+            sorted_ids = np.argsort(down_angles)
+            self._extra += np.trapz(extra_down[sorted_ids],
+                                    x=down_angles[sorted_ids], axis=0)
 
-        # Converting to numpy arrays
+            # Horizon we assume it is mirrored
 
-        extra_down = np.array(extra_down)
-        extra_hor = np.array(extra_hor)
-        ours_down = np.array(ours_down)
-        ours_hor = np.array(ours_hor)
-        down_angles = np.array(down_angles)
-        horizon_angles = np.array(horizon_angles)
+            sorted_ids = np.argsort(horizon_angles)
+            self._extra += 2. * np.trapz(extra_hor[sorted_ids],
+                                        x=horizon_angles[sorted_ids], axis=0)
 
-        # Integrating
-        # Extra
+            # Upgoing we assume the same flux for all
+            self._extra += (
+                (np.pi / 2 - np.pi / 3) *
+                extra * self._uptime *
+                self._ewidth * self._aeff.spl_A51(self._egrid)
+            )
 
-        self._extra = np.zeros_like(self._egrid)
+            # Ours
+            self._ours = np.zeros_like(self._egrid)
 
-        # Downgoing
-
-        sorted_ids = np.argsort(down_angles)
-        self._extra += np.trapz(extra_down[sorted_ids],
+            # Downgoing
+            sorted_ids = np.argsort(down_angles)
+            self._ours += np.trapz(ours_down[sorted_ids],
                                 x=down_angles[sorted_ids], axis=0)
+            # Horizon we assume it is mirrored
+            sorted_ids = np.argsort(horizon_angles)
+            self._ours += 2. * np.trapz(ours_hor[sorted_ids],
+                                        x=horizon_angles[sorted_ids], axis=0)
+            # Upgoing we assume the same flux for all
+            self._ours += (
+                (np.pi / 2 - np.pi / 3) *
+                ours_51 * self._uptime *
+                self._ewidth * self._aeff.spl_A51(self._egrid)
+            )
+            total_new_counts = (
+                (self._extra + self._ours) /
+                config["advanced"]["scaling correction"]  # Some unknown error
+            )
+            self._signal_counts[mass][sv] = total_new_counts
 
-        # Horizon we assume it is mirrored
-
-        sorted_ids = np.argsort(horizon_angles)
-        self._extra += 2. * np.trapz(extra_hor[sorted_ids],
-                                     x=horizon_angles[sorted_ids], axis=0)
-
-        # Upgoing we assume the same flux for all
-        self._extra += (
-            (np.pi / 2 - np.pi / 3) *
-            extra * self._uptime *
-            self._ewidth * self._aeff.spl_A51(self._egrid)
-        )
-
-        # Ours
-        self._ours = np.zeros_like(self._egrid)
-
-        # Downgoing
-        sorted_ids = np.argsort(down_angles)
-        self._ours += np.trapz(ours_down[sorted_ids],
-                               x=down_angles[sorted_ids], axis=0)
-        # Horizon we assume it is mirrored
-        sorted_ids = np.argsort(horizon_angles)
-        self._ours += 2. * np.trapz(ours_hor[sorted_ids],
-                                    x=horizon_angles[sorted_ids], axis=0)
-        # Upgoing we assume the same flux for all
-        self._ours += (
-            (np.pi / 2 - np.pi / 3) *
-            ours_51 * self._uptime *
-            self._ewidth * self._aeff.spl_A51(self._egrid)
-        )
-        total_new_counts = (
-            (self._extra + self._ours) /
-            config["advanced"]["scaling correction"]  # Some unknown error
-        )
-        self._signal_counts[mass][sv] = total_new_counts
+        elif config["general"]["detector"] == "IceCube":  # Modify this part for IceCube detector !!!-----01.09.21 
+            total_new_counts = np.zeros(self._egrid.shape)
         return total_new_counts
 
     def _find_nearest(self, array, value):
