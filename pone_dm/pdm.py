@@ -12,10 +12,10 @@ import numpy as np
 import yaml
 # -----------------------------------------
 # Package modules
-from .config import config
-from .atm_shower import Atm_Shower
-from .dm2nu import DM2Nu
-from .pone_aeff import Aeff
+from config import config
+from atm_shower import Atm_Shower
+from dm2nu import DM2Nu
+from pone_aeff import Aeff
 # from .limit_calc import Limits
 
 # unless we put this class in __init__, __name__ will be contagion.contagion

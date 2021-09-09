@@ -9,8 +9,8 @@ import numpy as np
 import pickle
 from scipy.integrate import quad
 from scipy.interpolate import UnivariateSpline
-from .config import config
-from .constants import pdm_constants
+from config import config
+from constants import pdm_constants
 
 _log = logging.getLogger(__name__)
 
