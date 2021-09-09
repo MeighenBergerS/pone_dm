@@ -7,12 +7,11 @@
 import logging
 import numpy as np
 from tqdm import tqdm
-from scipy.stats import chi2
-from .config import config
-from .pone_aeff import Aeff
-from .dm2nu import DM2Nu
-from .atm_shower import Atm_Shower
-from .constants import pdm_constants
+from config import config
+from pone_aeff import Aeff
+from dm2nu import DM2Nu
+from atm_shower import Atm_Shower
+from constants import pdm_constants
 
 _log = logging.getLogger(__name__)
 
@@ -33,10 +32,10 @@ class Limits(object):
         _log.info('Initializing the Limits object')
         self._aeff = aeff
         self._dmnu = dm_nu
+        self._const = pdm_constants()
         self._shower = shower_sim
         self._egrid = self._shower.egrid
         self._ewidth = self._shower.ewidth
-        self._const = pdm_constants()
         self._uptime = config['simulation parameters']['uptime']
         _log.info('Preliminary calculations')
         _log.debug('The total atmospheric flux')
@@ -110,7 +109,7 @@ class Limits(object):
     def limit_calc(self,
                    mass_grid=config["simulation parameters"]["mass grid"],
                    sv_grid=config["simulation parameters"]["sv grid"]
-                   ) -> np.array:
+                   ):
         """ Scans the masses and sigma*nu and calculates
         the corresponding limits
 
@@ -134,6 +133,7 @@ class Limits(object):
         y = {}
 
         # for more generations adding the loop ----
+
         for i in (config['atmospheric showers']['particles of interest']):
 
             for m in mass_grid:
@@ -157,7 +157,7 @@ class Limits(object):
         return y
 
     def _signal_calc(self, egrid: np.array, mass: float,
-                     sv: float, angle_grid: np.array) -> np.array:
+                     sv: float, angle_grid: np.array):
         """ Calculates the expected signal given the mass, sigma*v and angle
 
         Parameters
@@ -294,10 +294,6 @@ class Limits(object):
                 config["advanced"]["scaling correction"]  # Some unknown error
             )
             self._signal_counts[mass][sv] = total_new_counts
-
-        elif config["general"]["detector"] == "IceCube":  # Modify this part for IceCube detector !!!-----01.09.21 
-            total_new_counts = np.zeros(self._egrid.shape)
-        return total_new_counts
 
     def _find_nearest(self, array, value):
         """ Add description
