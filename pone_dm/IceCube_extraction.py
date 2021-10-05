@@ -83,7 +83,7 @@ class Icecube_data(object):
                 8: self.ice_parser(self.smearing_sets[8]),
                 9: self.ice_parser(self.smearing_sets[9]),
                 }
-            # MJD, log10(E/GeV), AngErr[deg], RA[deg], Dec[deg], Azimuth[deg], Zenith[deg]
+            # MJD, log10(E/GeV), AngErr[deg], RA[deg], Dec[deg], Azimuth[deg],Zenith[deg]
             self.data_sets = [
                 '../data/icecube_10year_ps/events/IC40_exp.csv',
                 '../data/icecube_10year_ps/events/IC59_exp.csv',
