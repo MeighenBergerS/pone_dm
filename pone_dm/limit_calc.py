@@ -151,8 +151,8 @@ class Limits(object):
                 self._bkgrd[i][self._t_d:]
                 for mass in mass_grid] for sv in tqdm(sv_grid)])
             y[i] = np.array([[
-                chi2.sf(np.sum(np.nan_to_num(x)), 2)
-                for x in k] for k in self._limit_scan_grid_base
+                              chi2.sf(np.sum(np.nan_to_num(x)), 2)  # TODO: chi2 needs to be defined or imported
+                            for x in k] for k in self._limit_scan_grid_base
             ])
         return y
 
@@ -211,7 +211,7 @@ class Limits(object):
         extra_hor = []
         ours_down = []
         ours_hor = []
-        if config["general"]["detector"]=="POne":
+        if config["general"]["detector"] == "POne":
             for angle in angle_grid:
                 rad = np.deg2rad(np.abs(angle - 90.))
 
@@ -263,7 +263,7 @@ class Limits(object):
 
             sorted_ids = np.argsort(horizon_angles)
             self._extra += 2. * np.trapz(extra_hor[sorted_ids],
-                                        x=horizon_angles[sorted_ids], axis=0)
+                                         x=horizon_angles[sorted_ids], axis=0)
 
             # Upgoing we assume the same flux for all
             self._extra += (
@@ -278,7 +278,7 @@ class Limits(object):
             # Downgoing
             sorted_ids = np.argsort(down_angles)
             self._ours += np.trapz(ours_down[sorted_ids],
-                                x=down_angles[sorted_ids], axis=0)
+                                   x=down_angles[sorted_ids], axis=0)
             # Horizon we assume it is mirrored
             sorted_ids = np.argsort(horizon_angles)
             self._ours += 2. * np.trapz(ours_hor[sorted_ids],

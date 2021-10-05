@@ -49,11 +49,14 @@ class Aeff(object):
             A_51 = np.concatenate((np.array([[100, 0]]), A_51), axis=0)
 
             self._A_15 = UnivariateSpline(A_15[:, 0], A_15[:, 1] *
-                                        self._const.msq2cmsq, k=1, s=0, ext=3)
+                                          self._const.msq2cmsq, k=1, s=0, ext=3)
             self._A_51 = UnivariateSpline(A_51[:, 0], A_51[:, 1] *
-                                        self._const.msq2cmsq, k=1, s=0, ext=3)
+                                          self._const.msq2cmsq, k=1, s=0, ext=3)
             self._A_55 = UnivariateSpline(A_55[:, 0], A_55[:, 1] *
-                                        self._const.msq2cmsq, k=1, s=0, ext=3)
+                                          self._const.msq2cmsq, k=1, s=0, ext=3)
+        if config["general"]["detector"] == "IceCube":
+            print("Loading Effective Area")
+            _log.info("Loading Effective Area for IceCube...")
 
 
     @property
