@@ -99,10 +99,15 @@ class PDM(object):
         self._dm_nu = DM2Nu()
         _log.info('Finished setting up the DM functions')
         # --------------------------------------------------------------
-        # Fetching the effective areas
+        # Fetching the effective areas -> convert to detector
         self._aeff = Aeff()
         _log.info('Finished loading the effective ares')
         # --------------------------------------------------------------
+        # Constructs background
+        self._bkgrd = Background(self._Detector, self._shower_sim)
+        # --------------------------------------------------------------
+        # Construct signal
+        self._signal = Signal(self._Detector, self._dm_nu)
         # Setting up the limit calculations
         self._limit_calc = Limits(self._aeff, self._dm_nu, self._shower_sim)
         _log.info('Finished loading the limit object')
