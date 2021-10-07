@@ -9,7 +9,7 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline
 from config import config
 from constants import pdm_constants
-from IceCube_extraction import Icecube_data
+
 _log = logging.getLogger(__name__)
 
 

@@ -11,7 +11,7 @@ from pone_aeff import Aeff
 from dm2nu import DM2Nu
 from atm_shower import Atm_Shower
 from constants import pdm_constants
-from IceCube_extraction import Icecube_data
+
 _log = logging.getLogger(__name__)
 
 
@@ -20,7 +20,7 @@ class background(object):
     Class to calculate background counts for both P-One and IceCube detectors
     """
     def __init__(self, aeff: Aeff, dm_nu: DM2Nu, shower_sim: Atm_Shower):
-        self.icecube_eff = Icecube_data
+        self.icecube_eff = Icecube_data()
         self._aeff = aeff
         self._dmnu = dm_nu
         self._shower = shower_sim
@@ -102,11 +102,13 @@ class background(object):
                 )
                 self._bkgrd[i] = self._bkgrd[i] * 46
 
-        elif config["general"]["detector"] == "IceCube":
-            self._bkgrd = self.Flux_eff
-            print("IceCube Detector")  # -------  ------    06.09.21
+ # -------  ------    06.09.21
 
     def Flux_eff(self):  # ----- 06.09.21 -------
+        """"
+        Retruns total background flux ( #/s  )
+        
+        """
         total_bkgrd = {}
         for i in config["atmospheric showers"]["particles of interest"]:
             for year in range(10):
