@@ -24,6 +24,7 @@ _baseconfig = {
         # Dump experiment config to this location
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne"],
+        "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
         "mass grid": np.logspace(3, 6, 5),
