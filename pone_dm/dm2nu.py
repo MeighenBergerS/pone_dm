@@ -212,8 +212,9 @@ class DM2Nu(object):
         )
 
     def _beta_z(self, z: np.array,
-                omega_m: float, omega_L: float) -> np.array:
-        """ Add description
+                omega_m: float, omega_L: float):
+        """ return
+        beta(z) : float
         """
         return (
             self._omega_mz(z, omega_m, omega_L) *
@@ -221,8 +222,8 @@ class DM2Nu(object):
         )
 
     def _rho_s(self, R: float, r_s: float,
-               g: float, rho_0: float) -> float:
-        """ rho_s from rho_0 in GeV cm**-3
+               g: float, rho_0: float):
+        """ rho_s from rho_0 in GeV cm**-3 : float
         Add description
         """
         r_r = R / r_s
@@ -231,14 +232,16 @@ class DM2Nu(object):
             (2**(3 - g))
         )
 
-    def _sigma_lopez(self, M: float) -> float:
-        """ Add description
+    def _sigma_lopez(self, M: float):
+        """ 
+        returns
+        sigma_lopez : float
         """
         return np.exp((2.6 * M**(0.001745)) - 0.2506 * M**0.07536)
 
     def _f_178(self, M: float, z: np.array,
-               omega_m: float, omega_L: float) -> np.array:
-        """ f_178 from lopez eq b19
+               omega_m: float, omega_L: float):
+        """ f_178 from lopez eq b19 : numpy array
         Add description
 
         """
@@ -264,8 +267,8 @@ class DM2Nu(object):
         )
 
     def _f_delta(self, M: float, z: np.array,
-                 omega_m: float, omega_L: float) -> np.array:
-        """ f_delta from lopez eq b21
+                 omega_m: float, omega_L: float):
+        """ f_delta from lopez eq b21 : numpy array
         Add description
         """
         sigma = (
@@ -281,8 +284,10 @@ class DM2Nu(object):
         return self._f_178(M, z, omega_m, omega_L) * b_t
 
     def _g_tild(self, M: float, z: np.array,
-                omega_m: float, omega_L: float) -> np.array:
-        """ Add description
+                omega_m: float, omega_L: float):
+        """ 
+        returns
+        g_tilda : numpy array
         """
         # TODO: All of these constants need to be placed into the constants
         # File
@@ -345,16 +350,20 @@ class DM2Nu(object):
             (3 * (np.log(1 + a_arr) - a_arr * (1 + a_arr)**(-1)))**2
         )
 
-    def _dln_sigma_1(self, M: float) -> float:
-        """ Add description
+    def _dln_sigma_1(self, M: float):
+        """ 
+        returns:
+        dln(sigma) : Float
         """
         return (
             0.2506 * 0.07536 * M**(0.07536 - 1) -
             2.6 * 0.001745 * M**(0.001745 - 1)
         )
 
-    def _G_lopez(self, z: float, omega_m: float, omega_L: float) -> np.array:
-        """ Add description
+    def _G_lopez(self, z: float, omega_m: float, omega_L: float):
+        """ 
+        returns
+        G_lopez : numpy array
         """
         def integrand(M):
             return (
@@ -383,8 +392,10 @@ class DM2Nu(object):
         # )
         return aa * bb
 
-    def _dphide_lopez(self, E: np.array, m_x: float, snu: float) -> np.array:
-        """ Add description
+    def _dphide_lopez(self, E: np.array, m_x: float, snu: float):
+        """ 
+        returns 
+        dphi/dE_Lopez : numpy array
         """
         z = m_x / E - 1
         z_tmp = z[z > 0]
@@ -400,8 +411,7 @@ class DM2Nu(object):
                self._const.H_0)
 
         a_g = a_t / b_t
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2 # changed 
-        
+        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 8 * np.pi * m_x**2
         res = aaa * a_g / (3 * E[E <= m_x] * b)
         # Padding with zeros
@@ -433,7 +443,7 @@ class DM2Nu(object):
             _log.debug("Searching for " + load_str)
             loaded_d = pickle.load(open(load_str, "rb"))
             self._d = loaded_d[1]
-        except:
+        except FileNotFoundError:
             _log.debug("Failed to load d data")
             _log.debug("Constructing it, this may take a while")
             z_grid = config["advanced"]["construction grid _d"]

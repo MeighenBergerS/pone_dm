@@ -5,8 +5,6 @@
 
 # Imports
 import logging
-
-from numpy.core.records import array
 from pone_aeff import Aeff
 from dm2nu import DM2Nu
 from atm_shower import Atm_Shower
@@ -47,18 +45,12 @@ class Detector(object):
 
                 _log.info("Trying to load pre-calculated tables")
                 _log.debug("Searching for Atmospheric and Astro Fluxes")
-
-                self.surface_fluxes = pickle.load(open("../data/surf_store.p",
-                                                       "rb"))
-
-                self.particle_counts = pickle.load(open('../data/atmos_all.p',
-                                                        "rb"))
-                self.astro_counts = pickle.load(open("../data/astro_all.p",
-                                                     "rb"))
-                self._egrid = self.surface_fluxes[0][0]
+                self.sim2dec = pickle.load(open(
+                    "../data/background_ice.pkl", "rb"))
 
             except FileNotFoundError:
-
+                _log.info("Failed to load pre-calculated tables")
+                _log.info("Calculating tables for background")
                 self.eff_areas = [
                     '../data/icecube_10year_ps/irfs/IC40_effectiveArea.csv',
                     '../data/icecube_10year_ps/irfs/IC59_effectiveArea.csv',
@@ -185,14 +177,29 @@ class Detector(object):
                 self.surface_fluxes[90] = self.surface_fluxes[89]
                 self._egrid = self.surface_fluxes[0][0]
 
-            self.sim2dec = self._sim_to_dec(self.surface_fluxes, config['general']['year'])
+                self.sim2dec = self._sim_to_dec(
+                    self.surface_fluxes, config['general']['year'])
+                pickle.dump(self.sim2dec,
+                            open("../data/background_ice.pkl", "wb"))
 
         if self.name == "P-ONE":
             #
             #
             #
             #
-            self.sim2dec = self._simdec_Pone(self._shower.flux_results)
+
+            try:
+                _log.info("Trying to load pre-calculated tables")
+                _log.debug("Searching for Atmospheric and Astro Fluxes")
+                self.sim2dec = pickle.load(
+                    open("../data/background_pone.pkl", "rb"))
+
+            except FileNotFoundError:
+                _log.info("Failed to load pre-calculated tables")
+                _log.info("Calculating tables for background")
+                self.sim2dec = self._simdec_Pone(self._shower.flux_results)
+                pickle.dump(self.sim2dec,
+                            open("../data/background_pone.pkl", "wb"))
 # ------------------------------------------
 # Icecube functions ------
 
@@ -336,7 +343,7 @@ class Detector(object):
         log_egrid = np.log10(m_egrid)
         self._atmos_counts = {}
         self._astro_counts = {}
-        self._tmp_bkgrd = np.zeros_like([m_egrid])  # Check the size of this again
+        self._tmp_bkgrd = np.zeros_like([m_egrid])  # Check the size of this
         self._bkgrd = {}
         for theta in tqdm((list(flux.keys()))):
 
@@ -445,7 +452,7 @@ class Detector(object):
                  self.astro_flux(self._egrid)) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
-            self._bkgrd[i] = self._bkgrd[i] * 46 # The scaling factor negation should be changed
+            self._bkgrd[i] = self._bkgrd[i] * 46  # The scaling factor
 
             return self._bkgrd
 

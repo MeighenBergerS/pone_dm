@@ -44,12 +44,10 @@ class pdm_constants(object):
         self.J_p3 = 0.13e17
         self.J_d3 = 0.18e11
 
-        # Total J
-        self.J = (
-            self.J_s1 + self.J_p1 + self.J_d1 +
-            self.J_s2 + self.J_s3 + self.J_p2 +
-            self.J_p3 + self.J_d2 + self.J_d3
-        )
+        # All sky J - Values [ Crlos et.al - DM Annihiliation to Neutrinos]
+        self.J_s = 2.3e23
+        self.J_p = 2.2e17
+        self.J_d = 3.6e11
         # ----------------------------------------------------------------------
         # Extra-Galactic
         self.M = np.logspace(-1, 15, 400, 10)
@@ -68,7 +66,8 @@ class pdm_constants(object):
         self.omega_L = 0.721  # dark energy density
         self.omega_B = 0.046
         self.omega_re = 9.8e-5
-        self.rho_B = self.omega_B * self.rho_0  # baryonic mass density changed rho_c_mpc to rho_0 '16.08.21'
+        self.rho_B = self.omega_B * self.rho_0  # baryonic mass density
+        # changed rho_c_mpc to rho_0 '16.08.21'
         # radiation density of these the most accurately measured ---------
         # ----------------------------------------------------------------------
         # DM

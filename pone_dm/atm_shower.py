@@ -80,7 +80,6 @@ class Atm_Shower(object):
             # Running simulations
             self._run_mceq()
 
-    @property
     def egrid(self):
         """ Fetches the calculation egrid
 

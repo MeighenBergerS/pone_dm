@@ -51,7 +51,7 @@ _baseconfig = {
         # Angles of interest currently not custom
         'theta angles': np.array([0., 5., 10., 20., 30., 45., 60., 70., 90.]),
         # Particles of interest
-        'particles of interest': ['numu', 'nue', 'nutau']  # should I just take numu here?-----
+        'particles of interest': ['numu', 'nue', 'nutau']
     },
     ###########################################################################
     # P-ONE

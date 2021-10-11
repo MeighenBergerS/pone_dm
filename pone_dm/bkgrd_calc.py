@@ -15,7 +15,7 @@ from detectors import Detector
 _log = logging.getLogger(__name__)
 
 
-class background(object):
+class Background(object):
     """
     Class to calculate background counts for both P-One and IceCube detectors
     """
@@ -35,6 +35,6 @@ class background(object):
         _log.info('Preliminary calculations')
         _log.debug('The total atmospheric flux')
 
-        # Checkthis again
+        # Check this again
         self.bkgrd = self._detector(self._aeff,
                                     self._dmnu, self._shower).sim2dec
