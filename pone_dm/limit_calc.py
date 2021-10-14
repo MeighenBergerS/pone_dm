@@ -37,10 +37,12 @@ class Limits(object):
         self._dmnu = dm_nu
         self._const = pdm_constants()
         self._shower = shower_sim
-        self._egrid = self._shower._egrid
-        self._ewidth = self._shower.ewidth
-        self._detector = detector(self._aeff, self._dmnu, self._shower)
+        self._detector = detector
+        self._egrid = self._shower().egrid
+        self._ewidth = self._shower().ewidth
         self._background = background
+        self._massgrid = config["simulation parameters"]["mass grid"]
+        self._svgrid = config["simulation parameters"]["sv grid"]
         self._uptime = config['simulation parameters']['uptime']
         _log.info('Preliminary calculations')
         _log.debug('The total atmospheric flux')
@@ -48,16 +50,16 @@ class Limits(object):
         self.name = config['general']['detector']
         self.bkgrd = self._detector.sim2dec
         if self.name == 'IceCube':
-            self.limit = self.limit_calc_ice()
+            self.limit = self.limit_calc_ice(self._massgrid, self._svgrid)
 
         elif self.name == 'POne':
-            self.limit = self.limit_calc_pone()
+            self.limit = self.limit_calc_pone(self._massgrid, self._svgrid)
 
 # Limit calculation for IceCube------------------
 
     def limit_calc_ice(self,
-                       mass_grid=config["simulation parameters"]["mass grid"],
-                       sv_grid=config["simulation parameters"]["sv grid"]):
+                       mass_grid,
+                       sv_grid):
 
         y = {}
         # for more generations adding the loop ----
@@ -67,13 +69,19 @@ class Limits(object):
             _log.info('Starting the limit calculation for IceCube detector')
 
             # The low energy cut off
+            print(type(self._egrid))
             self._t_d = self._find_nearest(self._egrid, 5e2)
-            self._limit_scan_grid_base = np.array([[
-                (self._signal_calc_ice(self._egrid, mass,
-                 sv, config['atmospheric showers']['theta angles']
-                )**2.)[self._t_d:] /
-                self.bkgrd[self._t_d:]
-                for mass in mass_grid] for sv in tqdm(sv_grid)])
+
+            self._limit_scan_grid_base = np.array(
+                [[
+                  ((self._signal_calc_ice(self._egrid, mass,
+                    sv)**2.
+                    )[self._t_d:] /
+                   self.bkgrd[self._t_d:])
+                  for mass in mass_grid]
+                 for sv in sv_grid]
+                 )
+
             y[i] = np.array([[
                               chi2.sf(np.sum(np.nan_to_num(x)), 2)
                             for x in k] for k in self._limit_scan_grid_base
@@ -83,8 +91,8 @@ class Limits(object):
 # Limit calculation for Pone----------------------
 
     def limit_calc_pone(self,
-                        mass_grid=config["simulation parameters"]["mass grid"],
-                        sv_grid=config["simulation parameters"]["sv grid"]
+                        mass_grid,
+                        sv_grid
                         ):
         """ Scans the masses and sigma*nu and calculates
         the corresponding limits
@@ -109,6 +117,7 @@ class Limits(object):
         for i in (config['atmospheric showers']['particles of interest']):
 
             self._t_d = self._find_nearest(self._egrid, 5e2)
+            print(type(self._egrid))
             self._limit_grid = np.array([[
                             (self._signal_calc_pone(
                                 self._egrid, mass,
@@ -123,6 +132,51 @@ class Limits(object):
             y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(x)), 2)
                             for x in k] for k in self._limit_grid])
         return y
+
+# Signal Calculation -------------
+
+    def _signal_calc_ice(self, egrid: np.array, mass: float,
+                         sv: float):
+        """ Calculates the expected signal given the mass, sigma*v and angle
+
+        Parameters
+        ----------
+        egrid : np.array
+            The energy grid to calculate on
+        mass : float
+            The DM mass
+        sv : float
+            The sigma * v of interest
+        angle_grid : np.array
+            The incoming angles
+
+        Returns
+        -------
+        total_new_counts : np.array
+            The total new counts
+        """
+
+        # Extra galactic
+        extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
+        self._extra_flux = extra
+
+        # Galactic
+
+        # TODO: Need to configure for IceCube ------
+
+        _ours = self._dmnu.galactic_flux(
+            egrid, mass, sv,
+            config['simulation parameters']["DM type k"],
+            self._const.J_d + self._const.J_p + self._const.J_s
+        )
+        _flux = self._detector._sim_to_dec(_ours)
+
+        total_new_counts = (
+            (self._extra + _flux) /
+            config["advanced"]["scaling correction"]  # Some unknown error
+        )
+
+        return total_new_counts
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,
                           sv: float, angle_grid: np.array):
@@ -146,6 +200,7 @@ class Limits(object):
         """
 
         # Extra galactic
+
         extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
         self._extra_flux = extra
 
@@ -262,52 +317,12 @@ class Limits(object):
 
         return total_new_counts
 
-    def _signal_calc_ice(self, egrid: np.array, mass: float,
-                         sv: float, angle_grid: np.array):
-        """ Calculates the expected signal given the mass, sigma*v and angle
+    def _find_nearest(self, array: np.array, value: float):
 
-        Parameters
-        ----------
-        egrid : np.array
-            The energy grid to calculate on
-        mass : float
-            The DM mass
-        sv : float
-            The sigma * v of interest
-        angle_grid : np.array
-            The incoming angles
-
-        Returns
-        -------
-        total_new_counts : np.array
-            The total new counts
+        """ Returns: index of the nearest vlaue of an array to the given number
+        --------------
+        idx :  float
         """
-
-        # Extra galactic
-        extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
-        self._extra_flux = extra
-
-        # Galactic
-
-        # TODO: Need to configure for IceCube ------
-
-        _ours = self._dmnu.galactic_flux(
-            egrid, mass, sv,
-            config['simulation parameters']["DM type k"],
-            self._const.J_d + self._const.J_p + self._const.J_s
-        )
-        _flux = self._detector.sim_to_dec(_ours)
-
-        total_new_counts = (
-            (self._extra + _flux) /
-            config["advanced"]["scaling correction"]  # Some unknown error
-        )
-
-        return total_new_counts
-
-    def _find_nearest(self, array, value):
-        """ Add description
-        """
-        array = np.asarray(array)
+        array = np.array(array)
         idx = (np.abs(array - value)).argmin()
         return idx

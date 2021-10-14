@@ -39,7 +39,7 @@ class Atm_Shower(object):
             _log.debug("Searching for " + self._load_str)
 
             loaded_atm = pickle.load(open(self._load_str, "rb"))
-            print("ayay")
+
             self._egrid = loaded_atm[0]
             self._ewidth = loaded_atm[1]
             self._particle_fluxes = loaded_atm[2]
@@ -74,12 +74,14 @@ class Atm_Shower(object):
                 primary_model=self._p_model,
                 theta_deg=0,
             )
+
             self._egrid = self._mceq_instance.e_grid
             self._ewidth = self._mceq_instance.e_widths
             self._mceq_instance.set_density_model(self._atmosphere)
             # Running simulations
             self._run_mceq()
 
+    @property
     def egrid(self):
         """ Fetches the calculation egrid
 

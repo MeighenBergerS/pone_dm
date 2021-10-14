@@ -177,7 +177,7 @@ class Detector(object):
                 self.surface_fluxes[90] = self.surface_fluxes[89]
                 self._egrid = self.surface_fluxes[0][0]
 
-                self.sim2dec = self._sim_to_dec(
+                self.sim2dec = self.sim_to_dec(
                     self.surface_fluxes, config['general']['year'])
                 pickle.dump(self.sim2dec,
                             open("../data/background_ice.pkl", "wb"))
@@ -203,6 +203,16 @@ class Detector(object):
 # ------------------------------------------
 # Icecube functions ------
 
+    @property
+    def sim2dec(self):
+        """
+        Returns
+        ------------------------------
+        counts : Dict ( label : neutrino flavour)
+
+        """
+        return self.sim2dec
+    
     def spl_e_areas(self):
         """
         for fetching effective areas
@@ -324,7 +334,8 @@ class Detector(object):
             unsmeared_astro_counts[theta] = tmp_as_un
         return unsmeared_atmos_counts, unsmeared_astro_counts, m_egrid
 
-    def _sim_to_dec(self, flux: dict, year: float):
+    @property
+    def sim_to_dec(self, flux: dict, year: float):
         """
         Returns Counts for atmospheric and astro fluxes for IceCube --> dict
         parameters
@@ -386,6 +397,8 @@ class Detector(object):
 
 # ------------------------------------------------
 # POne funcions -------- ------ -----
+
+    @property
     def _simdec_Pone(self, flux: dict):
         """
         Returns particle counts for P-One Detector
@@ -455,14 +468,3 @@ class Detector(object):
             self._bkgrd[i] = self._bkgrd[i] * 46  # The scaling factor
 
             return self._bkgrd
-
-    @property
-    def egrid(self):
-        """ Fetches the calculation egrid
-
-        Returns
-        -------
-        np.array
-            The energy grid
-        """
-        return self._egrid
