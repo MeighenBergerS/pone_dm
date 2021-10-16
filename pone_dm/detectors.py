@@ -6,10 +6,6 @@
 # Imports
 import logging
 from pone_aeff import Aeff
-from dm2nu import DM2Nu
-from atm_shower import Atm_Shower
-from constants import pdm_constants
-import pickle
 from config import config
 import numpy as np
 from tqdm import tqdm
@@ -26,198 +22,90 @@ class Detector(object):
 
     """
 
-    def __init__(self, aeff: Aeff, dm_nu: DM2Nu, shower_sim: Atm_Shower):
+    def __init__(self, aeff: Aeff):
 
         self.name = config["general"]["detector"]
         self._aeff = aeff
-        self._dmnu = dm_nu
-        self._shower = shower_sim
-        self._egrid = self._shower.egrid
-        self._ewidth = self._shower.ewidth
-        self._const = pdm_constants()
+
+        self._egrid = self._aeff._egrid
+        self._ewidth = self._aeff._ewidth
+
         self._uptime = config['simulation parameters']['uptime']
+        self.days = 60. * 24
 
+        self.smearing_sets = [
+                '../data/icecube_10year_ps/irfs/IC40_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC59_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC79_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC86_I_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
+                '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
+            ]
+
+        self.smearing_dic = {
+                0: self.ice_parser(self.smearing_sets[0]),
+                1: self.ice_parser(self.smearing_sets[1]),
+                2: self.ice_parser(self.smearing_sets[2]),
+                3: self.ice_parser(self.smearing_sets[3]),
+                4: self.ice_parser(self.smearing_sets[4]),
+                5: self.ice_parser(self.smearing_sets[5]),
+                6: self.ice_parser(self.smearing_sets[6]),
+                7: self.ice_parser(self.smearing_sets[7]),
+                8: self.ice_parser(self.smearing_sets[8]),
+                9: self.ice_parser(self.smearing_sets[9]),
+                }
+    # MJD, log10(E/GeV), AngErr[deg], RA[deg], Dec[deg],
+    # Azimuth[deg], Zenith[deg]
+
+        self.uptime_sets = [
+                '../data/icecube_10year_ps/uptime/IC40_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC59_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC79_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC86_I_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC86_II_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC86_III_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC86_IV_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC86_V_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC86_VI_exp.csv',
+                '../data/icecube_10year_ps/uptime/IC86_VII_exp.csv',
+            ]
+
+        self.uptime_dic = {
+                0: self.ice_parser(self.uptime_sets[0]),
+                1: self.ice_parser(self.uptime_sets[1]),
+                2: self.ice_parser(self.uptime_sets[2]),
+                3: self.ice_parser(self.uptime_sets[3]),
+                4: self.ice_parser(self.uptime_sets[4]),
+                5: self.ice_parser(self.uptime_sets[5]),
+                6: self.ice_parser(self.uptime_sets[6]),
+                7: self.ice_parser(self.uptime_sets[7]),
+                8: self.ice_parser(self.uptime_sets[8]),
+                9: self.ice_parser(self.uptime_sets[9]),
+            }
+
+        self.uptime_tot_dic = {}
+
+        for year in range(10):
+
+            self.uptime_tot_dic[year] = (np.sum(np.diff(
+                                                        self.uptime_dic[
+                                                            year])) *
+                                         self.days)
+        self.name = config["general"]["detector"]
         if self.name == "IceCube":
-            self.days = 60. * 24
-            self.minutes = 60.
-
-            try:
-
-                _log.info("Trying to load pre-calculated tables")
-                _log.debug("Searching for Atmospheric and Astro Fluxes")
-                self.sim2dec = pickle.load(open(
-                    "../data/background_ice.pkl", "rb"))
-
-            except FileNotFoundError:
-                _log.info("Failed to load pre-calculated tables")
-                _log.info("Calculating tables for background")
-                self.eff_areas = [
-                    '../data/icecube_10year_ps/irfs/IC40_effectiveArea.csv',
-                    '../data/icecube_10year_ps/irfs/IC59_effectiveArea.csv',
-                    '../data/icecube_10year_ps/irfs/IC79_effectiveArea.csv',
-                    '../data/icecube_10year_ps/irfs/IC86_I_effectiveArea.csv',
-                    '../data/icecube_10year_ps/irfs/IC86_II_effectiveArea.csv',
-                ]
-
-                self.eff_dic = {
-                        0: self.ice_parser(self.eff_areas[0]),
-                        1: self.ice_parser(self.eff_areas[1]),
-                        2: self.ice_parser(self.eff_areas[2]),
-                        3: self.ice_parser(self.eff_areas[3]),
-                        4: self.ice_parser(self.eff_areas[4]),
-                        5: self.ice_parser(self.eff_areas[4]),
-                        6: self.ice_parser(self.eff_areas[4]),
-                        7: self.ice_parser(self.eff_areas[4]),
-                        8: self.ice_parser(self.eff_areas[4]),
-                        9: self.ice_parser(self.eff_areas[4]),
-                    }
-
-            # Loading smearing
-            # log10(E_nu/GeV)_min, log10(E_nu/GeV)_max, Dec_nu_min[deg],
-            # Dec_nu_max[deg], log10(E/GeV), PSF_min[deg], PSF_max[deg],
-            # AngErr_min[deg], AngErr_max[deg], Fractional_Counts
-
-                self.smearing_sets = [
-                        '../data/icecube_10year_ps/irfs/IC40_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC59_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC79_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC86_I_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
-                        '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
-                    ]
-
-                self.smearing_dic = {
-                        0: self.ice_parser(self.smearing_sets[0]),
-                        1: self.ice_parser(self.smearing_sets[1]),
-                        2: self.ice_parser(self.smearing_sets[2]),
-                        3: self.ice_parser(self.smearing_sets[3]),
-                        4: self.ice_parser(self.smearing_sets[4]),
-                        5: self.ice_parser(self.smearing_sets[5]),
-                        6: self.ice_parser(self.smearing_sets[6]),
-                        7: self.ice_parser(self.smearing_sets[7]),
-                        8: self.ice_parser(self.smearing_sets[8]),
-                        9: self.ice_parser(self.smearing_sets[9]),
-                        }
-
-            # MJD, log10(E/GeV), AngErr[deg], RA[deg], Dec[deg],
-            # Azimuth[deg],Zenith[deg]
-
-                self.data_sets = [
-                        '../data/icecube_10year_ps/events/IC40_exp.csv',
-                        '../data/icecube_10year_ps/events/IC59_exp.csv',
-                        '../data/icecube_10year_ps/events/IC79_exp.csv',
-                        '../data/icecube_10year_ps/events/IC86_I_exp.csv',
-                        '../data/icecube_10year_ps/events/IC86_II_exp.csv',
-                        '../data/icecube_10year_ps/events/IC86_III_exp.csv',
-                        '../data/icecube_10year_ps/events/IC86_IV_exp.csv',
-                        '../data/icecube_10year_ps/events/IC86_V_exp.csv',
-                        '../data/icecube_10year_ps/events/IC86_VI_exp.csv',
-                        '../data/icecube_10year_ps/events/IC86_VII_exp.csv',
-                    ]
-
-                self.event_dic = {
-                        0: self.ice_parser(self.data_sets[0]),
-                        1: self.ice_parser(self.data_sets[1]),
-                        2: self.ice_parser(self.data_sets[2]),
-                        3: self.ice_parser(self.data_sets[3]),
-                        4: self.ice_parser(self.data_sets[4]),
-                        5: self.ice_parser(self.data_sets[5]),
-                        6: self.ice_parser(self.data_sets[6]),
-                        7: self.ice_parser(self.data_sets[7]),
-                        8: self.ice_parser(self.data_sets[8]),
-                        9: self.ice_parser(self.data_sets[9]),
-                    }
-
-            # MJD, log10(E/GeV), AngErr[deg], RA[deg], Dec[deg],
-            # Azimuth[deg], Zenith[deg]
-
-                self.uptime_sets = [
-                        '../data/icecube_10year_ps/uptime/IC40_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC59_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC79_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC86_I_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC86_II_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC86_III_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC86_IV_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC86_V_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC86_VI_exp.csv',
-                        '../data/icecube_10year_ps/uptime/IC86_VII_exp.csv',
-                    ]
-
-                self.uptime_dic = {
-                        0: self.ice_parser(self.uptime_sets[0]),
-                        1: self.ice_parser(self.uptime_sets[1]),
-                        2: self.ice_parser(self.uptime_sets[2]),
-                        3: self.ice_parser(self.uptime_sets[3]),
-                        4: self.ice_parser(self.uptime_sets[4]),
-                        5: self.ice_parser(self.uptime_sets[5]),
-                        6: self.ice_parser(self.uptime_sets[6]),
-                        7: self.ice_parser(self.uptime_sets[7]),
-                        8: self.ice_parser(self.uptime_sets[8]),
-                        9: self.ice_parser(self.uptime_sets[9]),
-                    }
-
-                self.uptime_tot_dic = {}
-
-                for year in range(10):
-
-                    self.uptime_tot_dic[year] = (np.sum(np.diff(
-                                                               self.uptime_dic[
-                                                                   year])) *
-                                                 self.days)
-                # Loading simulation results
-                self.surface_fluxes = pickle.load(open("../data/" +
-                                                       "surf_store_v1.p", "rb"
-                                                       ))
-                # Adding 90 deg
-                self.surface_fluxes[90] = self.surface_fluxes[89]
-                self._egrid = self.surface_fluxes[0][0]
-
-                self.sim2dec = self.sim_to_dec(
-                    self.surface_fluxes, config['general']['year'])
-                pickle.dump(self.sim2dec,
-                            open("../data/background_ice.pkl", "wb"))
-
-        if self.name == "P-ONE":
-            #
-            #
-            #
-            #
-
-            try:
-                _log.info("Trying to load pre-calculated tables")
-                _log.debug("Searching for Atmospheric and Astro Fluxes")
-                self.sim2dec = pickle.load(
-                    open("../data/background_pone.pkl", "rb"))
-
-            except FileNotFoundError:
-                _log.info("Failed to load pre-calculated tables")
-                _log.info("Calculating tables for background")
-                self.sim2dec = self._simdec_Pone(self._shower.flux_results)
-                pickle.dump(self.sim2dec,
-                            open("../data/background_pone.pkl", "wb"))
-# ------------------------------------------
-# Icecube functions ------
+            self._sim2dec = self.sim_to_dec
+        elif self.name == "POne":
+            self._sim2dec = self.simdec_Pone
 
     @property
     def sim2dec(self):
-        """
-        Returns
-        ------------------------------
-        counts : Dict ( label : neutrino flavour)
-
-        """
-        return self.sim2dec
-    
-    def spl_e_areas(self):
-        """
-        for fetching effective areas
-        """
-        return self.spl_e_area
+        return self._sim2dec
+# ------------------------------------------
+# Icecube functions ------
 
     def astro_flux(self):
         res = 1.66 * (self._egrid / 1e5)**(-2.6) * 1e-18  # Custom
@@ -272,69 +160,6 @@ class Detector(object):
 
         return smearing_e_grid, smearing_fraction
 
-    def effective_area_func(self, flux: dict, year: float):
-        """
-        Try to make sense of this ----------- 01.09.21 !!!!!!!
-
-        Parameters:
-        -------------------------
-        surface_fluxes: dic
-        year: float
-
-        returns:
-        -------------------------
-        unsmeared_atmos_counts: dic
-        unsmeared_astro_counts: dic
-        m_egrid: numpy arra
-        eff_areas : dic ------06.09.21
-
-        """
-        # Apply the effective area to the simulation and return unsmeared
-        # counts
-
-        ch_egrid = (self.eff_dic[year][:, 1] + self.eff_dic[year][:, 0])/2.
-        ch_theta = (self.eff_dic[year][:, 2] + self.eff_dic[year][:, 3])/2.
-        unsmeared_astro_counts = {}
-        unsmeared_atmos_counts = {}
-        for j, theta in enumerate(list(flux.keys())):
-            surf_counts = flux[theta][-1]
-            m_egrid = flux[theta][0]
-            tmp_eff = []
-            check_angle = (theta)
-
-            for energy in m_egrid:
-                if energy < 1e1:
-                    tmp_eff.append(0.)
-
-                else:
-
-                    loge = np.log10(energy)
-                    idE = np.abs(ch_egrid - loge).argmin()
-                    all_near = (np.where(ch_egrid == ch_egrid[idE])[0])
-                    idTheta = np.abs(ch_theta[all_near] - check_angle).argmin()
-                    tmp_eff.append(self.eff_dic[year][all_near, -1][idTheta])
-            loc_eff_area = np.array(tmp_eff)
-
-            # print(len(surf_counts))
-            # print(len(loc_eff_area))
-            # print(len(self.uptime_tot_dic[year]))
-
-            tmp_at_un = ((surf_counts *
-                          loc_eff_area *
-                          self.uptime_tot_dic[year] *
-                          flux[theta][1] *
-                          2. * np.pi))
-            tmp_as_un = ((self.astro_flux() *
-                          loc_eff_area *
-                          flux[theta][1] *
-                          self.uptime_tot_dic[year] *
-                          2. * np.pi))
-
-            unsmeared_atmos_counts[theta] = tmp_at_un
-            unsmeared_astro_counts[theta] = tmp_as_un
-        return unsmeared_atmos_counts, unsmeared_astro_counts, m_egrid
-
-    @property
     def sim_to_dec(self, flux: dict, year: float):
         """
         Returns Counts for atmospheric and astro fluxes for IceCube --> dict
@@ -349,37 +174,45 @@ class Detector(object):
                 [Total background ( atmos + astro )]  sumed over all thetas
         """
         # Converts simulation data to detector data
-        at_counts_unsm, as_counts_unsm, m_egrid = self.effective_area_func(
-            flux, year)
-        log_egrid = np.log10(m_egrid)
+        # TODO: The flux data for signal  would be an array whereas here we
+        #  need a dictionary [angle] !!!!!!!
+        if type(flux) != dict:
+            _flux = {}
+            for theta in config["atmospheric showers"]["theta angles"]:
+                _flux[theta] = flux
+        else:
+            _flux = flux
+        at_counts_unsm, as_counts_unsm, = self._aeff.effective_area_func(
+            _flux, year)
+        log_egrid = np.log10(self._egrid)
         self._atmos_counts = {}
         self._astro_counts = {}
-        self._tmp_bkgrd = np.zeros_like([m_egrid])  # Check the size of this
+        self._tmp_bkgrd = np.zeros_like([self._egrid])
         self._bkgrd = {}
-        for theta in tqdm((list(flux.keys()))):
+        for theta in tqdm((list(_flux.keys()))):
 
             check_angle = (theta)
             tmp_1 = []
             tmp_2 = []
             for id_check in range(len(log_egrid)):
                 smearing_e, smearing = self.smearing_function(
-                                                              log_egrid[
-                                                                  id_check],
-                                                              check_angle,
-                                                              year)
+                                                            log_egrid[
+                                                                id_check],
+                                                            check_angle,
+                                                            year)
                 # print(len(at_counts_unsm[theta]), len(smearing))
                 if len(smearing) < 3:
                     continue
                 tmp_1.append(UnivariateSpline(smearing_e,
                                               (smearing *
                                                at_counts_unsm[theta][
-                                                   id_check]),
+                                                  id_check]),
                                               k=1, s=0,
                                               ext=1)(np.log10(self._egrid)))
                 tmp_2.append(UnivariateSpline(smearing_e,
                                               (smearing *
                                                as_counts_unsm[theta][
-                                                   id_check]),
+                                                  id_check]),
                                               k=1, s=0,
                                               ext=1)(np.log10(self._egrid)))
             self._atmos_counts[theta] = np.sum(tmp_1, axis=0)
@@ -397,9 +230,7 @@ class Detector(object):
 
 # ------------------------------------------------
 # POne funcions -------- ------ -----
-
-    @property
-    def _simdec_Pone(self, flux: dict):
+    def simdec_Pone(self, flux: dict):
         """
         Returns particle counts for P-One Detector
         parameter
@@ -418,11 +249,12 @@ class Detector(object):
         self._bkgrd = {}
 
         for i in (config['atmospheric showers']['particles of interest']):
+            print(i)
             self.bkgrd_down[i] = []
             down_angles = []
             self.bkgrd_horizon[i] = []
             horizon_angles = []
-        # Astrophysical is the same everywhere
+            # Astrophysical is the same everywhere
             for angle in config['atmospheric showers']['theta angles']:
                 rad = np.deg2rad(np.abs(angle - 90.))
                 # Downgoing
@@ -430,7 +262,7 @@ class Detector(object):
                     down_angles.append(rad)
                     self.bkgrd_down[i] = (
                         (flux[angle][i] +
-                         self.astro_flux(self._egrid)) * self._uptime *
+                         self.astro_flux()) * self._uptime *
                         self._ewidth * self._aeff.spl_A15(self._egrid)
                     )
                 # Horizon
@@ -438,7 +270,7 @@ class Detector(object):
                     horizon_angles.append(rad)
                     self.bkgrd_horizon[i] = (
                         (flux[angle][i] +
-                         self.astro_flux(self._egrid)) * self._uptime *
+                         self.astro_flux()) * self._uptime *
                         self._ewidth * self._aeff.spl_A55(self._egrid)
                     )
             # Converting to numpy arrays
@@ -462,9 +294,10 @@ class Detector(object):
             self._bkgrd[i] += (
                 (np.pi / 2 - np.pi / 3) *
                 (flux[0.][i] +
-                 self.astro_flux(self._egrid)) * self._uptime *
+                 self.astro_flux()) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
             self._bkgrd[i] = self._bkgrd[i] * 46  # The scaling factor
+            print(i)
 
-            return self._bkgrd
+        return self._bkgrd

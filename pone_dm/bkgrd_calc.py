@@ -6,12 +6,9 @@
 # Imports
 import logging
 from config import config
-from pone_aeff import Aeff
-from dm2nu import DM2Nu
 from atm_shower import Atm_Shower
-from constants import pdm_constants
 from detectors import Detector
-
+import pickle
 _log = logging.getLogger(__name__)
 
 
@@ -19,22 +16,55 @@ class Background(object):
     """
     Class to calculate background counts for both P-One and IceCube detectors
     """
-    def __init__(self, aeff: Aeff, dm_nu: DM2Nu, shower_sim: Atm_Shower,
-                 detector: Detector):
+    def __init__(self, shower_sim: Atm_Shower, detector: Detector):
 
-        self._aeff = aeff
-        self._dmnu = dm_nu
-        self._shower = shower_sim
         self._detector = detector
-        self._egrid = self._shower.egrid
-        self._ewidth = self._shower.ewidth
-        self._const = pdm_constants()
+        self._shower = shower_sim
         self._uptime = config['simulation parameters']['uptime']
-
+        self.name = config['general']['detector']
         _log.info('Initializing the Limits object')
         _log.info('Preliminary calculations')
         _log.debug('The total atmospheric flux')
 
         # Check this again
-        self.bkgrd = self._detector(self._aeff,
-                                    self._dmnu, self._shower).sim2dec
+        if self.name == "IceCube":
+            self.days = 60. * 24
+            self.minutes = 60.
+
+            try:
+
+                _log.info("Trying to load pre-calculated tables")
+                _log.debug("Searching for Atmospheric and Astro Fluxes")
+                self._bkgrd = pickle.load(open(
+                    "../data/background_ice.pkl", "rb"))
+
+            except FileNotFoundError:
+                _log.info("Failed to load pre-calculated tables")
+                _log.info("Calculating tables for background")
+                self._bkgrd = self._detector.sim2dec(
+                    self._shower.flux_results, config['general']['year'])
+                pickle.dump(self._bkgrd,
+                            open("../data/background_ice.pkl", "wb"))
+
+        elif self.name == 'POne':
+
+            try:
+                _log.info("Trying to load pre-calculated tables")
+                _log.debug("Searching for Atmospheric and Astro Fluxes")
+                self._bkgrd = pickle.load(
+                    open("../data/background_pone.pkl", "rb"))
+
+            except FileNotFoundError:
+                _log.info("Failed to load pre-calculated tables")
+                _log.info("Calculating tables for background")
+                self._bkgrd = self._detector.sim2dec(self._shower.flux_results)
+                pickle.dump(self._bkgrd,
+                            open("../data/background_pone.pkl", "wb"))
+
+    # TODO: bkgrd() -> returns
+
+    @property
+    def bkgrd(self):
+        """Returns backgorund counts dict [ label : Neutrino Flavour ]
+        """
+        return self._bkgrd
