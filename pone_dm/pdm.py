@@ -16,6 +16,9 @@ from config import config
 from atm_shower import Atm_Shower
 from dm2nu import DM2Nu
 from pone_aeff import Aeff
+from bkgrd_calc import Background
+from detectors import Detector
+from signal_calc import Signal
 # from .limit_calc import Limits
 
 # unless we put this class in __init__, __name__ will be contagion.contagion
@@ -103,13 +106,17 @@ class PDM(object):
         self._aeff = Aeff()
         _log.info('Finished loading the effective ares')
         # --------------------------------------------------------------
-        # Constructs background
-        self._bkgrd = Background(self._Detector, self._shower_sim)
+        # Constructs detector
+        self._Detector = Detector(self._aeff)
         # --------------------------------------------------------------
-        # Construct signal
-        self._signal = Signal(self._Detector, self._dm_nu)
+        # Constructs signal
+        self._signal = Signal(self._aeff, self._dm_nu, self._Detector)
+        # --------------------------------------------------------------
+        # Constructs background
+        self._bkgrd = Background(self._shower_sim, self._Detector)
+        # --------------------------------------------------------------
         # Setting up the limit calculations
-        self._limit_calc = Limits(self._aeff, self._dm_nu, self._shower_sim)
+        self._limit_calc = Limits(self._signal, self._shower_sim, self._bkgrd)
         _log.info('Finished loading the limit object')
 
     @property
@@ -140,7 +147,7 @@ class PDM(object):
         -------
         None
         """
-        self._results = self._limit_calc.limit_calc(
+        self._results = self._limit_calc.limits(
             mass_grid=mass_grid, sv_grid=sv_grid
         )
         # --------------------------------------------------------------

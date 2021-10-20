@@ -47,6 +47,7 @@ class Signal(object):
     @property
     def signal_calc(self):
         """Returns appropriate signal calculation function
+        total_counts : np.array
         """
         return self._signal_calc
 
