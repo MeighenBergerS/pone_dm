@@ -27,8 +27,8 @@ _baseconfig = {
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(3, 6, 15),
-        "sv grid": np.logspace(-26, -23, 15),
+        "mass grid": np.logspace(3, 6, 20),
+        "sv grid": np.logspace(-26, -23, 20),
         "uptime": 5 * 365 * 24 * 60 * 60,
         "low enery cutoff": 10e3,  # GeV
         "DM type k": 2

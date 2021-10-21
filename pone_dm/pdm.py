@@ -6,7 +6,7 @@
 # Imports
 # Native modules
 import logging
-from pone_dm.limit_calc import Limits
+from limit_calc import Limits
 import sys
 import numpy as np
 import yaml
@@ -118,38 +118,12 @@ class PDM(object):
         # Setting up the limit calculations
         self._limit_calc = Limits(self._signal, self._shower_sim, self._bkgrd)
         _log.info('Finished loading the limit object')
-
-    @property
-    def results(self):
-        """ Fetches the results from the limit calculation
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        return self._results
-
-    def limit_calc(self,
-                   mass_grid=config["simulation parameters"]["mass grid"],
-                   sv_grid=config["simulation parameters"]["sv grid"]):
-        """ Calculates the limits for the given setup. Results can be
-        found in self.results
-
-        Parameters
-        ---------
-        None
-
-        Returns
-        -------
-        None
-        """
-        self._results = self._limit_calc.limits(
-            mass_grid=mass_grid, sv_grid=sv_grid
-        )
+        # -------------------------------------------------
+        # Limit Calculation
+        self.mass_grid = config["simulation parameters"]["mass grid"]
+        self.sv_grid = config["simulation parameters"]["sv grid"]
+        self._results = self._results = self._limit_calc.limits(self.mass_grid,
+                                                                self.sv_grid)
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         _log.debug(
@@ -168,3 +142,19 @@ class PDM(object):
         _log.info('     `*-._`._(__.--*"`./ ')
         _log.info('---------------------------------------------------')
         _log.info('---------------------------------------------------')
+
+    @property
+    def results(self):
+        """ Fetches the results from the limit calculation
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        return self._results
+
+       

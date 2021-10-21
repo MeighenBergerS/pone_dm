@@ -1,4 +1,4 @@
-!!python/object/new:pone_dm.config.ConfigClass
+!!python/object/new:config.ConfigClass
 dictitems:
   advanced:
     _d storage: ../data/
@@ -176,28 +176,19 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 91
+        - 9
       - *id002
       - false
       - !!binary |
-        AAAAAAAAAAAAAAAAAADwPwAAAAAAAABAAAAAAAAACEAAAAAAAAAQQAAAAAAAABRAAAAAAAAAGEAA
-        AAAAAAAcQAAAAAAAACBAAAAAAAAAIkAAAAAAAAAkQAAAAAAAACZAAAAAAAAAKEAAAAAAAAAqQAAA
-        AAAAACxAAAAAAAAALkAAAAAAAAAwQAAAAAAAADFAAAAAAAAAMkAAAAAAAAAzQAAAAAAAADRAAAAA
-        AAAANUAAAAAAAAA2QAAAAAAAADdAAAAAAAAAOEAAAAAAAAA5QAAAAAAAADpAAAAAAAAAO0AAAAAA
-        AAA8QAAAAAAAAD1AAAAAAAAAPkAAAAAAAAA/QAAAAAAAAEBAAAAAAACAQEAAAAAAAABBQAAAAAAA
-        gEFAAAAAAAAAQkAAAAAAAIBCQAAAAAAAAENAAAAAAACAQ0AAAAAAAABEQAAAAAAAgERAAAAAAAAA
-        RUAAAAAAAIBFQAAAAAAAAEZAAAAAAACARkAAAAAAAABHQAAAAAAAgEdAAAAAAAAASEAAAAAAAIBI
-        QAAAAAAAAElAAAAAAACASUAAAAAAAABKQAAAAAAAgEpAAAAAAAAAS0AAAAAAAIBLQAAAAAAAAExA
-        AAAAAACATEAAAAAAAABNQAAAAAAAgE1AAAAAAAAATkAAAAAAAIBOQAAAAAAAAE9AAAAAAACAT0AA
-        AAAAAABQQAAAAAAAQFBAAAAAAACAUEAAAAAAAMBQQAAAAAAAAFFAAAAAAABAUUAAAAAAAIBRQAAA
-        AAAAwFFAAAAAAAAAUkAAAAAAAEBSQAAAAAAAgFJAAAAAAADAUkAAAAAAAABTQAAAAAAAQFNAAAAA
-        AACAU0AAAAAAAMBTQAAAAAAAAFRAAAAAAABAVEAAAAAAAIBUQAAAAAAAwFRAAAAAAAAAVUAAAAAA
-        AEBVQAAAAAAAgFVAAAAAAADAVUAAAAAAAABWQAAAAAAAQFZAAAAAAACAVkA=
+        AAAAAAAAAAAAAAAAAAAUQAAAAAAAACRAAAAAAAAANEAAAAAAAAA+QAAAAAAAgEZAAAAAAAAATkAA
+        AAAAAIBRQAAAAAAAgFZA
   general:
     config location: ../run/config.txt
     debug level: 40
+    detector: POne
     log file handler: ../run/pdm.log
     random state seed: 1337
+    year: 8
   pone:
     aeff location: /home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_work/data/
     specific particle scaling:
@@ -298,11 +289,13 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 5
+        - 20
       - *id002
       - false
       - !!binary |
-        AAAAAABAj0CBcuDKafe1QHqM17Ox4d5Adgwthx+1BUEAAAAAgIQuQQ==
+        AAAAAABAj0B36YOvzHmWQHBgkbJGKqBA8FEo8LNAp0AJHRUYVbmwQOaummt7DrhA867hfVVNwUAa
+        sVD7X+PIQGGsqadz5tFAtns/k6C/2UDKvmzc3ITiQM8reVR+o+pAFSDb878o80DLHW+gPI/7QN6T
+        L2RN0gNB1aHeLCGDDEEi9YNQt4EUQe0Dbhh0fx1B0ZWklzE3JUEAAAAAgIQuQQ==
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -313,9 +306,11 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 5
+        - 20
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDrq+p61U2exOpWGBEWJd9g69rwSe84yATtRshJAsy0oOw==
+        FMuuxEDCiDp203Exoc6ROnd/Vj5cnZk6AznOlDdsojqzxki/CoCqOl5NKpFAD7M6rutKT49quzpX
+        QEJc7LfDOk6cVEcvXcw6t5h21mxm1DrKgBFmMljdOkXXi5n1GuU6I1AY5eJb7jrUoewHvNX1OsOf
+        3Y6NaP86sfNyXPeWBjsKerTqQD8QOxQEvbrgXhc7K2Dp9AjPIDtRshJAsy0oOw==
     uptime: 157680000

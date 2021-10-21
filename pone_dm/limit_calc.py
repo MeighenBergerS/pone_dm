@@ -48,11 +48,11 @@ class Limits(object):
         self.name = config['general']['detector']
         self._bkgrd = self._background.bkgrd
         self._signal = self._sig._signal_calc
+        self._t_d = self._find_nearest(self._egrid, 5e2)
         if self.name == 'IceCube':
-            self.limit = self.limit_calc_ice(self._massgrid, self._svgrid)
-
+            self.limit = self.limit_calc_ice
         elif self.name == 'POne':
-            self.limit = self.limit_calc_pone(self._massgrid, self._svgrid)
+            self.limit = self.limit_calc_pone
 
     @property
     def limits(self):
@@ -67,28 +67,19 @@ class Limits(object):
 
         y = {}
         # for more generations adding the loop ----
-
-        for i in tqdm(config['atmospheric showers']['particles of interest']):
-
-            _log.info('Starting the limit calculation for IceCube detector')
-
-            # The low energy cut off
-            self._t_d = self._find_nearest(self._egrid, 5e2)
-
-            self._limit_scan_grid_base = np.array(
-                [[
+        self._limit_grid = np.array([[
                   ((self._signal(self._egrid, mass,
                     sv)**2.
-                    )[self._t_d:] /
-                   self._bkgrd[i][self._t_d:])
+                    )[self._t_d:])
                   for mass in mass_grid]
                  for sv in sv_grid]
                  )
+        for i in tqdm(config['atmospheric showers']['particles of interest']):
 
-            y[i] = np.array([[
-                              chi2.sf(np.sum(np.nan_to_num(x)), 2)
-                            for x in k] for k in self._limit_scan_grid_base
-            ])
+            _log.info('Starting the limit calculation for IceCube detector')
+            y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(x)), 2)
+                            for x in k/self._bkgrd[i][self._t_d:]]
+                             for k in self._limit_grid])
         return y
 
 # Limit calculation for Pone----------------------
@@ -116,24 +107,21 @@ class Limits(object):
         _log.info('Starting the limit calculation')
         # The low energy cut off
         y = {}
-
-        for i in (config['atmospheric showers']['particles of interest']):
-
-            self._t_d = self._find_nearest(self._egrid, 5e2)
-
-            self._limit_grid = np.array([[
+        self._limit_grid = np.array([[
                             (self._signal(
                                 self._egrid, mass,
                                 sv,
                                 config['atmospheric showers']['theta angles']
                                 )**2.
-                             )[self._t_d:] /
-                            self._bkgrd[i][self._t_d:]
+                             )[self._t_d:]
                             for mass in mass_grid]
                             for sv in tqdm(sv_grid)
                             ])
+        for i in (config['atmospheric showers']['particles of interest']):
+
             y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(x)), 2)
-                            for x in k] for k in self._limit_grid])
+                            for x in k/self._bkgrd[i][self._t_d:]]
+                             for k in self._limit_grid])
         return y
 
     def _find_nearest(self, array: np.array, value: float):
