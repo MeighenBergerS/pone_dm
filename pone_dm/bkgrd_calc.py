@@ -9,7 +9,7 @@ from config import config
 from atm_shower import Atm_Shower
 from detectors import Detector
 import pickle
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("pone_dm")
 
 
 class Background(object):
@@ -41,10 +41,12 @@ class Background(object):
             except FileNotFoundError:
                 _log.info("Failed to load pre-calculated tables")
                 _log.info("Calculating tables for background")
-                self._bkgrd = self._detector.sim2dec(
+                self._bkgrd, self.eff_are_dic = self._detector.sim2dec(
                     self._shower.flux_results, config['general']['year'])
                 pickle.dump(self._bkgrd,
                             open("../data/background_ice.pkl", "wb"))
+                pickle.dump(self.eff_are_dic, open("../data/eff_area_ice.pkl",
+                                                   "wb"))
 
         elif self.name == 'POne':
 

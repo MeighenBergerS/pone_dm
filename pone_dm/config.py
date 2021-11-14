@@ -27,8 +27,8 @@ _baseconfig = {
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(3, 6, 20),
-        "sv grid": np.logspace(-26, -23, 20),
+        "mass grid": np.logspace(1, 4, 20),
+        "sv grid": np.logspace(-24, -21, 20),
         "uptime": 5 * 365 * 24 * 60 * 60,
         "low enery cutoff": 10e3,  # GeV
         "DM type k": 2
@@ -49,7 +49,7 @@ _baseconfig = {
         # Primary model
         'primary model': 'H4a',
         # Angles of interest currently not custom
-        'theta angles': np.array([0., 5., 10., 20., 30., 45., 60., 70., 90.]),
+        'theta angles': range(0, 91, 1),
         # Particles of interest
         'particles of interest': ['numu', 'nue', 'nutau']
     },
@@ -57,8 +57,7 @@ _baseconfig = {
     # P-ONE
     ###########################################################################
     "pone": {
-            'aeff location': '/home/kruteesh/Desktop/DM_nu_simulation_P-One/' +
-            'PONE_git/pone_work/data/',
+            'aeff location': '../data/',
             "specific particle scaling": {
                 "numu": 1.,
                 "nue": 1.,
@@ -73,7 +72,7 @@ _baseconfig = {
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 1
+        "scaling correction": 50
 
     }
 }

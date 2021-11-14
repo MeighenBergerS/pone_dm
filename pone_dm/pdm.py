@@ -122,8 +122,8 @@ class PDM(object):
         # Limit Calculation
         self.mass_grid = config["simulation parameters"]["mass grid"]
         self.sv_grid = config["simulation parameters"]["sv grid"]
-        self._results = self._results = self._limit_calc.limits(self.mass_grid,
-                                                                self.sv_grid)
+        self._results, self._signal_data = self._limit_calc.limits(
+            self.mass_grid, self.sv_grid)
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         _log.debug(
@@ -157,4 +157,9 @@ class PDM(object):
         """
         return self._results
 
-       
+    @property
+    def signal(self):
+        """Fetches the signal counts as a 3D array with
+            mass_grid x sv_grid x energy_grid
+        """
+        return self._signal_data

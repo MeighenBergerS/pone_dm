@@ -12,7 +12,7 @@ from tqdm import tqdm
 import csv
 
 from scipy.interpolate import UnivariateSpline
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("pone_dm")
 
 
 class Detector(object):
@@ -172,6 +172,7 @@ class Detector(object):
         ----------------
         _bkgrd : dict [label : neutrino flavour]
                 [Total background ( atmos + astro )]  sumed over all thetas
+        _eff_are : np.array
         """
         # Converts simulation data to detector data
         # TODO: The flux data for signal  would be an array whereas here we
@@ -182,7 +183,7 @@ class Detector(object):
                 _flux[theta] = flux
         else:
             _flux = flux
-        at_counts_unsm, as_counts_unsm, = self._aeff.effective_area_func(
+        at_counts_unsm, as_counts_unsm, effe_area = self._aeff.effective_area_func(
             _flux, year)
         log_egrid = np.log10(self._egrid)
         self._atmos_counts = {}
@@ -226,7 +227,7 @@ class Detector(object):
             # Assuming the same background for all flavours ----------
             self._bkgrd[i] = self._tmp_bkgrd
 
-        return self._bkgrd
+        return self._bkgrd, effe_area
 
 # ------------------------------------------------
 # POne funcions -------- ------ -----
@@ -297,7 +298,6 @@ class Detector(object):
                  self.astro_flux()) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
-            self._bkgrd[i] = self._bkgrd[i] * 46  # The scaling factor
-            print(i)
+            self._bkgrd[i] = self._bkgrd[i] / 1  # The scaling factor
 
         return self._bkgrd

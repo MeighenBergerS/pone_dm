@@ -8,7 +8,7 @@ import logging
 import sys
 import pickle
 from config import config
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("pone_dm")
 
 
 class Atm_Shower(object):
@@ -42,6 +42,7 @@ class Atm_Shower(object):
                 loaded_atm = pickle.load(open(self._load_str, "rb"))
 
                 self._egrid = loaded_atm[0]
+
                 self._ewidth = loaded_atm[1]
                 self._particle_fluxes = loaded_atm[2]
             except FileNotFoundError:

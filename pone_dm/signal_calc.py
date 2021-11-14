@@ -11,7 +11,7 @@ from pone_aeff import Aeff
 from dm2nu import DM2Nu
 from constants import pdm_constants
 from detectors import Detector
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("pone_dm")
 
 
 class Signal(object):
@@ -70,6 +70,8 @@ class Signal(object):
         -------
         total_new_counts : np.array
             The total new counts
+        totla_flux : np.array
+            the total_flux 
         """
         # Extra galactic
         _extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
@@ -85,14 +87,12 @@ class Signal(object):
         )
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
-        _flux = self._detector.sim2dec(_ours, self._year)
-        _flux_ext = self._detector.sim2dec(_extra, self._year)
+        total_flux = _ours+_extra
+        total_new_counts = self._detector.sim2dec(total_flux, self._year)[0][
+            'numu'] / config["advanced"]["scaling correction"]
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours
-        total_new_counts = (
-            (_flux_ext["numu"] + _flux["numu"]) /
-            config["advanced"]["scaling correction"]
-        )
+
         return total_new_counts
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,

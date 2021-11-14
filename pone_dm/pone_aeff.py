@@ -11,7 +11,7 @@ from config import config
 from constants import pdm_constants
 from atm_shower import Atm_Shower
 import csv
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("pone_dm")
 
 
 class Aeff(object):
@@ -74,7 +74,7 @@ class Aeff(object):
                     '../data/icecube_10year_ps/irfs/IC86_II_effectiveArea.csv',
                 ]
 
-            self.eff_dic = {
+            self._eff_dic = {
                         0: self.ice_parser(self.eff_areas[0]),
                         1: self.ice_parser(self.eff_areas[1]),
                         2: self.ice_parser(self.eff_areas[2]),
@@ -119,6 +119,9 @@ class Aeff(object):
                                                                 year])) *
                                              self.days)
 
+    def eff_dic(self):
+        return self._eff_dic
+
     @property
     def egrid(self):
         return self._egrid
@@ -147,10 +150,11 @@ class Aeff(object):
         # Apply the effective area to the simulation and return unsmeared
         # counts
 
-        ch_egrid = (self.eff_dic[year][:, 1] + self.eff_dic[year][:, 0])/2.
-        ch_theta = (self.eff_dic[year][:, 2] + self.eff_dic[year][:, 3])/2.
+        ch_egrid = (self._eff_dic[year][:, 1] + self._eff_dic[year][:, 0])/2.
+        ch_theta = (self._eff_dic[year][:, 2] + self._eff_dic[year][:, 3])/2.
         unsmeared_astro_counts = {}
         unsmeared_atmos_counts = {}
+        eff_area = {}
         for j, theta in enumerate(list(flux.keys())):
             surf_counts = flux[theta][-1]
 
@@ -167,9 +171,9 @@ class Aeff(object):
                     idE = np.abs(ch_egrid - loge).argmin()
                     all_near = (np.where(ch_egrid == ch_egrid[idE])[0])
                     idTheta = np.abs(ch_theta[all_near] - check_angle).argmin()
-                    tmp_eff.append(self.eff_dic[year][all_near, -1][idTheta])
+                    tmp_eff.append(self._eff_dic[year][all_near, -1][idTheta])
             loc_eff_area = np.array(tmp_eff)
-
+            eff_area[theta] = loc_eff_area
             tmp_at_un = ((surf_counts *
                           loc_eff_area *
                           self.uptime_tot_dic[year] *
@@ -183,7 +187,7 @@ class Aeff(object):
 
             unsmeared_atmos_counts[theta] = tmp_at_un
             unsmeared_astro_counts[theta] = tmp_as_un
-        return unsmeared_atmos_counts, unsmeared_astro_counts
+        return unsmeared_atmos_counts, unsmeared_astro_counts, eff_area
 
     @property
     def spl_A15(self):

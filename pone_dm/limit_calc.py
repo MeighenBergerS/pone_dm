@@ -13,7 +13,7 @@ from atm_shower import Atm_Shower
 
 from scipy.stats import chi2
 from bkgrd_calc import Background
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("pone_dm")
 
 
 class Limits(object):
@@ -68,8 +68,8 @@ class Limits(object):
         y = {}
         # for more generations adding the loop ----
         self._limit_grid = np.array([[
-                  ((self._signal(self._egrid, mass,
-                    sv)**2.
+                  (((self._signal(self._egrid, mass,
+                    sv))**2.
                     )[self._t_d:])
                   for mass in mass_grid]
                  for sv in sv_grid]
@@ -77,10 +77,12 @@ class Limits(object):
         for i in tqdm(config['atmospheric showers']['particles of interest']):
 
             _log.info('Starting the limit calculation for IceCube detector')
-            y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(x)), 2)
-                            for x in k/self._bkgrd[i][self._t_d:]]
+            y[i] = np.array([[chi2.sf(np.sum(
+                np.nan_to_num(x /
+                              self._bkgrd[i][self._t_d:])), 2)
+                            for x in k]
                              for k in self._limit_grid])
-        return y
+        return y, self._limit_grid
 
 # Limit calculation for Pone----------------------
 
@@ -119,10 +121,11 @@ class Limits(object):
                             ])
         for i in (config['atmospheric showers']['particles of interest']):
 
-            y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(x)), 2)
-                            for x in k/self._bkgrd[i][self._t_d:]]
+            y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(
+                x / self._bkgrd[i][self._t_d:])), 2)
+                            for x in k]
                              for k in self._limit_grid])
-        return y
+        return y, self._limit_grid
 
     def _find_nearest(self, array: np.array, value: float):
 

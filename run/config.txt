@@ -151,7 +151,7 @@ dictitems:
         JvVrDEPxtDRLT1ETQzwzGDtwQhpDiLjuRBjZIUPm2GI5B0MoQ/jznh2AfTBDl5XcC4ZqNkPSspvh
         sng+Q5SrmgD3tURDEsi3gkInTEOPUvoJniJTQzeiXn/3AlpDjM4KXPStYUOb0WmdYghoQ5siXl+k
         VXBDAKDYhVc0dkM=
-    scaling correction: 1
+    scaling correction: 50
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -166,31 +166,19 @@ dictitems:
     - nutau
     path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
     primary model: H4a
-    theta angles: !!python/object/apply:numpy.core.multiarray._reconstruct
-      args:
-      - *id001
-      - !!python/tuple
-        - 0
-      - !!binary |
-        Yg==
-      state: !!python/tuple
-      - 1
-      - !!python/tuple
-        - 9
-      - *id002
-      - false
-      - !!binary |
-        AAAAAAAAAAAAAAAAAAAUQAAAAAAAACRAAAAAAAAANEAAAAAAAAA+QAAAAAAAgEZAAAAAAAAATkAA
-        AAAAAIBRQAAAAAAAgFZA
+    theta angles: !!python/object/apply:builtins.range
+    - 0
+    - 91
+    - 1
   general:
     config location: ../run/config.txt
     debug level: 40
     detector: POne
     log file handler: ../run/pdm.log
     random state seed: 1337
-    year: 8
+    year: 7
   pone:
-    aeff location: /home/kruteesh/Desktop/DM_nu_simulation_P-One/PONE_git/pone_work/data/
+    aeff location: ../data/
     specific particle scaling:
       nue: 1.0
       numu: 1.0
@@ -289,13 +277,11 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 20
+        - 4
       - *id002
       - false
       - !!binary |
-        AAAAAABAj0B36YOvzHmWQHBgkbJGKqBA8FEo8LNAp0AJHRUYVbmwQOaummt7DrhA867hfVVNwUAa
-        sVD7X+PIQGGsqadz5tFAtns/k6C/2UDKvmzc3ITiQM8reVR+o+pAFSDb878o80DLHW+gPI/7QN6T
-        L2RN0gNB1aHeLCGDDEEi9YNQt4EUQe0Dbhh0fx1B0ZWklzE3JUEAAAAAgIQuQQ==
+        AAAAAABAj0CvHbGP3tSgQKq1zL2WIbJAAAAAAACIw0A=
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -306,11 +292,9 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 20
+        - 4
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDp203Exoc6ROnd/Vj5cnZk6AznOlDdsojqzxki/CoCqOl5NKpFAD7M6rutKT49quzpX
-        QEJc7LfDOk6cVEcvXcw6t5h21mxm1DrKgBFmMljdOkXXi5n1GuU6I1AY5eJb7jrUoewHvNX1OsOf
-        3Y6NaP86sfNyXPeWBjsKerTqQD8QOxQEvbrgXhc7K2Dp9AjPIDtRshJAsy0oOw==
+        FMuuxEDCiDrZfdr10PK+OqeOqJnCV/M6UbISQLMtKDs=
     uptime: 157680000

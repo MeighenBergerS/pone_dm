@@ -34,18 +34,24 @@ class DM2Nu(object):
 
     def galactic_flux(self, E: np.array,
                       m_x: float, sv: float,
-                      k: float, J: float) -> np.array:
+                      k: float, J: float):
         """ Fetches the galactic flux
-        Add description
+        E : Energy Grid
+        m_x : Dark Matter mass
+        sv : signma_nu 
+        k : k factor (majorana: 2 otherwise 4)
+        J : J-factor
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
         )
 
     def extra_galactic_flux(self, E: np.array,
-                            m_x: float, sv: float) -> np.array:
+                            m_x: float, sv: float):
         """ Fetches the extra-galactic flux
-        Add description
+        E : Energy grid
+        m_x : mass of Dark Matter
+        sv : sigma_nu
         """
         return self._dphide_lopez(
             E, m_x, sv
@@ -393,8 +399,7 @@ class DM2Nu(object):
         return aa * bb
 
     def _dphide_lopez(self, E: np.array, m_x: float, snu: float):
-        """ 
-        returns 
+        """ returns
         dphi/dE_Lopez : numpy array
         """
         z = m_x / E - 1
