@@ -130,7 +130,8 @@ class Detector(object):
 
     def smearing_function(self, true_e, true_dec, year):
         """"
-        parameters are float
+        parameters:
+        E :
 
         """
         # Returns the smeared reconstructed values
@@ -171,12 +172,12 @@ class Detector(object):
         Returns
         ----------------
         _bkgrd : dict [label : neutrino flavour]
-                [Total background ( atmos + astro )]  sumed over all thetas
+                [Total counts ( atmos + astro )]  sumed over all thetas
         _eff_are : np.array
         """
         # Converts simulation data to detector data
         # TODO: The flux data for signal  would be an array whereas here we
-        #  need a dictionary [angle] !!!!!!!
+        #       need a dictionary [angle] !!!!!!!
         if type(flux) != dict:
             _flux = {}
             for theta in config["atmospheric showers"]["theta angles"]:
@@ -186,10 +187,8 @@ class Detector(object):
         at_counts_unsm, as_counts_unsm, effe_area = self._aeff.effective_area_func(
             _flux, year)
         log_egrid = np.log10(self._egrid)
-        self._atmos_counts = {}
-        self._astro_counts = {}
-        self._tmp_bkgrd = np.zeros_like([self._egrid])
         self._bkgrd = {}
+        self._tmp_bkgrd = []
         for theta in tqdm((list(_flux.keys()))):
 
             check_angle = (theta)
@@ -204,27 +203,20 @@ class Detector(object):
                 # print(len(at_counts_unsm[theta]), len(smearing))
                 if len(smearing) < 3:
                     continue
-                tmp_1.append(UnivariateSpline(smearing_e,
-                                              (smearing *
-                                               at_counts_unsm[theta][
-                                                  id_check]),
-                                              k=1, s=0,
-                                              ext=1)(np.log10(self._egrid)))
-                tmp_2.append(UnivariateSpline(smearing_e,
-                                              (smearing *
-                                               as_counts_unsm[theta][
-                                                  id_check]),
-                                              k=1, s=0,
-                                              ext=1)(np.log10(self._egrid)))
-            self._atmos_counts[theta] = np.sum(tmp_1, axis=0)
-            self._astro_counts[theta] = np.sum(tmp_2, axis=0)
-            self._tmp_bkgrd = np.append(self._tmp_bkgrd, (tmp_1 +
-                                        tmp_2), axis=0)
-        # suming up for all the angles ------ dont know if thats correct -----
+                local_sp = UnivariateSpline(smearing_e,
+                                            smearing,
+                                            k=1, s=0,
+                                            ext=1)(np.log10(self._egrid))
+
+                tmp_1.append(local_sp * at_counts_unsm[theta][id_check])
+                tmp_2.append(local_sp * as_counts_unsm[theta][id_check])
+            # appending array to a list ( tmp_1(e_bin)_theta )
+            self._tmp_bkgrd.append(np.sum(np.array(tmp_1), axis=0))
+        # suming up for all the angles ------ need to check -----
         self._tmp_bkgrd = np.sum(self._tmp_bkgrd, axis=0)
 
         for i in config['atmospheric showers']['particles of interest']:
-            # Assuming the same background for all flavours ----------
+            # Assuming the same counts for all flavours ----------
             self._bkgrd[i] = self._tmp_bkgrd
 
         return self._bkgrd, effe_area

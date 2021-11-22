@@ -71,7 +71,7 @@ class Signal(object):
         total_new_counts : np.array
             The total new counts
         totla_flux : np.array
-            the total_flux 
+            the total_flux
         """
         # Extra galactic
         _extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)

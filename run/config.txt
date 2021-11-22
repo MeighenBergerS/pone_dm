@@ -162,8 +162,6 @@ dictitems:
     native mceq: true
     particles of interest:
     - numu
-    - nue
-    - nutau
     path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
     primary model: H4a
     theta angles: !!python/object/apply:builtins.range
@@ -173,10 +171,10 @@ dictitems:
   general:
     config location: ../run/config.txt
     debug level: 40
-    detector: POne
+    detector: IceCube
     log file handler: ../run/pdm.log
     random state seed: 1337
-    year: 7
+    year: 9
   pone:
     aeff location: ../data/
     specific particle scaling:
@@ -277,11 +275,11 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 4
+        - 2
       - *id002
       - false
       - !!binary |
-        AAAAAABAj0CvHbGP3tSgQKq1zL2WIbJAAAAAAACIw0A=
+        AAAAAAAAJEAAAAAAAIjDQA==
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -292,9 +290,9 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 4
+        - 2
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDrZfdr10PK+OqeOqJnCV/M6UbISQLMtKDs=
+        p46omcJX8zpPmw4KtOOSOw==
     uptime: 157680000

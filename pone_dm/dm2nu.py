@@ -38,7 +38,7 @@ class DM2Nu(object):
         """ Fetches the galactic flux
         E : Energy Grid
         m_x : Dark Matter mass
-        sv : signma_nu 
+        sv : signma_nu
         k : k factor (majorana: 2 otherwise 4)
         J : J-factor
         """
@@ -239,8 +239,7 @@ class DM2Nu(object):
         )
 
     def _sigma_lopez(self, M: float):
-        """ 
-        returns
+        """ returns
         sigma_lopez : float
         """
         return np.exp((2.6 * M**(0.001745)) - 0.2506 * M**0.07536)
@@ -291,8 +290,7 @@ class DM2Nu(object):
 
     def _g_tild(self, M: float, z: np.array,
                 omega_m: float, omega_L: float):
-        """ 
-        returns
+        """ returns
         g_tilda : numpy array
         """
         # TODO: All of these constants need to be placed into the constants

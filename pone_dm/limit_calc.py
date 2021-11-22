@@ -109,7 +109,7 @@ class Limits(object):
         _log.info('Starting the limit calculation')
         # The low energy cut off
         y = {}
-        self._limit_grid = np.array([[
+        self._signal_grid = np.array([[
                             (self._signal(
                                 self._egrid, mass,
                                 sv,
@@ -124,8 +124,8 @@ class Limits(object):
             y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(
                 x / self._bkgrd[i][self._t_d:])), 2)
                             for x in k]
-                             for k in self._limit_grid])
-        return y, self._limit_grid
+                             for k in self._signal_grid])
+        return y, self._signal_grid
 
     def _find_nearest(self, array: np.array, value: float):
 
