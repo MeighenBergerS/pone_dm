@@ -88,7 +88,7 @@ class Signal(object):
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
         total_flux = _ours+_extra
-        total_new_counts = self._detector.sim2dec(total_flux, self._year)[0][
+        total_new_counts = self._detector.sim2dec(total_flux, self._year)[
             'numu'] / config["advanced"]["scaling correction"]
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours

@@ -69,7 +69,7 @@ class Limits(object):
         # for more generations adding the loop ----
         self._limit_grid = np.array([[
                   (((self._signal(self._egrid, mass,
-                    sv))**2.
+                    sv))
                     )[self._t_d:])
                   for mass in mass_grid]
                  for sv in sv_grid]
@@ -78,7 +78,7 @@ class Limits(object):
 
             _log.info('Starting the limit calculation for IceCube detector')
             y[i] = np.array([[chi2.sf(np.sum(
-                np.nan_to_num(x /
+                np.nan_to_num(x**2 /
                               self._bkgrd[i][self._t_d:])), 2)
                             for x in k]
                              for k in self._limit_grid])
@@ -114,7 +114,7 @@ class Limits(object):
                                 self._egrid, mass,
                                 sv,
                                 config['atmospheric showers']['theta angles']
-                                )**2.
+                                )
                              )[self._t_d:]
                             for mass in mass_grid]
                             for sv in tqdm(sv_grid)
@@ -122,7 +122,7 @@ class Limits(object):
         for i in (config['atmospheric showers']['particles of interest']):
 
             y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(
-                x / self._bkgrd[i][self._t_d:])), 2)
+                x**2 / self._bkgrd[i][self._t_d:])), 2)
                             for x in k]
                              for k in self._signal_grid])
         return y, self._signal_grid

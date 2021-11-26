@@ -176,16 +176,18 @@ class Detector(object):
         _eff_are : np.array
         """
         # Converts simulation data to detector data
-        # TODO: The flux data for signal  would be an array whereas here we
-        #       need a dictionary [angle] !!!!!!!
         if type(flux) != dict:
             _flux = {}
+            boolean_sig = True
             for theta in config["atmospheric showers"]["theta angles"]:
                 _flux[theta] = flux
+                
         else:
             _flux = flux
+            boolean_sig = False
+
         at_counts_unsm, as_counts_unsm, effe_area = self._aeff.effective_area_func(
-            _flux, year)
+            _flux, year, boolean_sig)
         log_egrid = np.log10(self._egrid)
         self._bkgrd = {}
         self._tmp_bkgrd = []
@@ -219,7 +221,7 @@ class Detector(object):
             # Assuming the same counts for all flavours ----------
             self._bkgrd[i] = self._tmp_bkgrd
 
-        return self._bkgrd, effe_area
+        return self._bkgrd
 
 # ------------------------------------------------
 # POne funcions -------- ------ -----

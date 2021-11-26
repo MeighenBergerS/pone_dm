@@ -151,7 +151,7 @@ dictitems:
         JvVrDEPxtDRLT1ETQzwzGDtwQhpDiLjuRBjZIUPm2GI5B0MoQ/jznh2AfTBDl5XcC4ZqNkPSspvh
         sng+Q5SrmgD3tURDEsi3gkInTEOPUvoJniJTQzeiXn/3AlpDjM4KXPStYUOb0WmdYghoQ5siXl+k
         VXBDAKDYhVc0dkM=
-    scaling correction: 50
+    scaling correction: 1
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -171,10 +171,10 @@ dictitems:
   general:
     config location: ../run/config.txt
     debug level: 40
-    detector: IceCube
+    detector: POne
     log file handler: ../run/pdm.log
     random state seed: 1337
-    year: 9
+    year: 7
   pone:
     aeff location: ../data/
     specific particle scaling:
@@ -264,7 +264,7 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    low enery cutoff: 10000.0
+    low enery cutoff: 1000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001

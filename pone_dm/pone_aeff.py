@@ -130,7 +130,7 @@ class Aeff(object):
     def ewidth(self):
         return self._ewidth
 
-    def effective_area_func(self, flux: dict, year: float):
+    def effective_area_func(self, flux: dict, year: float, boolean_sig=False):
         """
         Try to make sense of this ----------- 01.09.21 !!!!!!!
 
@@ -148,15 +148,20 @@ class Aeff(object):
 
         """
         # Apply the effective area to the simulation and return unsmeared
-        # counts
+        # TODO: surf_counts
 
         ch_egrid = (self._eff_dic[year][:, 1] + self._eff_dic[year][:, 0])/2.
         ch_theta = (self._eff_dic[year][:, 2] + self._eff_dic[year][:, 3])/2.
         unsmeared_astro_counts = {}
         unsmeared_atmos_counts = {}
         eff_area = {}
+        
         for j, theta in enumerate(list(flux.keys())):
-            surf_counts = flux[theta][-1]
+             
+            if boolean_sig:
+                surf_counts = flux[theta]
+            else:
+                surf_counts = flux[theta][-1]
 
             tmp_eff = []
             check_angle = (theta)
@@ -177,11 +182,11 @@ class Aeff(object):
             tmp_at_un = ((surf_counts *
                           loc_eff_area *
                           self.uptime_tot_dic[year] *
-                          flux[theta][1] *
+                          self._ewidth*
                           2. * np.pi))
             tmp_as_un = ((self.astro_flux() *
                           loc_eff_area *
-                          flux[theta][1] *
+                          self._ewidth*
                           self.uptime_tot_dic[year] *
                           2. * np.pi))
 
