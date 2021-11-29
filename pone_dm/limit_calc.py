@@ -49,83 +49,37 @@ class Limits(object):
         self._bkgrd = self._background.bkgrd
         self._signal = self._sig._signal_calc
         self._t_d = self._find_nearest(self._egrid, 5e2)
-        if self.name == 'IceCube':
-            self.limit = self.limit_calc_ice
-        elif self.name == 'POne':
-            self.limit = self.limit_calc_pone
+        self.limit = self.limit_calc
 
     @property
     def limits(self):
         """Returns Calculated Limits for mass grid and SV grd"""
         return self.limit
 
-# Limit calculation for IceCube------------------
+# Limit calculation ------------------
 
-    def limit_calc_ice(self,
-                       mass_grid,
-                       sv_grid):
+    def limit_calc(self,
+                   mass_grid,
+                   sv_grid):
 
         y = {}
         # for more generations adding the loop ----
-        self._limit_grid = np.array([[
-                  (((self._signal(self._egrid, mass,
-                    sv))
-                    )[self._t_d:])
+        self._signal_grid = np.array([[
+                  (self._signal(self._egrid, mass,
+                   sv)
+                   )[self._t_d:]
                   for mass in mass_grid]
                  for sv in sv_grid]
                  )
         for i in tqdm(config['atmospheric showers']['particles of interest']):
-
-            _log.info('Starting the limit calculation for IceCube detector')
             y[i] = np.array([[chi2.sf(np.sum(
                 np.nan_to_num(x**2 /
                               self._bkgrd[i][self._t_d:])), 2)
                             for x in k]
-                             for k in self._limit_grid])
-        return y, self._limit_grid
-
-# Limit calculation for Pone----------------------
-
-    def limit_calc_pone(self,
-                        mass_grid,
-                        sv_grid
-                        ):
-        """ Scans the masses and sigma*nu and calculates
-        the corresponding limits
-
-        Parameters
-        ----------
-        mass_grid : np.array
-            The masses to scan
-        sv_grid : np.array
-            The sigma * v grid
-
-        Returns
-        -------
-        list
-            The resulting chi values
-        """
-
-        _log.info('Starting the limit calculation')
-        # The low energy cut off
-        y = {}
-        self._signal_grid = np.array([[
-                            (self._signal(
-                                self._egrid, mass,
-                                sv,
-                                config['atmospheric showers']['theta angles']
-                                )
-                             )[self._t_d:]
-                            for mass in mass_grid]
-                            for sv in tqdm(sv_grid)
-                            ])
-        for i in (config['atmospheric showers']['particles of interest']):
-
-            y[i] = np.array([[chi2.sf(np.sum(np.nan_to_num(
-                x**2 / self._bkgrd[i][self._t_d:])), 2)
-                            for x in k]
                              for k in self._signal_grid])
         return y, self._signal_grid
+
+# Limit calculation for Pone----------------------
 
     def _find_nearest(self, array: np.array, value: float):
 

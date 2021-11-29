@@ -171,7 +171,7 @@ class Detector(object):
 
         Returns
         ----------------
-        _bkgrd : dict [label : neutrino flavour]
+        _count : dict [label : neutrino flavour]
                 [Total counts ( atmos + astro )]  sumed over all thetas
         _eff_are : np.array
         """
@@ -181,7 +181,6 @@ class Detector(object):
             boolean_sig = True
             for theta in config["atmospheric showers"]["theta angles"]:
                 _flux[theta] = flux
-                
         else:
             _flux = flux
             boolean_sig = False
@@ -189,8 +188,8 @@ class Detector(object):
         at_counts_unsm, as_counts_unsm, effe_area = self._aeff.effective_area_func(
             _flux, year, boolean_sig)
         log_egrid = np.log10(self._egrid)
-        self._bkgrd = {}
-        self._tmp_bkgrd = []
+        self._count = {}
+        self._tmp_count = []
         for theta in tqdm((list(_flux.keys()))):
 
             check_angle = (theta)
@@ -213,19 +212,19 @@ class Detector(object):
                 tmp_1.append(local_sp * at_counts_unsm[theta][id_check])
                 tmp_2.append(local_sp * as_counts_unsm[theta][id_check])
             # appending array to a list ( tmp_1(e_bin)_theta )
-            self._tmp_bkgrd.append(np.sum(np.array(tmp_1), axis=0))
+            self._tmp_count.append(np.sum(np.array(tmp_1), axis=0))
         # suming up for all the angles ------ need to check -----
-        self._tmp_bkgrd = np.sum(self._tmp_bkgrd, axis=0)
+        self._tmp_count = np.sum(self._tmp_count, axis=0)
 
         for i in config['atmospheric showers']['particles of interest']:
             # Assuming the same counts for all flavours ----------
-            self._bkgrd[i] = self._tmp_bkgrd
+            self._count[i] = self._tmp_count
 
-        return self._bkgrd
+        return self._count
 
 # ------------------------------------------------
 # POne funcions -------- ------ -----
-    def simdec_Pone(self, flux: dict):
+    def simdec_Pone(self, flux: dict, boolean_sig=False):
         """
         Returns particle counts for P-One Detector
         parameter
@@ -234,20 +233,25 @@ class Detector(object):
 
         returns
         ------------------
-        _bkgrd : Dict ( label : neutrino flavour)
+        _count : Dict ( label : neutrino flavour)
                 [Total background ( astro + atmos )]
 
         """
-        self.bkgrd_down = {}
-        self.bkgrd_horizon = {}
+        self.count_down = {}
+        self.count_horizon = {}
         # backgorund dictionary repositioned
-        self._bkgrd = {}
+        self._count = {}
+        thetas = np.array([i for i in flux.keys()])
+        # Differentiation between Background and signal Counts conversion
+        if boolean_sig:
+            Astro = np.zeros_like(self.astro_flux())
+        else:
+            Astro = np.array(self.astro_flux())
 
         for i in (config['atmospheric showers']['particles of interest']):
-            print(i)
-            self.bkgrd_down[i] = []
+            self.count_down[i] = []
             down_angles = []
-            self.bkgrd_horizon[i] = []
+            self.count_horizon[i] = []
             horizon_angles = []
             # Astrophysical is the same everywhere
             for angle in config['atmospheric showers']['theta angles']:
@@ -255,43 +259,43 @@ class Detector(object):
                 # Downgoing
                 if np.pi / 3 <= rad <= np.pi / 2:
                     down_angles.append(rad)
-                    self.bkgrd_down[i] = (
-                        (flux[angle][i] +
-                         self.astro_flux()) * self._uptime *
+                    self.count_down[i] = (
+                        (flux[thetas[0]] +
+                         Astro) * self._uptime *
                         self._ewidth * self._aeff.spl_A15(self._egrid)
                     )
                 # Horizon
                 else:
                     horizon_angles.append(rad)
-                    self.bkgrd_horizon[i] = (
-                        (flux[angle][i] +
-                         self.astro_flux()) * self._uptime *
+                    self.count_horizon[i] = (
+                        (flux[thetas[1]] +
+                         Astro) * self._uptime *
                         self._ewidth * self._aeff.spl_A55(self._egrid)
                     )
             # Converting to numpy arrays
-            self.bkgrd_down[i] = np.array(self.bkgrd_down[i])
-            self.bkgrd_horizon[i] = np.array(self.bkgrd_horizon[i])
+            self.count_down[i] = np.array(self.count_down[i])
+            self.count_horizon[i] = np.array(self.count_horizon[i])
             down_angles = np.array(down_angles)
             horizon_angles = np.array(horizon_angles)
             # Integrating
-            self._bkgrd[i] = np.zeros_like(self._egrid)
+            self._count[i] = np.zeros_like(self._egrid)
             sorted_ids = np.argsort(down_angles)
             # Downgoing
-            self._bkgrd[i] += np.trapz(self.bkgrd_down[i][sorted_ids],
+            self._count[i] += np.trapz(self.count_down[i][sorted_ids],
                                        x=down_angles[sorted_ids], axis=0)
             # Horizon we assume it is mirrored
             sorted_ids = np.argsort(horizon_angles)
-            self._bkgrd[i] += 2. * np.trapz(self.bkgrd_horizon[i][
+            self._count[i] += 2. * np.trapz(self.count_horizon[i][
                                                     sorted_ids],
                                             x=horizon_angles[sorted_ids],
                                             axis=0)
             # Upgoing we assume the same flux for all
-            self._bkgrd[i] += (
+            self._count[i] += (
                 (np.pi / 2 - np.pi / 3) *
-                (flux[0.][i] +
-                 self.astro_flux()) * self._uptime *
+                (flux[thetas[2]] +
+                 Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
-            self._bkgrd[i] = self._bkgrd[i] / 1  # The scaling factor
+            self._count[i] = self._count[i]   # The scaling factor
 
-        return self._bkgrd
+        return self._count

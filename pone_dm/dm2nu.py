@@ -44,7 +44,7 @@ class DM2Nu(object):
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        )
+        )*1e-3
 
     def extra_galactic_flux(self, E: np.array,
                             m_x: float, sv: float):
@@ -55,11 +55,11 @@ class DM2Nu(object):
         """
         return self._dphide_lopez(
             E, m_x, sv
-        )
+        )*1e-3  # Some error in unit conversion 29.11.21
     # ---------------------------------------------------------------------------
     # Galactic
 
-    def _dN_nu_E_nu(self, m_x: float, E: np.array) -> np.array:
+    def _dN_nu_E_nu(self, m_x: float, E: np.array):
         """ implements a delta function for the decay
 
         Parameters
@@ -76,12 +76,12 @@ class DM2Nu(object):
         """
         tmp = np.zeros_like(E)
         # Since we work on a grid, the delta function is the closest val
-        idE = self._find_nearest(E, m_x)
+        idE = self._find_nearest(E, m_x) - 1
         tmp[idE] = 1 / E[idE]
         return tmp
 
     def _dphi_dE_g(self, sigma: float, k: float,
-                   m: float, E: np.array, J: float) -> np.array:
+                   m: float, E: np.array, J: float):
         """ The galactic contribution for the neutrino flux
 
         Parameters
@@ -90,7 +90,7 @@ class DM2Nu(object):
 
         Returns
         -------
-        Add
+        np.array
         """
         return (
             (1 / (4 * np.pi)) *
@@ -100,7 +100,7 @@ class DM2Nu(object):
     # ---------------------------------------------------------------------------
     # Extra-Galactic
 
-    def _dN_nu_E_nu_Extra(self, m_x: float, E: np.array) -> np.array:
+    def _dN_nu_E_nu_Extra(self, m_x: float, E: np.array):
         """ implements a kinematic cut-off for the decay
 
         Parameters
@@ -116,11 +116,11 @@ class DM2Nu(object):
             An array of the same shape as E
         """
         return np.array([
-            1 / (3 * E) if E <= m_x
+            1 / (3 * E) if E < m_x
             else 0
         ])
 
-    def _R(self, rho_b: float, M: np.array) -> np.array:
+    def _R(self, rho_b: float, M: np.array):
         """ baryon density as per 2008 ZARIJA stdudy
 
         Parameters
@@ -133,14 +133,14 @@ class DM2Nu(object):
         """
         return (3 * M / (4 * rho_b * np.pi))**(1/3)
 
-    def _a_z(self, z: np.array) -> np.array:
+    def _a_z(self, z: np.array):
         """ Add description
         """
         return 1 / (1+z)
 
     # TODO: Why is there an H_0 here?
     def _H(self, a: np.array, H_0: float,
-           Omega_m: float, Omega_L: float) -> np.array:
+           Omega_m: float, Omega_L: float):
         """ time dependent Hubble parameter
 
         Parameters
@@ -155,13 +155,13 @@ class DM2Nu(object):
         return ((Omega_m / a**3) + Omega_L)**(1/2)
 
     def _D_to_inte(self, a: np.array, H_0: float,
-                   Omega_m: float, Omega_L: float) -> np.array:
+                   Omega_m: float, Omega_L: float):
         """ Add description
         """
         return 1 / ((a * self._H(a, H_0, Omega_m, Omega_L))**3)
 
     def _D(self, a: np.array, H_0: float,
-           Omega_m: float, Omega_L: float) -> np.array:
+           Omega_m: float, Omega_L: float):
         """ Add description
         """
 
@@ -173,7 +173,7 @@ class DM2Nu(object):
         return prefac * integral
 
     def _D_approx(self, a: np.array, Omega_m: float, Omega_L: float
-                  ) -> np.array:
+                  ):
 
         """
         Lopez approximation
@@ -182,14 +182,14 @@ class DM2Nu(object):
         return ((5/2) * (self._omega_mz()))
 
     def _d_func(self, a: np.array, H_0: float,
-                Omega_m: float, Omega_L: float) -> np.array:
+                Omega_m: float, Omega_L: float):
         """ Add description
         """
         t = self._D(a, H_0, Omega_m, Omega_L)
         return t / self._D(np.ones_like(a), H_0, Omega_m, Omega_L)
 
     def _omega_mz(self, z: np.array,
-                  omega_m: float, omega_L: float) -> np.array:
+                  omega_m: float, omega_L: float):
         """ I have neglected omega_re and omega_k couldn't find proper values
         Add description
         """
@@ -200,7 +200,7 @@ class DM2Nu(object):
         )
 
     def _A_z(self, z: np.array,
-             omega_m: float, omega_L: float) -> np.array:
+             omega_m: float, omega_L: float):
         """ Add description
         """
         return (
@@ -209,7 +209,7 @@ class DM2Nu(object):
         )
 
     def _alpha_z(self, z: np.array,
-                 omega_m: float, omega_L: float) -> np.array:
+                 omega_m: float, omega_L: float):
         """ Add description
         """
         return (
@@ -290,7 +290,8 @@ class DM2Nu(object):
 
     def _g_tild(self, M: float, z: np.array,
                 omega_m: float, omega_L: float):
-        """ returns
+        """ For Delta = 200 so g^tilda_200
+        returns
         g_tilda : numpy array
         """
         # TODO: All of these constants need to be placed into the constants
@@ -345,18 +346,15 @@ class DM2Nu(object):
             return A * aa * dd
 
         def c_200(x):
-            return B_1(x) * C(x)
+            return B_0(x) * C(x)
         a_arr = c_200(x)
         # Removing too high values
         a_arr[a_arr > 100] = 100
-        return (
-            (a_arr**3) * (1 - (1 + a_arr)**(-3)) /
-            (3 * (np.log(1 + a_arr) - a_arr * (1 + a_arr)**(-1)))**2
-        )
+        return ((a_arr**3) * (1 - (1 + a_arr)**(-3)) /
+                (3 * (np.log(1 + a_arr) - a_arr * (1 + a_arr)**(-1)))**2)
 
     def _dln_sigma_1(self, M: float):
-        """ 
-        returns:
+        """returns:
         dln(sigma) : Float
         """
         return (
@@ -365,8 +363,7 @@ class DM2Nu(object):
         )
 
     def _G_lopez(self, z: float, omega_m: float, omega_L: float):
-        """ 
-        returns
+        """returns
         G_lopez : numpy array
         """
         def integrand(M):
@@ -416,7 +413,7 @@ class DM2Nu(object):
         a_g = a_t / b_t
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 8 * np.pi * m_x**2
-        res = aaa * a_g / (3 * E[E <= m_x] * b)
+        res = aaa * a_g / (3 * E[E < m_x] * b)
         # Padding with zeros
         result = np.zeros_like(E)
         result[0:len(res)] = res
