@@ -142,7 +142,7 @@ class Signal(object):
             self._const.J_d3 + self._const.J_p3 + self._const.J_s3
         )
         for i in _flux.keys():
-            _flux[i] += extra
+            _flux[i] = np.array(_flux[i])+np.array(extra)
 
         total_counts = self._detector.sim2dec(_flux, boolean_sig=True)[
             'numu'] / config["advanced"]["scaling correction"]
