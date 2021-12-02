@@ -254,7 +254,7 @@ class Detector(object):
             self.count_horizon[i] = []
             horizon_angles = []
             # Astrophysical is the same everywhere
-            for angle in config['atmospheric showers']['theta angles']:
+            for angle in flux.keys():  # config['atmospheric showers']['theta angles']:
                 rad = np.deg2rad(np.abs(angle - 90.))
                 # Downgoing
                 if np.pi / 3 <= rad <= np.pi / 2:
