@@ -82,7 +82,7 @@ class Limits(object):
                             for x in k]
                              for k in self._signal_grid])
         return y, self._signal_grid
-    
+
     # P-ONE Limit calculation
 
     def limit_calc_POne(self,
