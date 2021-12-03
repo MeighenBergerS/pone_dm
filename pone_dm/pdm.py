@@ -5,6 +5,7 @@
 
 # Imports
 # Native modules
+from time import time
 import logging
 from limit_calc import Limits
 import sys
@@ -44,6 +45,7 @@ class PDM(object):
         # --------------------------------------------------------------
         # Fetching the user inputs
         # Inputs
+        self._start = time()
         if userconfig is not None:
             if isinstance(userconfig, dict):
                 config.from_dict(userconfig)
@@ -130,6 +132,8 @@ class PDM(object):
             "Dumping run settings into %s",
             config["general"]["config location"],
         )
+        self._end = time()
+        _log.info('Time of simulation %.f' % (self._end-self._start))
         with open(config["general"]["config location"], "w") as f:
             yaml.dump(config, f)
         _log.debug("Finished dump")
@@ -142,6 +146,7 @@ class PDM(object):
         _log.info('     `*-._`._(__.--*"`./ ')
         _log.info('---------------------------------------------------')
         _log.info('---------------------------------------------------')
+        
 
     @property
     def results(self):

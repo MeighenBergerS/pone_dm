@@ -46,10 +46,16 @@ class Limits(object):
         _log.debug('The total atmospheric flux')
         self._year = config['general']['year']
         self.name = config['general']['detector']
+        
         self._bkgrd = self._background.bkgrd
+        self._bkgrd = np.sum(self._bkgrd, axis=0)
+
         self._signal = self._sig._signal_calc
         self._t_d = self._find_nearest(self._egrid, 5e2)
-        self.limit = self.limit_calc
+        if self.name == 'IceCube':
+            self.limit = self.limit_calc_ice
+        elif self.name == 'POne':
+            self.limit = self.limit_calc_POne
 
     @property
     def limits(self):
@@ -58,16 +64,14 @@ class Limits(object):
 
 # Limit calculation ------------------
 
-    def limit_calc(self,
-                   mass_grid,
-                   sv_grid):
+    def limit_calc_ice(self, mass_grid,
+                       sv_grid):
 
         y = {}
         # for more generations adding the loop ----
         self._signal_grid = np.array([[
-                  (self._signal(self._egrid, mass,
-                   sv)
-                   )[self._t_d:]
+                  np.sum((self._signal(self._egrid, mass, sv))[self._t_d:],
+                         axis=0)
                   for mass in mass_grid]
                  for sv in sv_grid]
                  )
@@ -78,7 +82,26 @@ class Limits(object):
                             for x in k]
                              for k in self._signal_grid])
         return y, self._signal_grid
+    
+    # P-ONE Limit calculation
 
+    def limit_calc_POne(self,
+                        mass_grid,
+                        sv_grid):
+
+        y = {}
+        # for more generations adding the loop ----
+        self._signal_grid = np.array([[self._signal(self._egrid,
+                                                    mass, sv)[self._t_d:]
+                                       for mass in mass_grid]
+                                      for sv in sv_grid])
+        for i in tqdm(config['atmospheric showers']['particles of interest']):
+            y[i] = np.array([[chi2.sf(np.sum(
+                np.nan_to_num(x**2 /
+                              self._bkgrd[i][self._t_d:])), 2)
+                            for x in k]
+                             for k in self._signal_grid])
+        return y, self._signal_grid
 # Limit calculation for Pone----------------------
 
     def _find_nearest(self, array: np.array, value: float):

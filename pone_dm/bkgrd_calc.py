@@ -16,8 +16,9 @@ class Background(object):
     """
     Class to calculate background counts for both P-One and IceCube detectors
     """
-    def __init__(self, shower_sim: Atm_Shower, detector: Detector):
-
+    def __init__(self, shower_sim: Atm_Shower, detector: Detector, year=config['general']['year']):
+        
+        self._year = year
         self._detector = detector
         self._shower = shower_sim
         self._uptime = config['simulation parameters']['uptime']
@@ -41,12 +42,18 @@ class Background(object):
             except FileNotFoundError:
                 _log.info("Failed to load pre-calculated tables")
                 _log.info("Calculating tables for background")
-                self._bkgrd, self.eff_are_dic = self._detector.sim2dec(
-                    self._shower.flux_results, config['general']['year'])
+                self._bkgrd = []
+
+                for y in self._year:
+                    bkd, _ = self._detector.sim2dec(
+                        self._shower.flux_results, y)
+                    self._bkgrd.append(bkd)
+                
                 pickle.dump(self._bkgrd,
                             open("../data/background_ice.pkl", "wb"))
                 pickle.dump(self.eff_are_dic, open("../data/eff_area_ice.pkl",
                                                    "wb"))
+
 
         elif self.name == 'POne':
 

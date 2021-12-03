@@ -27,14 +27,14 @@ class Signal(object):
         A Detector object
     """
     def __init__(self, aeff: Aeff, dmnu: DM2Nu,
-                 detector: Detector):
+                 detector: Detector, year=config['general']['year']):
         self._aeff = aeff
 
         self._dmnu = dmnu
         self._detector = detector
         self._const = pdm_constants()
         self._uptime = config['simulation parameters']['uptime']
-        self._year = config['general']['year']
+        self._year = year
         self._ewidth = self._aeff.ewidth
         self._egrid = self._aeff.egrid
 
@@ -70,16 +70,14 @@ class Signal(object):
 
         Returns
         -------
-        total_new_counts : np.array
+        total_new_counts : np.array (len(year),len(E_grid))
             The total new counts
-        totla_flux : np.array
-            the total_flux
         """
         # Extra galactic
         _extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
 
         # Galactic
-
+        total_new_counts = []
         # TODO: Need to configure for IceCube ------
 
         _ours = self._dmnu.galactic_flux(
@@ -90,8 +88,9 @@ class Signal(object):
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
         total_flux = _ours+_extra
-        total_new_counts = self._detector.sim2dec(total_flux, self._year)[
-            'numu'] / config["advanced"]["scaling correction"]
+        for y in self._year:
+            total_new_counts.append(self._detector.sim2dec(total_flux, y)[
+                'numu'] / config["advanced"]["scaling correction"])
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours
 
