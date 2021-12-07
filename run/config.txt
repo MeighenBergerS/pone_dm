@@ -173,10 +173,10 @@ dictitems:
   general:
     config location: ../run/config.txt
     debug level: 40
-    detector: POne
+    detector: IceCube
     log file handler: ../run/pdm.log
     random state seed: 1337
-    year: 7
+    year: 8
   pone:
     aeff location: ../data/
     specific particle scaling:
@@ -266,7 +266,7 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    low enery cutoff: 1000.0
+    low energy cutoff: 1000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -277,16 +277,12 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 41
+        - 11
       - *id002
       - false
       - !!binary |
-        AAAAAABAj0AhPSafs6uTQBNmC6GSw5hAWJJLnAwtn0CUz1naxZ+jQC89eSmOtKhATn+WtiQar0B4
-        Em5R35OzQFpOR82SpbhAAK7oR0gHv0AAAAAAAIjDQGLM74aglshAmD9OSXf0zkB3O6/hJ3zTQIBD
-        8FC3h9hAeozXs7Hh3kCLDx7yVnDjQBaXySXXeOhA8CGZgPfO7kDFbPEsjWTzQAAAAAAAavhAer+r
-        qEi8/kC/59CNylgDQWMKG9oxWwhBX1QsJaWpDkHMt2YQD00TQW6Tpa5sTBhB2/w77wyXHkFBtV+w
-        WkEjQffHLXiwPShBAAAAAICELkGsV2tprTUzQa8hRTH9LjhB+8yhUP5xPkG8tDs3BypDQcBlgNRS
-        IEhBSvhO2odfTkEJfoUVaB5TQZGid1yxEVhB9Tk5lhxNXkEAAAAA0BJjQQ==
+        AAAAAAAAWUBTf1xdCWZvQHsLOaSot4NAE2YLoZLDmEBOf5a2JBqvQAAAAAAAiMNAgEPwULeH2EAC
+        IpmA987uQL/n0I3KWANBbpOlrmxMGEEAAAAAgIQuQQ==
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -297,14 +293,10 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 41
+        - 11
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDoF89xEYyuPOvntxR26npM6gKb/GT2zmDqtyhdhfBifOhDSNjfUkqM6cnw0ikKkqDoP
-        eb3zoAWvOgvrwof1hrM618rHD1GVuDrZfdr10PK+OuMXCgsee8M6d2k3pWiGyDogkH9gDODOOqze
-        rrxNb9M6lYYERYl32DqOm8EsU83eOqprVpiEY+M6zqWz6bJo6DqNvblTpbruOqeOqJnCV/M63J3M
-        jeVZ+DrUQ4XOAqj+OhS6T7wHTAM7V5baKyFLCDs6qEWWa5UOOzkB+ftTQBM7lAZsvmU8GDtCjyCk
-        34IeO3gWVFSnNCM7UbISQLMtKDtTxT/xXnAuO2VKE8EBKTM7mahjqwkfODvtO9F26V0+OySJ6z1j
-        HUM7h0H3+mgQSDs5CAcuf0tOO4lZlMbLEVM7FhxpKdEBWDvmXhcQIDleOw==
+        p46omcJX8zrUQ4XOAqj+OleW2ishSwg7OQH5+1NAEztCjyCk34IeO1GyEkCzLSg7ZUoTwQEpMzvt
+        O9F26V0+O4dB9/poEEg7iVmUxssRUzvmXhcQIDleOw==
     uptime: 157680000

@@ -6,6 +6,7 @@
 # Imports
 # Native modules
 from time import time
+import pickle
 import logging
 from limit_calc import Limits
 import sys
@@ -126,6 +127,8 @@ class PDM(object):
         self.sv_grid = config["simulation parameters"]["sv grid"]
         self._results, self._signal_data = self._limit_calc.limits(
             self.mass_grid, self.sv_grid)
+        pickle.dump(self._results,open('../data/limits_results_IceCube.pkl','wb'))
+        pickle.dump(self._signal_data,open('../data/limits_signal_IceCube.pkl','wb'))
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         _log.debug(

@@ -42,17 +42,18 @@ class Background(object):
             except FileNotFoundError:
                 _log.info("Failed to load pre-calculated tables")
                 _log.info("Calculating tables for background")
-                self._bkgrd = []
-
+                self._bkgrd = {}
+                for i in config['atmospheric showers']['particles of interest']:
+                    self._bkgrd[i] = []
                 for y in self._year:
-                    bkd, _ = self._detector.sim2dec(
+                    bkd = self._detector.sim2dec(
                         self._shower.flux_results, y)
-                    self._bkgrd.append(bkd)
+                    for i in config['atmospheric showers']['particles of interest']:
+                        self._bkgrd[i].append(bkd[i])
                 
                 pickle.dump(self._bkgrd,
                             open("../data/background_ice.pkl", "wb"))
-                pickle.dump(self.eff_are_dic, open("../data/eff_area_ice.pkl",
-                                                   "wb"))
+
 
 
         elif self.name == 'POne':

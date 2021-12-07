@@ -18,7 +18,7 @@ pdm = PDM()
 limits_results = pdm.results['numu']
 mass_grid = config['simulation parameters']['mass grid']
 sv_grid = config['simulation parameters']['sv grid']
-plt.title(r"IceCube Limits DM->$\nu$$\bar{\nu$}")
+plt.title(r"IceCube Limits DM->$\nu$$\bar{\nu}$")
 plt.imshow(limits_results,
            origin='lower', extent=(min(np.log10(mass_grid)),
                                    max(np.log10(mass_grid)),

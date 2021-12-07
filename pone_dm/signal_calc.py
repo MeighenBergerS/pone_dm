@@ -6,6 +6,7 @@
 # Imports
 import logging
 import numpy as np
+import pickle
 from config import config
 from pone_aeff import Aeff
 from dm2nu import DM2Nu
@@ -93,7 +94,8 @@ class Signal(object):
                 'numu'] / config["advanced"]["scaling correction"])
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours
-
+        pickle.dump(total_flux,open('../data/signal_flux/extra_%.1e_%.1e.pkl' % (mass,sv),'wb'))
+        pickle.dump(total_new_conts,open("../data/signal_counts/counts_%.1_%.1e.pkl"%(mass,sv),"wb"))
         return total_new_counts
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,

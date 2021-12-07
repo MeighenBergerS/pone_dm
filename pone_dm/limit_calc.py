@@ -10,7 +10,7 @@ from tqdm import tqdm
 from config import config
 from signal_calc import Signal
 from atm_shower import Atm_Shower
-
+import pickle
 from scipy.stats import chi2
 from bkgrd_calc import Background
 _log = logging.getLogger("pone_dm")
@@ -45,15 +45,15 @@ class Limits(object):
         _log.info('Preliminary calculations')
         _log.debug('The total atmospheric flux')
         self._year = config['general']['year']
-        self.name = config['general']['detector']
-        
+        self.name = config['general']['detector'] 
         self._bkgrd = self._background.bkgrd
-        self._bkgrd = np.sum(self._bkgrd, axis=0)
-
         self._signal = self._sig._signal_calc
-        self._t_d = self._find_nearest(self._egrid, 5e2)
+        self._t_d = self._find_nearest(self._egrid, config['simulation parameters']['low energy cutoff'])
+
         if self.name == 'IceCube':
             self.limit = self.limit_calc_ice
+            for i in config['atmospheric showers']['particles of interest']:
+                self._bkgrd[i] = np.sum(self._bkgrd[i], axis=0)
         elif self.name == 'POne':
             self.limit = self.limit_calc_POne
 
