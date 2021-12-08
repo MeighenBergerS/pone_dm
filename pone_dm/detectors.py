@@ -217,7 +217,7 @@ class Detector(object):
         self._tmp_count = np.sum(self._tmp_count, axis=0)
 
         for i in config['atmospheric showers']['particles of interest']:
-            # Assuming the same counts for all flavours ----------
+            # Assuming the same counts for all flavours For IceCube ----------
             self._count[i] = self._tmp_count
 
         return self._count
