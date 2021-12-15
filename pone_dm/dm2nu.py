@@ -44,7 +44,7 @@ class DM2Nu(object):
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        ) * 1e-3 # TODO: Unit correction need to check which one
+        ) * config["advanced"]["scaling correction"] # TODO: Unit correction need to check which one
 
     def extra_galactic_flux(self, E: np.array,
                             m_x: float, sv: float):
@@ -55,7 +55,7 @@ class DM2Nu(object):
         """
         return self._dphide_lopez(
             E, m_x, sv
-        ) * 1e-3 # Some error in unit conversion 29.11.21
+        ) * config["advanced"]["scaling correction"] # Some error in unit conversion 29.11.21
     # ---------------------------------------------------------------------------
     # Galactic
 

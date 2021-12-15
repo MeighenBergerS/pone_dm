@@ -6,6 +6,7 @@
 # Imports
 import logging
 import numpy as np
+from scipy.stats.stats import _two_sample_transform
 from tqdm import tqdm
 from config import config
 from signal_calc import Signal
@@ -92,17 +93,37 @@ class Limits(object):
                         sv_grid):
 
         y = {}
+        self._signal_grid = {}
+        for i in config['atmospheric showers']['particles of interest']:
+            self._signal_grid[i] = np.zeros((len(sv_grid),len(mass_grid),len(self._egrid[self._t_d:])))
         # for more generations adding the loop ----
-        self._signal_grid = np.array([[self._signal(self._egrid,
-                                                    mass, sv)[self._t_d:]
-                                       for mass in mass_grid]
-                                      for sv in sv_grid])
+        for j, sv in enumerate(sv_grid):
+            tmp_mu = []
+            tmp_e = []
+            tmp_tau = []
+            for mass in mass_grid:
+                mu_sig, e_sig, tau_sig = self._signal(self._egrid,
+                                                    mass, sv)
+                tmp_mu.append(mu_sig[self._t_d:])
+                tmp_e.append(e_sig[self._t_d:])
+                tmp_tau.append(tau_sig[self._t_d:])
+            tmp_mu = np.array(tmp_mu)
+            tmp_e = np.array(tmp_e)
+            tmp_tau = np.array(tmp_tau)
+            self._signal_grid["numu"][j] = tmp_mu
+            self._signal_grid["nue"][j] = tmp_e
+            self._signal_grid["nutau"][j] = tmp_tau
+
+        #self._signal_grid = np.array([[self._signal(self._egrid,
+        #                                            mass, sv)[self._t_d:]
+        #                               for mass in mass_grid]
+        #                              for sv in sv_grid])
         for i in tqdm(config['atmospheric showers']['particles of interest']):
             y[i] = np.array([[chi2.sf(np.sum(
                 np.nan_to_num(x**2 /
                               self._bkgrd[i][self._t_d:])), 2)
                             for x in k]
-                             for k in self._signal_grid])
+                             for k in self._signal_grid[i]])
         return y, self._signal_grid
 # Limit calculation for Pone----------------------
 

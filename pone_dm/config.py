@@ -27,8 +27,8 @@ _baseconfig = {
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(1, 6, 41),
-        "sv grid": np.logspace(-24, -21, 41),
+        "mass grid": np.logspace(3, 6, 48),
+        "sv grid": np.logspace(-26, -23, 48),
         "uptime": 10 * 365 * 24 * 60 * 60,
         "low enery cutoff": 1e3,  # GeV
         "DM type k": 2
@@ -72,7 +72,7 @@ _baseconfig = {
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 1
+        "scaling correction": 1e-2
 
     }
 }

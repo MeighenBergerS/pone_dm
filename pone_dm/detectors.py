@@ -229,7 +229,7 @@ class Detector(object):
         Returns particle counts for P-One Detector
         parameter
         ------------------
-        flux : dict ( label : angle)
+        flux : dict ( label : angle: flavour)
 
         returns
         ------------------
@@ -241,12 +241,16 @@ class Detector(object):
         self.count_horizon = {}
         # backgorund dictionary repositioned
         self._count = {}
+
+        #  From here the bakgound flux has many thetas whereas for signal 
+        # we have dfined it differently:::: ??????
+
         thetas = np.array([i for i in flux.keys()])
         # Differentiation between Background and signal Counts conversion
-        if boolean_sig:
-            Astro = np.zeros_like(self.astro_flux())
-        else:
-            Astro = np.array(self.astro_flux())
+        #if boolean_sig:
+        Astro = np.zeros_like(self.astro_flux())
+        #else:
+        #    Astro = np.array(self.astro_flux())
 
         for i in (config['atmospheric showers']['particles of interest']):
             self.count_down[i] = []
@@ -254,21 +258,22 @@ class Detector(object):
             self.count_horizon[i] = []
             horizon_angles = []
             # Astrophysical is the same everywhere
-            for angle in flux.keys():  # config['atmospheric showers']['theta angles']:
+            for angle in flux.keys():
                 rad = np.deg2rad(np.abs(angle - 90.))
                 # Downgoing
                 if np.pi / 3 <= rad <= np.pi / 2:
                     down_angles.append(rad)
-                    self.count_down[i] = (
-                        (flux[thetas[0]] +
+                    self.count_down[i].append(
+                        (
+                            flux[angle][i] +
                          Astro) * self._uptime *
                         self._ewidth * self._aeff.spl_A15(self._egrid)
                     )
                 # Horizon
                 else:
                     horizon_angles.append(rad)
-                    self.count_horizon[i] = (
-                        (flux[thetas[1]] +
+                    self.count_horizon[i].append(
+                        (flux[angle][i] +
                          Astro) * self._uptime *
                         self._ewidth * self._aeff.spl_A55(self._egrid)
                     )
@@ -282,7 +287,7 @@ class Detector(object):
             sorted_ids = np.argsort(down_angles)
             # Downgoing
             self._count[i] += np.trapz(self.count_down[i][sorted_ids],
-                                       x=down_angles[sorted_ids], axis=0)
+                                       x=down_angles[sorted_ids], axis=0) 
             # Horizon we assume it is mirrored
             sorted_ids = np.argsort(horizon_angles)
             self._count[i] += 2. * np.trapz(self.count_horizon[i][
@@ -292,7 +297,7 @@ class Detector(object):
             # Upgoing we assume the same flux for all
             self._count[i] += (
                 (np.pi / 2 - np.pi / 3) *
-                (flux[thetas[2]] +
+                (flux[thetas[2]][i] +
                  Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )

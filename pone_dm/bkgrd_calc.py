@@ -44,13 +44,13 @@ class Background(object):
                 _log.info("Failed to load pre-calculated tables")
                 _log.info("Calculating tables for background")
                 self._bkgrd = {}
-                for i in config['atmospheric showers']['particles of intersts']:
+                for i in config['atmospheric showers']['particles of interest']:
                     self._bkgrd[i] = []
                 for y in self._year:
                     bkd = self._detector.sim2dec(
                         self._shower.flux_results, y)
 
-                    for i in config['atmospheric showers']['particles of intersts']:
+                    for i in config['atmospheric showers']['particles of interest']:
                         self._bkgrd[i].append(bkd[i])
                 pickle.dump(self._bkgrd,
                             open("../data/background_ice.pkl", "wb"))
@@ -66,7 +66,7 @@ class Background(object):
             except FileNotFoundError:
                 _log.info("Failed to load pre-calculated tables")
                 _log.info("Calculating tables for background")
-                self._bkgrd = self._detector.sim2dec(self._shower.flux_results)
+                self._bkgrd = self._detector.sim2dec(self._shower.flux_results, boolean_sig=False)
                 pickle.dump(self._bkgrd,
                             open("../data/background_pone.pkl", "wb"))
 

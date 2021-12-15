@@ -121,32 +121,32 @@ class Signal(object):
 
         extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
         _flux = {}
+        _flux[15] = {}
+        _flux[85] = {}
+        _flux[120] = {}
         # Galactic
+        for i in config['atmospheric showers']['particles of interest']:
+            _flux[15][i] = np.array(extra) + self._dmnu.galactic_flux(
+                egrid, mass, sv,
+                config['simulation parameters']["DM type k"],
+                self._const.J_d1 + self._const.J_p1 + self._const.J_s1
+            )
 
-        _flux[15] = self._dmnu.galactic_flux(
-            egrid, mass, sv,
-            config['simulation parameters']["DM type k"],
-            self._const.J_d1 + self._const.J_p1 + self._const.J_s1
-        )
+            _flux[85][i] = np.array(extra) + self._dmnu.galactic_flux(
+                egrid, mass, sv,
+                config['simulation parameters']["DM type k"],
+                self._const.J_d2 + self._const.J_p2 + self._const.J_s2
+            )
 
-        _flux[85] = self._dmnu.galactic_flux(
-            egrid, mass, sv,
-            config['simulation parameters']["DM type k"],
-            self._const.J_d2 + self._const.J_p2 + self._const.J_s2
-        )
+            _flux[120][i] = np.array(extra) + self._dmnu.galactic_flux(
+                egrid, mass, sv,
+                config['simulation parameters']["DM type k"],
+                self._const.J_d3 + self._const.J_p3 + self._const.J_s3
+            )
 
-        _flux[120] = self._dmnu.galactic_flux(
-            egrid, mass, sv,
-            config['simulation parameters']["DM type k"],
-            self._const.J_d3 + self._const.J_p3 + self._const.J_s3
-        )
-        for i in _flux.keys():
-            _flux[i] = np.array(_flux[i])+np.array(extra)
+        total_counts = self._detector.sim2dec(_flux, boolean_sig=True)
 
-        total_counts = self._detector.sim2dec(_flux, boolean_sig=True)[
-            'numu'] / config["advanced"]["scaling correction"]
-
-        return total_counts
+        return total_counts["numu"], total_counts["nue"], total_counts["nutau"]
 
     def _find_nearest(self, array: np.array, value: float):
 
