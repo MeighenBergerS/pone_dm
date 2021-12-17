@@ -247,10 +247,10 @@ class Detector(object):
 
         thetas = np.array([i for i in flux.keys()])
         # Differentiation between Background and signal Counts conversion
-        #if boolean_sig:
-        Astro = np.zeros_like(self.astro_flux())
-        #else:
-        #    Astro = np.array(self.astro_flux())
+        if boolean_sig:
+            Astro = np.zeros_like(self.astro_flux())
+        else:
+            Astro = np.array(self.astro_flux())
 
         for i in (config['atmospheric showers']['particles of interest']):
             self.count_down[i] = []
