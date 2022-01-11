@@ -27,8 +27,8 @@ _baseconfig = {
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 11),
-        "sv grid": np.logspace(-24, -22, 11),
+        "mass grid": np.logspace(2, 6, 16),
+        "sv grid": np.logspace(-25, -21, 16),
         "uptime": 5 * 365 * 24 * 60 * 60,
         "low energy cutoff": 1e3,  # GeV
         "DM type k": 2
@@ -51,7 +51,7 @@ _baseconfig = {
         # Angles of interest currently not custom
         'theta angles': range(0, 91, 1),
         # Particles of interest
-        'particles of interest': ['numu', "nue", "nutau"]
+        'particles of interest': ['numu']
     },
     ###########################################################################
     # P-ONE

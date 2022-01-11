@@ -12,8 +12,6 @@ from pdm import PDM
 
 
 config["general"]["detector"] = "IceCube"
-config["general"]["year"] = 8
-
 pdm = PDM()
 limits_results = pdm.results['numu']
 mass_grid = config['simulation parameters']['mass grid']

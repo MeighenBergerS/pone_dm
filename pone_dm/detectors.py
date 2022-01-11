@@ -157,11 +157,11 @@ class Detector(object):
 
         # Normalizing
         smearing_fraction = (np.array(smearing_fraction) /
-                             np.trapz(smearing_fraction, x=smearing_e_grid))
+                             np.trapz(smearing_fraction, x=smearing_e_grid)) / 10 # For change in basis from log_10 to Natural numbers 
 
         return smearing_e_grid, smearing_fraction
 
-    def sim_to_dec(self, flux: dict, year: float):
+    def sim_to_dec(self, flux: dict, year: float, boolean_sig=False):
         """
         Returns Counts for atmospheric and astro fluxes for IceCube --> dict
         parameters
@@ -212,7 +212,10 @@ class Detector(object):
                 tmp_1.append(local_sp * at_counts_unsm[theta][id_check])
                 tmp_2.append(local_sp * as_counts_unsm[theta][id_check])
             # appending array to a list ( tmp_1(e_bin)_theta )
-            self._tmp_count.append(np.sum(np.array(tmp_1), axis=0))
+            if boolean_sig:
+                self._tmp_count.append(np.sum(np.array(tmp_1), axis=0))
+            else:
+                self._tmp_count.append(np.sum(np.array(tmp_1) + np.array(tmp_2), axis=0))
         # suming up for all the angles ------ need to check -----
         self._tmp_count = np.sum(self._tmp_count, axis=0)
 

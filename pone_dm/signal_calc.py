@@ -95,7 +95,7 @@ class Signal(object):
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours
         pickle.dump(total_flux,open('../data/signal_flux/extra_%.1e_%.1e.pkl' % (mass,sv),'wb'))
-        pickle.dump(total_new_conts,open("../data/signal_counts/counts_%.1_%.1e.pkl"%(mass,sv),"wb"))
+        pickle.dump(total_new_counts,open("../data/signal_counts/counts_%.1e_%.1e.pkl"%(mass,sv),"wb"))
         return total_new_counts
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,

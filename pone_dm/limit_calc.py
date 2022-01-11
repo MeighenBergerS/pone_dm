@@ -61,7 +61,6 @@ class Limits(object):
     def limits(self):
         """Returns Calculated Limits for mass grid and SV grd"""
         return self.limit
-
 # Limit calculation ------------------
 
     def limit_calc_ice(self, mass_grid,
@@ -70,8 +69,7 @@ class Limits(object):
         y = {}
         # for more generations adding the loop ----
         self._signal_grid = np.array([[
-                  np.sum((self._signal(self._egrid, mass, sv))[self._t_d:],
-                         axis=0)
+                  np.sum((self._signal(self._egrid, mass, sv)), axis=0)[self._t_d:]
                   for mass in mass_grid]
                  for sv in sv_grid]
                  )
