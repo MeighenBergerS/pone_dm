@@ -27,10 +27,10 @@ _baseconfig = {
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 42),
-        "sv grid": np.logspace(-26, -21, 42),
+        "mass grid": np.logspace(2, 6, 64),
+        "sv grid": np.logspace(-26, -21, 64),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low enery cutoff": 1e3,  # GeV
+        "low enery cutoff": 5e2,  # GeV
         "DM type k": 2
     },
     ###########################################################################
@@ -72,7 +72,7 @@ _baseconfig = {
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 1
+        "scaling correction": 1e-2
 
     }
 }

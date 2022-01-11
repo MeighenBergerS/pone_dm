@@ -151,7 +151,7 @@ dictitems:
         JvVrDEPxtDRLT1ETQzwzGDtwQhpDiLjuRBjZIUPm2GI5B0MoQ/jznh2AfTBDl5XcC4ZqNkPSspvh
         sng+Q5SrmgD3tURDEsi3gkInTEOPUvoJniJTQzeiXn/3AlpDjM4KXPStYUOb0WmdYghoQ5siXl+k
         VXBDAKDYhVc0dkM=
-    scaling correction: 1
+    scaling correction: 0.01
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -266,7 +266,7 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    low enery cutoff: 1000.0
+    low enery cutoff: 500.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -277,16 +277,19 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 42
+        - 64
       - *id002
       - false
       - !!binary |
-        AAAAAAAAWUDK99gKAExfQMYY3O4Cl2NA2sCu5yqGaEDLjXoxe7NuQGx4HEyLN3NAkFsPiacOeEAF
-        bzid3R1+QPyp8ebk2YJA2oi7lmqZh0Bs6OUnGYuNQCZoGuQGfpJA8GVh+mgml0AANUrwH/ucQMRu
-        fpPoI6JAFAm305e1pkB4dtBY5G2sQNglXG+By7FAbzJzd+xGtkDxEz4GWeO7QIVNehvJdMFA2v9K
-        blzaxUC/Xm/ecFvLQHGXXWS3H9FAf4v0c91v1UAAXxoHH9baQI0agj5EzOBAVV0udmUH5UA+qpfk
-        VlPqQIKOmMVnevBA0JfLk+qg9EAuJrEYDNP5QC88xzsaKgBBBMnEG2M8BEFem3aBMlUJQcki3RGo
-        tg9B6UhNjMXZE0Fa+hc4vtkYQaqL4nMbHB9Btg/tkQh5I0ExOcWPo2AoQQAAAACAhC5B
+        AAAAAAAAWUD6n8alge9cQEc/LAjPvmBAzenehqZhY0AN/K9Rum5mQK0maLrD9mlABfIWDR4NbkAR
+        28VUGGRxQFl0Uuj0IHRANYxJYyZMd0Asz5EqC/d6QPAN5pm9NX9A6+FIGsEPgkAqenCXo+eEQLJf
+        qgUcMohAOVVdOjQBjEApD2l/5jSQQIxXSkAIwpJA6X/gYvu1lUDYjKB97yCZQMVnpnKgFZ1Aqh2x
+        j97UoEAP/EYbL3ujQHpq8OdHjKZA+FDCT/gYqkCQ4gEftTSuQLtUspwBe7FAJv6ThHk7tEBJ/Umu
+        12q3QEk8gGCRGrtA+nHccttev0AbtvKHjCfCQCj7O/MtA8VAhNm5RPxRyEDj7HMVGSbMQLfNA1hA
+        StBAlHXmi77a0kBmadGVldLVQMuJEl8KQtlApo33d/E73UCApWEnC+vgQKeBG1PZlONADuM/bfyp
+        5kAGjjb1WTvqQLfFElmAXO5AGUmpEwmS8UDMv0kQIVb0QJolpmixifdAy8dUY0Y++0C6Q8p2L4j/
+        QCBqlU53PwJBu81Ql9weBUE1+kKCBnIIQYMWY4suSwxB6MdvUbZfEEHkmeZllfMSQaJwLHdV7xVB
+        aqF/3VBjGUGyaOP3dGIdQfCrh/VUASFBJFitWqWuI0FtNOkU2McmQUbDIuboXSpBAAAAAICELkE=
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -297,14 +300,17 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 42
+        - 64
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDohqe/SiGSQOk4aOEwFtZU6zqJgFpG+nDoFGiedFAijOoPpw+uSM6k6Lz1sV5CvsDra
-        agXBXxi2OkOmBzYhQr06oAU0GjBfwzpYVSy+66bJOn1Ln0Tv+9A6xyo084B91joVF3F/C8jdOif6
-        5kfat+M6iF/agVQc6jqJ4VC+q0nxOgrSGwRx5PY6F/S1tlpQ/jr+Ww1HGhIEO67jMafWkwo7jRVj
-        BMyYETvEIko6OE0XO0vhNdEZ2x47AawUWfdtJDuXi8rJew0rO32mUnNW6TE7Q3stAt+3NzsRsXj2
-        U2g/OxPbn+B4y0Q76Is1sU2JSzsy57mEUTtSO1Izwu5tJFg7lfUTgRT4XztaSR9ipiplOx7qxlFW
-        B2w7hwHWz8OOcjsQE0O67ZJ4O39Wyn8zRYA7NHxrhIeLhTt2WmLNn4eMO0+bDgq045I7
+        FMuuxEDCiDrs9lmxH7mNOkFNYT9o15E6EXj6izVrlTpDLIEEo7aZOmqdWy2C3p46SMWpN4OHojoO
+        Re8DoD6mOuHGK3pxtKo6se4ORZoHsDpY4R5zaD6zOuvyLkgxGrc6yGmaJwm8uzpbotA306XAOnk4
+        avda/MM6eP2izjn+xzoir8Kkys3MOl2RAeolStE6yIHBX6DB1DpYRGYnDevYOj2OCUMa6t06fAL+
+        ks704TqNb2j2gI7lOgIxZBsC4ek6OVAGMmAR7zpo0oC8C6byOrxPLs9HY/Y6ZBwmzHLg+jpfMdhS
+        BCIAO5M6jlkeXgM70ijx4kJABzson9rUvOkLO7IAA/9BwRA7HMtA3kkdFDuYZDAswyUYO8/iomxB
+        /Rw70SAdeKNmITvdUYFY1OMkO9CCucQcFCk7VIcyimUbLjuNyrxYZRIyOym/sokGsjU7srV5BKcL
+        OjvsLc8IkkQ/O8I5qpHGxEI7N21bASyIRjuMr3+hvAxLO4iZXueZPFA7azXwgAh+UzsXktU4k2ZX
+        O9ldOdG7F1w7TdeT+t3cYDtYQ9AJbz5kO4b/ELCNTWg7ksL5agYtbTs4Lsn4T4NxO3pKo61ABnU7
+        2b1wC3A9eTvHjdMLAk1+O0VMcuAsMII7U8SvpcbVhTs+bs8ykjaKO9ye1TsYeI87T5sOCrTjkjs=
     uptime: 315360000

@@ -6,7 +6,7 @@
 # Imports
 import logging
 import numpy as np
-from scipy.stats.stats import _two_sample_transform
+# from scipy.stats.stats import _two_sample_transform
 from tqdm import tqdm
 from config import config
 from signal_calc import Signal
@@ -50,7 +50,8 @@ class Limits(object):
 
         self._bkgrd = self._background.bkgrd
         self._signal = self._sig._signal_calc
-        self._t_d = self._find_nearest(self._egrid, 5e2)
+        self._t_d = self._find_nearest(self._egrid,
+                                       config['simulation parameters']['low enery cutoff'])
 
         if self.name == 'IceCube':
             self.limit = self.limit_calc_ice
@@ -95,7 +96,8 @@ class Limits(object):
         y = {}
         self._signal_grid = {}
         for i in config['atmospheric showers']['particles of interest']:
-            self._signal_grid[i] = np.zeros((len(sv_grid),len(mass_grid),len(self._egrid[self._t_d:])))
+            self._signal_grid[i] = np.zeros((len(sv_grid), len(mass_grid),
+                                             len(self._egrid[self._t_d:])))
         # for more generations adding the loop ----
         for j, sv in enumerate(sv_grid):
             tmp_mu = []
@@ -103,7 +105,7 @@ class Limits(object):
             tmp_tau = []
             for mass in mass_grid:
                 mu_sig, e_sig, tau_sig = self._signal(self._egrid,
-                                                    mass, sv)
+                                                      mass, sv)
                 tmp_mu.append(mu_sig[self._t_d:])
                 tmp_e.append(e_sig[self._t_d:])
                 tmp_tau.append(tau_sig[self._t_d:])
@@ -114,7 +116,7 @@ class Limits(object):
             self._signal_grid["nue"][j] = tmp_e
             self._signal_grid["nutau"][j] = tmp_tau
 
-        #self._signal_grid = np.array([[self._signal(self._egrid,
+        # self._signal_grid = np.array([[self._signal(self._egrid,
         #                                            mass, sv)[self._t_d:]
         #                               for mass in mass_grid]
         #                              for sv in sv_grid])

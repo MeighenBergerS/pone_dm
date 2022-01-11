@@ -10,7 +10,7 @@ from config import config
 import numpy as np
 from tqdm import tqdm
 import csv
-
+import pickle
 from scipy.interpolate import UnivariateSpline
 _log = logging.getLogger("pone_dm")
 
@@ -157,7 +157,7 @@ class Detector(object):
 
         # Normalizing
         smearing_fraction = (np.array(smearing_fraction) /
-                             np.trapz(smearing_fraction, x=smearing_e_grid))
+                             np.trapz(smearing_fraction, x=smearing_e_grid)) / 10 # For change in basis from log_10 to natural number 
 
         return smearing_e_grid, smearing_fraction
 
@@ -190,6 +190,15 @@ class Detector(object):
         log_egrid = np.log10(self._egrid)
         self._count = {}
         self._tmp_count = []
+
+        self._counts_at_eff = at_counts_unsm
+        self._counts_as_eff = as_counts_unsm
+        if boolean_sig is False:
+            pickle.dump(at_counts_unsm,
+                        open('../data/counts_unsme/atmo_%f.pkl' % (year)))
+            pickle.dump(as_counts_unsm,
+                        open('../data/counts_unsme/atmo_%f.pkl' % (year)))
+
         for theta in tqdm((list(_flux.keys()))):
 
             check_angle = (theta)
@@ -301,6 +310,6 @@ class Detector(object):
                  Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
-            self._count[i] = self._count[i]   # The scaling factor
+            self._count[i] = self._count[i]
 
         return self._count
