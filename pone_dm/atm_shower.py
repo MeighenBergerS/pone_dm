@@ -94,6 +94,67 @@ class Atm_Shower(object):
             self._egrid = self.surface_fluxes[0][0]
             self._ewidth = self.surface_fluxes[0][1]
 
+        elif config['general']['detector'] == 'combined':
+            # PONE atmospheric flux
+            try:
+                _log.info("Trying to load pre-calculated tables")
+                _log.debug("Searching for " + self._load_str)
+
+                loaded_atm = pickle.load(open(self._load_str, "rb"))
+
+                self._egrid = loaded_atm[0]
+
+                self._ewidth = loaded_atm[1]
+                self._particle_fluxes_pone = loaded_atm[2]
+            except FileNotFoundError:
+                _log.info("Failed to load data. Generating..")
+                # Importing the primary flux models
+                _log.info('Importing Primary models')
+                import crflux.models as pm
+                # Checking if MCEq is native or self built
+                _log.info('Importing MCEq')
+                if config['atmospheric showers']['native mceq']:
+                    _log.debug('Using a native MCEq')
+                    from MCEq.core import MCEqRun
+                else:
+                    _log.debug('Using a custom MCEq')
+                    sys.path.insert(0,
+                                    config['atmospheric' +
+                                           ' showers']['path to mceq'])
+                    from MCEq.core import MCEqRun
+                # Setting options
+                _log.info('Setting MCEq options')
+                self._atmosphere = config['atmospheric showers']['atmosphere']
+                self._i_model = config['atmospheric' +
+                                       ' showers']['interaction model']
+                if config['atmospheric showers']['primary model'] == 'H4a':
+                    self._p_model = (pm.HillasGaisser2012, 'H4a')
+                else:
+                    ValueError('Unsupported primary model!' +
+                               ' Please check the config file')
+                    sys.exit()
+                _log.info('initializing a MCEq instance')
+                self._mceq_instance = MCEqRun(
+                    interaction_model=self._i_model,
+                    primary_model=self._p_model,
+                    theta_deg=0,
+                )
+
+                self._egrid = self._mceq_instance.e_grid
+                self._ewidth = self._mceq_instance.e_widths
+                self._mceq_instance.set_density_model(self._atmosphere)
+                # Running simulations
+                self._run_mceq()
+
+            # particle fluxes for IceCube    
+            self.surface_fluxes = pickle.load(open("../data/" +
+                                                   "surf_store_v1.p", "rb"))
+            # Adding 90 deg
+            self.surface_fluxes[90] = self.surface_fluxes[89]
+            self._particle_fluxes_ice = self.surface_fluxes
+            self._egrid = self.surface_fluxes[0][0]
+            self._ewidth = self.surface_fluxes[0][1]
+
     @property
     def egrid(self):
         """ Fetches the calculation egrid
@@ -127,6 +188,14 @@ class Atm_Shower(object):
             particles.
         """
         return self._particle_fluxes
+
+    @property
+    def flux_results_ice(self):
+        return self._particle_fluxes_ice
+
+    @property
+    def flux_results_pone(self):
+        return self._particle_fluxes_pone
 
     def _run_mceq(self):
         """ Runs the mceq simulation with the set parameters
@@ -169,6 +238,7 @@ class Atm_Shower(object):
                     )
             # Adding results to dic
             self._particle_fluxes[angle] = tmp_particle_store
+            self._particle_fluxes_pone[angle] = tmp_particle_store
         # Dumping for later usage
         pickle.dump([self._egrid, self._ewidth, self._particle_fluxes],
                     open(self._load_str, "wb"))

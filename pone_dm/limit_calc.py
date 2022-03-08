@@ -61,6 +61,9 @@ class Limits(object):
         elif self.name == 'POne':
             self.limit = self.limit_calc_POne
 
+        elif self.name == 'combined':
+            self.limit = self.limit_calc_combined
+
     @property
     def limits(self):
         """Returns Calculated Limits for mass grid and SV grd"""
@@ -95,31 +98,21 @@ class Limits(object):
 
         y = {}
         self._signal_grid = {}
+        tmp_dic = {}
         for i in config['atmospheric showers']['particles of interest']:
             self._signal_grid[i] = np.zeros((len(sv_grid), len(mass_grid),
                                              len(self._egrid[self._t_d:])))
-        # for more generations adding the loop ----
-        for j, sv in enumerate(sv_grid):
-            tmp_mu = []
-            tmp_e = []
-            tmp_tau = []
-            for mass in mass_grid:
-                mu_sig, e_sig, tau_sig = self._signal(self._egrid,
-                                                      mass, sv)
-                tmp_mu.append(mu_sig[self._t_d:])
-                tmp_e.append(e_sig[self._t_d:])
-                tmp_tau.append(tau_sig[self._t_d:])
-            tmp_mu = np.array(tmp_mu)
-            tmp_e = np.array(tmp_e)
-            tmp_tau = np.array(tmp_tau)
-            self._signal_grid["numu"][j] = tmp_mu
-            self._signal_grid["nue"][j] = tmp_e
-            self._signal_grid["nutau"][j] = tmp_tau
+            tmp_dic[i] = []
+        for i in config['atmospheric showers']['particles of interest']:      
+            for j, sv in enumerate(sv_grid):
 
-        # self._signal_grid = np.array([[self._signal(self._egrid,
-        #                                            mass, sv)[self._t_d:]
-        #                               for mass in mass_grid]
-        #                              for sv in sv_grid])
+                for mass in mass_grid:
+                    tmp_sig = self._signal(self._egrid,
+                                                          mass, sv)
+                    tmp_dic[i].append(tmp_sig[i][self._t_d:])
+                tmp_dic = np.array(tmp_dic[i])
+                self._signal_grid[i][j] = tmp_dic[i]
+
         for i in tqdm(config['atmospheric showers']['particles of interest']):
             y[i] = np.array([[chi2.sf(np.sum(
                 np.nan_to_num(x**2 /
@@ -127,7 +120,34 @@ class Limits(object):
                             for x in k]
                              for k in self._signal_grid[i]])
         return y, self._signal_grid
-# Limit calculation for Pone----------------------
+
+    def limit_calc_combined(self, mass_grid, sv_grid):
+        y = {}
+        self._signal_grid = {}
+        tmp_dic = {}
+        for i in config['atmospheric showers']['particles of interest']:
+            self._signal_grid[i] = np.zeros((len(sv_grid), len(mass_grid),
+                                             len(self._egrid[self._t_d:])))
+            tmp_dic[i] = []
+        for i in config['atmospheric showers']['particles of interest']:      
+            for j, sv in enumerate(sv_grid):
+
+                for mass in mass_grid:
+                    tmp_sig = self._signal(self._egrid,
+                                                          mass, sv)
+                    tmp_dic[i].append(tmp_sig[i][self._t_d:])
+                tmp_dic = np.array(tmp_dic[i])
+                self._signal_grid[i][j] = tmp_dic[i]
+
+
+        for i in tqdm(config['atmospheric showers']['particles of interest']):
+            y[i] = np.array([[chi2.sf(np.sum(
+                np.nan_to_num(x**2 /
+                              self._bkgrd[i][self._t_d:])), 2)
+                            for x in k]
+                             for k in self._signal_grid[i]])
+
+        return y, self._signal_grid
 
     def _find_nearest(self, array: np.array, value: float):
 

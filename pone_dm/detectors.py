@@ -96,10 +96,23 @@ class Detector(object):
                                                             year])) *
                                          self.days)
         self.name = config["general"]["detector"]
+        self.spl_mid_mean = UnivariateSpline([1e3, 1e4], [700., 1e4], k=1)
+        self.spl_mid_sigma = UnivariateSpline([1e3, 1e4], [0.45, 0.35], k=1)
         if self.name == "IceCube":
             self._sim2dec = self.sim_to_dec
         elif self.name == "POne":
             self._sim2dec = self.simdec_Pone
+        elif self.name == 'combined':
+            self._sim2dec_pone = self.simdec_Pone
+            self._sim2dec_ice = self.sim_to_dec
+
+    @property
+    def sim2dec_pone(self):
+        return self._sim2dec_pone
+
+    @property
+    def sim2dec_ice(self):
+        return self._sim2dec_ice
 
     @property
     def sim2dec(self):
@@ -131,8 +144,13 @@ class Detector(object):
     def smearing_function(self, true_e, true_dec, year):
         """"
         parameters:
-        E :
+        tru_e : log_10( E )
+        true_dec : Declanation
+        year : year in interset
 
+        return:
+        smearing_e : log_10(E)
+        smearing_fraction : smearing distribution for true over log_10( E ) grid
         """
         # Returns the smeared reconstructed values
         e_test = true_e
@@ -157,11 +175,12 @@ class Detector(object):
 
         # Normalizing
         smearing_fraction = (np.array(smearing_fraction) /
-                             np.trapz(smearing_fraction, x=smearing_e_grid)) / 10 # For change in basis from log_10 to natural number 
+                             np.trapz(smearing_fraction,
+                                      x=smearing_e_grid)) / 10  # For change in basis from log_10 to natural number Does this make sense ???????
 
         return smearing_e_grid, smearing_fraction
 
-    def sim_to_dec(self, flux: dict, year: float):
+    def sim_to_dec(self, flux: dict, year: float, boolean_combined=False):
         """
         Returns Counts for atmospheric and astro fluxes for IceCube --> dict
         parameters
@@ -173,7 +192,6 @@ class Detector(object):
         ----------------
         _count : dict [label : neutrino flavour]
                 [Total counts ( atmos + astro )]  sumed over all thetas
-        _eff_are : np.array
         """
         # Converts simulation data to detector data
         if type(flux) != dict:
@@ -195,9 +213,9 @@ class Detector(object):
         self._counts_as_eff = as_counts_unsm
         if boolean_sig is False:
             pickle.dump(at_counts_unsm,
-                        open('../data/counts_unsme/atmo_%f.pkl' % (year)))
+                        open('../data/counts_unsme/atmo_%f.pkl' %(year), 'wb'))
             pickle.dump(as_counts_unsm,
-                        open('../data/counts_unsme/atmo_%f.pkl' % (year)))
+                        open('../data/counts_unsme/atmo_%f.pkl' %(year), 'wb'))
 
         for theta in tqdm((list(_flux.keys()))):
 
@@ -233,7 +251,36 @@ class Detector(object):
 
 # ------------------------------------------------
 # POne funcions -------- ------ -----
-    def simdec_Pone(self, flux: dict, boolean_sig=False):
+    def _distro_parms(self, Etrue):
+        """ Parameter estimation function depending  on the E_true
+        return:
+        mu, sigma : tuple
+        """
+        if Etrue < 1e3:
+            mu = np.log(700)
+            sigma = 0.45
+        elif 1e3 <= Etrue <= 1e4:
+            mu = np.log(self.spl_mid_mean(Etrue))
+            sigma = self.spl_mid_sigma(Etrue) * np.log(Etrue)
+        else:
+            mu = np.log(Etrue)
+            sigma = 0.35
+        return mu, sigma
+
+    def _log_norm(self, E, mu, sigma):
+        """Distribution function
+        x = E_grid
+        mu = log(E)
+        sigma = fraction of E * E ( so no fraction or percentage )
+        ( standard deviation as per definition )
+        """
+        pdf = (np.exp(- (np.log(E) - mu)**2 / (2 * sigma**2)) /
+               (E * sigma * np.sqrt(2 * np.pi)))
+
+        return pdf
+
+    def simdec_Pone(self, flux: dict, boolean_sig=False,
+                    boolean_combined=False):
         """
         Returns particle counts for P-One Detector
         parameter
@@ -251,7 +298,7 @@ class Detector(object):
         # backgorund dictionary repositioned
         self._count = {}
 
-        #  From here the bakgound flux has many thetas whereas for signal 
+        #  From here the bakgound flux has many thetas whereas for signal
         # we have dfined it differently:::: ??????
 
         thetas = np.array([i for i in flux.keys()])
@@ -273,8 +320,7 @@ class Detector(object):
                 if np.pi / 3 <= rad <= np.pi / 2:
                     down_angles.append(rad)
                     self.count_down[i].append(
-                        (
-                            flux[angle][i] +
+                        (flux[angle][i] +
                          Astro) * self._uptime *
                         self._ewidth * self._aeff.spl_A15(self._egrid)
                     )
@@ -296,7 +342,7 @@ class Detector(object):
             sorted_ids = np.argsort(down_angles)
             # Downgoing
             self._count[i] += np.trapz(self.count_down[i][sorted_ids],
-                                       x=down_angles[sorted_ids], axis=0) 
+                                       x=down_angles[sorted_ids], axis=0)
             # Horizon we assume it is mirrored
             sorted_ids = np.argsort(horizon_angles)
             self._count[i] += 2. * np.trapz(self.count_horizon[i][
@@ -311,5 +357,15 @@ class Detector(object):
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
             self._count[i] = self._count[i]
+
+            if boolean_combined:
+                tmp_count_mat = []
+                for k, e in enumerate(self._egrid):
+                    mu, sigma = self._distro_parms(e)
+                    local_log_norm = self._log_norm(self._egrid, mu, sigma)
+                    tmp_count_mat.append(self._count[i][k] * local_log_norm)
+                # suming over the the energy bin vertically to get combined
+                # value of counts after smearing over all energy bins
+                self._count[i] = np.array(np.sum(tmp_count_mat, axis=0))
 
         return self._count

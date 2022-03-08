@@ -35,16 +35,19 @@ class Signal(object):
         self._const = pdm_constants()
         self._uptime = config['simulation parameters']['uptime']
         self._year = year
-        self._ewidth = self._aeff.ewidth
-        self._egrid = self._aeff.egrid
+        self._ewidth = self._aeff._ewidth
+        self._egrid = self._aeff._egrid
 
-        name = config['general']['detector']
-        if name == 'IceCube':
-            print(name)
+        self.name = config['general']['detector']
+        if self.name == 'IceCube':
+            print(self.name)
             self._signal_calc = self._signal_calc_ice
-        elif name == 'POne':
-            print(name)
+        elif self.name == 'POne':
+            print(self.name)
             self._signal_calc = self._signal_calc_pone
+        elif self.name == 'combined':
+            print(self.name)
+            self._signal_calc = self._signal_calc_combined
 
     @property
     def signal_calc(self):
@@ -113,8 +116,7 @@ class Signal(object):
 
         Returns
         -------
-        total_new_counts : np.array
-            The total new counts
+        total_new_counts : tuple ( #numu , # nue, #nutau )
         """
 
         # Extra galactic
@@ -144,9 +146,22 @@ class Signal(object):
                 self._const.J_d3 + self._const.J_p3 + self._const.J_s3
             )
 
-        total_counts = self._detector.sim2dec(_flux, boolean_sig=True)
+        if self.name == 'combined':
+            total_counts = self._detector.sim2dec(_flux, boolean_sig=True,
+                                                  boolean_combined=True)
+        else:
+            total_counts = self._detector.sim2dec(_flux, boolean_sig=True)
 
-        return total_counts["numu"], total_counts["nue"], total_counts["nutau"]
+        return total_counts
+
+    def _signal_calc_combined(self, egrid, mass, sv):
+        signal_ice = np.sum(self._signal_calc_ice(egrid, mass, sv), axis=0)
+        signal_pone = {}
+        signal_pone['numu'], signal_pone["nue"], signal_pone["nutau"] = self._signal_calc_pone(egrid, mass, sv)
+        signal_dic = {}
+        for i in config['atmospheric showers']['particles of interest']:
+            signal_dic[i] = signal_ice + signal_pone[i]
+        return signal_dic
 
     def _find_nearest(self, array: np.array, value: float):
 
