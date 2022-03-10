@@ -51,7 +51,8 @@ class Limits(object):
         self._bkgrd = self._background.bkgrd
         self._signal = self._sig._signal_calc
         self._t_d = self._find_nearest(self._egrid,
-                                       config['simulation parameters']['low enery cutoff'])
+                                       config['simulation paramet' +
+                                              'ers']['low enery cutoff'])
 
         if self.name == 'IceCube':
             self.limit = self.limit_calc_ice
@@ -100,18 +101,20 @@ class Limits(object):
         self._signal_grid = {}
         tmp_dic = {}
         for i in config['atmospheric showers']['particles of interest']:
-            self._signal_grid[i] = np.zeros((len(sv_grid), len(mass_grid),
+            self._signal_grid[i] = np.empty((len(sv_grid), len(mass_grid),
                                              len(self._egrid[self._t_d:])))
-            tmp_dic[i] = []
-        for i in config['atmospheric showers']['particles of interest']:      
+        tmp_sig_dic = {}
+        for _, sv in enumerate(sv_grid):
+            for _, mass in enumerate(mass_grid):
+                tmp_sig_dic[sv, mass] = (self._signal(self._egrid,
+                                         mass, sv))
+        for i in config['atmospheric showers']['particles' +
+                                               ' of interest']:
             for j, sv in enumerate(sv_grid):
-
+                tmp_dic[i] = []
                 for mass in mass_grid:
-                    tmp_sig = self._signal(self._egrid,
-                                                          mass, sv)
-                    tmp_dic[i].append(tmp_sig[i][self._t_d:])
-                tmp_dic = np.array(tmp_dic[i])
-                self._signal_grid[i][j] = tmp_dic[i]
+                    tmp_dic[i].append(tmp_sig_dic[sv, mass][i][self._t_d:])
+                self._signal_grid[i][j] = (tmp_dic[i])
 
         for i in tqdm(config['atmospheric showers']['particles of interest']):
             y[i] = np.array([[chi2.sf(np.sum(
@@ -126,19 +129,20 @@ class Limits(object):
         self._signal_grid = {}
         tmp_dic = {}
         for i in config['atmospheric showers']['particles of interest']:
-            self._signal_grid[i] = np.zeros((len(sv_grid), len(mass_grid),
+            self._signal_grid[i] = np.empty((len(sv_grid), len(mass_grid),
                                              len(self._egrid[self._t_d:])))
-            tmp_dic[i] = []
-        for i in config['atmospheric showers']['particles of interest']:      
+        tmp_sig_dic = {}
+        for _, sv in enumerate(sv_grid):
+            for _, mass in enumerate(mass_grid):
+                tmp_sig_dic[sv, mass] = (self._signal(self._egrid,
+                                         mass, sv))
+        for i in config['atmospheric showers']['particles' +
+                                               ' of interest']:
             for j, sv in enumerate(sv_grid):
-
+                tmp_dic[i] = []
                 for mass in mass_grid:
-                    tmp_sig = self._signal(self._egrid,
-                                                          mass, sv)
-                    tmp_dic[i].append(tmp_sig[i][self._t_d:])
-                tmp_dic = np.array(tmp_dic[i])
-                self._signal_grid[i][j] = tmp_dic[i]
-
+                    tmp_dic[i].append(tmp_sig_dic[sv, mass][i][self._t_d:])
+                self._signal_grid[i][j] = (tmp_dic[i])
 
         for i in tqdm(config['atmospheric showers']['particles of interest']):
             y[i] = np.array([[chi2.sf(np.sum(

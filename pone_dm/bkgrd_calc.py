@@ -63,7 +63,8 @@ class Background(object):
                 _log.info("Trying to load pre-calculated tables")
                 _log.debug("Searching for Atmospheric and Astro Fluxes")
                 self._bkgrd = pickle.load(
-                    open("../data/background_pone.pkl", "rb"))
+                    open("../data/background_pone_unsm.pkl", "rb"))
+                # smearing for PONE if needed
 
             except FileNotFoundError:
                 _log.info("Failed to load pre-calculated tables")
@@ -71,7 +72,7 @@ class Background(object):
                 self._bkgrd = self._detector.sim2dec(self._shower.flux_results,
                                                      boolean_sig=False)
                 pickle.dump(self._bkgrd,
-                            open("../data/background_pone.pkl", "wb"))
+                            open("../data/background_pone_unsm.pkl", "wb"))
 
         # background counts for combined
         elif self.name == 'combined':
@@ -86,7 +87,7 @@ class Background(object):
 
             except FileNotFoundError:
                 # background for IceCube
-                self.name = 'IceCube'
+
                 self._bkgrd = {}
                 try:
                     _log.info("Trying to load pre-calculated tables IceCube")
@@ -111,7 +112,7 @@ class Background(object):
                                 open("../data/background_ice.pkl", "wb"))
 
                 # background for P-ONE
-                self.name = 'POne'
+
                 try:
                     _log.info("Trying to load pre-calculated tables P-ONE")
                     _log.debug("Searching for Atmospheric and Astro Fluxes")
@@ -126,7 +127,7 @@ class Background(object):
                                         boolean_combined=True)
                     pickle.dump(self._bkgrd_PONE,
                                 open("../data/background_pone.pkl", "wb"))
-                self.name = 'combined'
+
                 # combinning the background for further analysis
                 for i in self._bkgrd.keys():
                     for y in self._bkgrd_ice[i].keys():

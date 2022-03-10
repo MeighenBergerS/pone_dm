@@ -116,7 +116,7 @@ class Signal(object):
 
         Returns
         -------
-        total_new_counts : tuple ( #numu , # nue, #nutau )
+        total_new_counts : dictionary ( #numu , # nue, #nutau )
         """
 
         # Extra galactic
@@ -151,13 +151,13 @@ class Signal(object):
                                                   boolean_combined=True)
         else:
             total_counts = self._detector.sim2dec(_flux, boolean_sig=True)
+            # smearing for PONE if needed
 
         return total_counts
 
     def _signal_calc_combined(self, egrid, mass, sv):
         signal_ice = np.sum(self._signal_calc_ice(egrid, mass, sv), axis=0)
-        signal_pone = {}
-        signal_pone['numu'], signal_pone["nue"], signal_pone["nutau"] = self._signal_calc_pone(egrid, mass, sv)
+        signal_pone = self._signal_calc_pone(egrid, mass, sv)
         signal_dic = {}
         for i in config['atmospheric showers']['particles of interest']:
             signal_dic[i] = signal_ice + signal_pone[i]

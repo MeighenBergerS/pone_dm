@@ -208,6 +208,7 @@ class Atm_Shower(object):
         """
         # Storing simulation results here
         self._particle_fluxes = {}
+        self._particle_fluxes_pone = {}
         _log.info('Running MCEq simulations')
         _log.debug('Running %d simulations for the angles' % (
             len(config['atmospheric showers']['theta angles']))
