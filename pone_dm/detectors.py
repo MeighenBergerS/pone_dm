@@ -150,7 +150,8 @@ class Detector(object):
 
         return:
         smearing_e : log_10(E)
-        smearing_fraction : smearing distribution for true over log_10( E ) grid
+        smearing_fraction : smearing distribution for true over log_10( E )
+        grid
         """
         # Returns the smeared reconstructed values
         e_test = true_e
@@ -176,7 +177,8 @@ class Detector(object):
         # Normalizing
         smearing_fraction = (np.array(smearing_fraction) /
                              np.trapz(smearing_fraction,
-                                      x=smearing_e_grid)) / 10  # For change in basis from log_10 to natural number Does this make sense ???????
+                                      x=smearing_e_grid)) / 10  # For change
+        # in basis from log_10 to natural number Does this make sense ???????
 
         return smearing_e_grid, smearing_fraction
 
@@ -213,9 +215,11 @@ class Detector(object):
         self._counts_as_eff = as_counts_unsm
         if boolean_sig is False:
             pickle.dump(at_counts_unsm,
-                        open('../data/counts_unsme/atmo_%f.pkl' %(year), 'wb'))
+                        open('../data/counts_unsme/atmo_%f.pkl' % (year),
+                             'wb'))
             pickle.dump(as_counts_unsm,
-                        open('../data/counts_unsme/atmo_%f.pkl' %(year), 'wb'))
+                        open('../data/counts_unsme/atmo_%f.pkl' % (year),
+                             'wb'))
 
         for theta in tqdm((list(_flux.keys()))):
 

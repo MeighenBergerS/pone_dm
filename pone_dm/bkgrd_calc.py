@@ -87,7 +87,6 @@ class Background(object):
 
             except FileNotFoundError:
                 # background for IceCube
-
                 self._bkgrd = {}
                 try:
                     _log.info("Trying to load pre-calculated tables IceCube")
@@ -112,7 +111,6 @@ class Background(object):
                                 open("../data/background_ice.pkl", "wb"))
 
                 # background for P-ONE
-
                 try:
                     _log.info("Trying to load pre-calculated tables P-ONE")
                     _log.debug("Searching for Atmospheric and Astro Fluxes")
@@ -129,9 +127,11 @@ class Background(object):
                                 open("../data/background_pone.pkl", "wb"))
 
                 # combinning the background for further analysis
-                for i in self._bkgrd.keys():
-                    for y in self._bkgrd_ice[i].keys():
-                        self._bkgrd_ice[i] = np.sum(self._bkgrd_ice[i], axis=0)
+                for i in config['atmospheric showers']['particles ' +
+                                                       'of interest']:
+                    self._bkgrd_ice[i] = np.sum(self._bkgrd_ice[i], axis=0)
+                    print(len(self._bkgrd_ice[i]))
+                    print(len(self._bkgrd_PONE[i]))
                     self._bkgrd[i] = self._bkgrd_ice[i] + self._bkgrd_PONE[i]
                 pickle.dump(self._bkgrd, open('../data/' +
                                               'background_combined.pkl', 'wb'))

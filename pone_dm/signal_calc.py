@@ -92,8 +92,12 @@ class Signal(object):
         #  These steps take a lot of time !!!!
         total_flux = _ours+_extra
         for y in self._year:
-            total_new_counts.append(self._detector.sim2dec(total_flux, y)[
-                'numu'])
+            if self.name == "IceCube":
+                total_new_counts.append(self._detector.sim2dec(total_flux, y)[
+                    'numu'])
+            elif self.name == "combined":
+                total_new_counts.append(self._detector.sim2dec_ice(total_flux,
+                                                                   y)['numu'])
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours
 
@@ -147,8 +151,8 @@ class Signal(object):
             )
 
         if self.name == 'combined':
-            total_counts = self._detector.sim2dec(_flux, boolean_sig=True,
-                                                  boolean_combined=True)
+            total_counts = self._detector.sim2dec_pone(_flux, boolean_sig=True,
+                                                       boolean_combined=True)
         else:
             total_counts = self._detector.sim2dec(_flux, boolean_sig=True)
             # smearing for PONE if needed
