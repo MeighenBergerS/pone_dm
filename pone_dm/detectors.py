@@ -97,7 +97,7 @@ class Detector(object):
                                          self.days)
         self.name = config["general"]["detector"]
         self.spl_mid_mean = UnivariateSpline([1e3, 1e4], [700., 1e4], k=1)
-        self.spl_mid_sigma = UnivariateSpline([1e3, 1e4], [0.25, 0.09], k=1)
+        self.spl_mid_sigma = UnivariateSpline([1e3, 1e4], [0.45, 0.35], k=1)
         if self.name == "IceCube":
             self._sim2dec = self.sim_to_dec
         elif self.name == "POne":
@@ -182,11 +182,11 @@ class Detector(object):
 
         return smearing_e_grid, smearing_fraction
 
-    def sim_to_dec(self, flux: dict, year: float, boolean_combined=False):
+    def sim_to_dec(self, flux: dict, year: float):
         """
         Returns Counts for atmospheric and astro fluxes for IceCube --> dict
         parameters
-        ----------------
+        ----------------s
         flux : Dict [ label : angle ]
         year : float
 
@@ -205,7 +205,7 @@ class Detector(object):
             _flux = flux
             boolean_sig = False
 
-        at_counts_unsm, as_counts_unsm, effe_area = self._aeff.effective_area_func(
+        at_counts_unsm, as_counts_unsm = self._aeff.effective_area_func(
             _flux, year, boolean_sig)
         log_egrid = np.log10(self._egrid)
         self._count = {}
@@ -221,7 +221,7 @@ class Detector(object):
                         open('../data/counts_unsme/atmo_%f.pkl' % (year),
                              'wb'))
 
-        for theta in tqdm((list(_flux.keys()))):
+        for theta in tqdm(list(_flux.keys())):
 
             check_angle = (theta)
             tmp_1 = []
@@ -262,13 +262,13 @@ class Detector(object):
         """
         if Etrue < 1e3:
             mu = np.log(700)
-            sigma = 0.25
+            sigma = 0.45
         elif 1e3 <= Etrue <= 1e4:
             mu = np.log(self.spl_mid_mean(Etrue))
             sigma = self.spl_mid_sigma(Etrue) * np.log(Etrue)
         else:
             mu = np.log(Etrue)
-            sigma = 0.09
+            sigma = 0.35
         return mu, sigma
 
     def _log_norm(self, E, mu, sigma):
@@ -284,7 +284,7 @@ class Detector(object):
         return pdf
 
     def simdec_Pone(self, flux: dict, boolean_sig=False,
-                    boolean_combined=False):
+                    boolean_smeared=False):
         """
         Returns particle counts for P-One Detector
         parameter
@@ -362,7 +362,7 @@ class Detector(object):
             )
             self._count[i] = self._count[i]
 
-            if boolean_combined:
+            if boolean_smeared:
                 tmp_count_mat = []
                 for k, e in enumerate(self._egrid):
                     mu, sigma = self._distro_parms(e)

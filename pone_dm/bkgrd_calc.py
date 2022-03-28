@@ -6,6 +6,7 @@
 # Imports
 import logging
 from config import config
+# from tqdm import tqdm
 from atm_shower import Atm_Shower
 from detectors import Detector
 import pickle
@@ -63,16 +64,17 @@ class Background(object):
                 _log.info("Trying to load pre-calculated tables")
                 _log.debug("Searching for Atmospheric and Astro Fluxes")
                 self._bkgrd = pickle.load(
-                    open("../data/background_pone_unsm.pkl", "rb"))
+                    open("../data/background_pone.pkl", "rb"))
                 # smearing for PONE if needed
 
             except FileNotFoundError:
                 _log.info("Failed to load pre-calculated tables")
                 _log.info("Calculating tables for background")
                 self._bkgrd = self._detector.sim2dec(self._shower.flux_results,
-                                                     boolean_sig=False)
+                                                     boolean_sig=False,
+                                                     boolean_smeared=True)
                 pickle.dump(self._bkgrd,
-                            open("../data/background_pone_unsm.pkl", "wb"))
+                            open("../data/background_pone.pkl", "wb"))
 
         # background counts for combined
         elif self.name == 'combined':
@@ -100,7 +102,7 @@ class Background(object):
                     for i in config['atmospheric showers']['particles ' +
                                                            'of interest']:
                         self._bkgrd_ice[i] = []
-                    for y in self._year:
+                    for y in (self._year):
                         bkd = self._detector.sim2dec_ice(
                             self._shower.flux_results_ice, y)
 
@@ -122,7 +124,8 @@ class Background(object):
                     self._bkgrd_PONE = self._detector.sim2dec_pone(
                                         self._shower.flux_results_pone,
                                         boolean_sig=False,
-                                        boolean_combined=True)
+                                        boolean_smeared=True)
+                    # # smearing pars
                     pickle.dump(self._bkgrd_PONE,
                                 open("../data/background_pone.pkl", "wb"))
 
@@ -132,9 +135,10 @@ class Background(object):
                     self._bkgrd_ice[i] = np.sum(self._bkgrd_ice[i], axis=0)
                     print(len(self._bkgrd_ice[i]))
                     print(len(self._bkgrd_PONE[i]))
-                    self._bkgrd[i] = self._bkgrd_ice[i] + self._bkgrd_PONE[i]
-                pickle.dump(self._bkgrd, open('../data/' +
-                                              'background_combined.pkl', 'wb'))
+                    self._bkgrd[i] = np.add(self._bkgrd_ice[i],
+                                            self._bkgrd_PONE[i])
+                pickle.dump(self._bkgrd, open(
+                    '../data/background_combined.pkl', 'wb'))
 
     # TODO: bkgrd() -> returns
 

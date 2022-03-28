@@ -24,13 +24,13 @@ _baseconfig = {
         # Dump experiment config to this location
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
-        "year": [1]  # , 2, 3, 4, 5, 6, 7, 8, 9]
+        "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 1),
-        "sv grid": np.logspace(-26, -21, 1),
+        "mass grid": np.logspace(2, 6, 9),
+        "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low enery cutoff": 1e2,  # GeV
+        "low enery cutoff": 1e3,  # GeV
         "DM type k": 2
     },
     ###########################################################################

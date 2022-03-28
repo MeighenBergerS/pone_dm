@@ -29,7 +29,7 @@ class Aeff(object):
         self._const = pdm_constants()
         _log.info('Loading the effective area data')
         shower = Atm_Shower()
-        self._egrid = shower._egrid  # ###########
+        self._egrid = shower.egrid  # ###########
         self._ewidth = shower._ewidth
         self.days = 60. * 24.
         self.minutes = 60.
@@ -272,7 +272,7 @@ class Aeff(object):
 
             unsmeared_atmos_counts[theta] = tmp_at_un
             unsmeared_astro_counts[theta] = tmp_as_un
-        return unsmeared_atmos_counts, unsmeared_astro_counts, eff_area
+        return unsmeared_atmos_counts, unsmeared_astro_counts
 
     @property
     def spl_A15(self):
