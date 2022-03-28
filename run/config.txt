@@ -162,6 +162,8 @@ dictitems:
     native mceq: true
     particles of interest:
     - numu
+    - nue
+    - nutau
     path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
     primary model: H4a
     theta angles: !!python/object/apply:builtins.range
@@ -171,7 +173,7 @@ dictitems:
   general:
     config location: ../run/config.txt
     debug level: 40
-    detector: combined
+    detector: POne
     log file handler: ../run/pdm.log
     random state seed: 1337
     year:
@@ -273,11 +275,7 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-<<<<<<< HEAD
     low enery cutoff: 500.0
-=======
-    low enery cutoff: 1000.0
->>>>>>> 17a64f712cbfcbbc2ace89713e01970e31bd6caf
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001

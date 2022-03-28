@@ -72,7 +72,7 @@ class Background(object):
                 _log.info("Calculating tables for background")
                 self._bkgrd = self._detector.sim2dec(self._shower.flux_results,
                                                      boolean_sig=False,
-                                                     boolean_smeared=True)
+                                                     boolean_smeared=False)
                 pickle.dump(self._bkgrd,
                             open("../data/background_pone.pkl", "wb"))
 

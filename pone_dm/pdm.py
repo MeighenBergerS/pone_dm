@@ -132,10 +132,10 @@ class PDM(object):
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         pickle.dump(self._results, open(
-            '../data/25_03/smeared/limits_results_%s_sm.pkl' %
+            '../data/28_03/unsmeared/limits_results_%s_unsm.pkl' %
             (self._detector_name), 'wb'))
         pickle.dump(self._signal_data, open(
-            '../data/25_03/smeared/signal_grid_%s_sm.pkl' %
+            '../data/28_03/unsmeared/signal_grid_%s_unsm.pkl' %
             (self._detector_name), 'wb'))
         _log.debug(
             "Dumping run settings into %s",

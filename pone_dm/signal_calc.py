@@ -176,7 +176,7 @@ class Signal(object):
                                                        boolean_smeared=True)
         else:
             total_counts = self._detector.sim2dec(_flux, boolean_sig=True,
-                                                  boolean_smeared=True)
+                                                  boolean_smeared=False)
             # smearing for PONE if needed
 
         return total_counts
