@@ -37,8 +37,11 @@ class Signal(object):
         self._year = year
         self._ewidth = self._aeff._ewidth
         self._egrid = self._aeff._egrid
-
         self.name = config['general']['detector']
+
+        self._s_pone = self._signal_calc_pone
+        self._s_ice = self._signal_calc_ice
+
         if self.name == 'IceCube':
             print(self.name)
             self._signal_calc = self._signal_calc_ice
@@ -55,6 +58,16 @@ class Signal(object):
         total_counts : np.array
         """
         return self._signal_calc
+
+    @property
+    def signal_calc_pone(self):
+
+        return self._s_pone
+
+    @property
+    def signal_calc_ice(self):
+
+        return self._s_ice
 
     def _signal_calc_ice(self, egrid: np.array, mass: float,
                          sv: float):
@@ -91,13 +104,21 @@ class Signal(object):
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
         total_flux = _ours+_extra
-        for y in self._year:
-            if self.name == "IceCube":
-                total_new_counts.append(self._detector.sim2dec(total_flux, y)[
-                    'numu'])
-            elif self.name == "combined":
-                total_new_counts.append(self._detector.sim2dec_ice(total_flux,
-                                                                   y)['numu'])
+        if self.name == 'combined':
+            for y in self._year:
+                _log.info("combined signal ice year =" +
+                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
+                total_new_counts.append(
+                    np.array(self._detector.sim2dec_ice(total_flux,
+                                                        y)['numu']))
+        elif self.name == 'IceCube':
+            for y in self._year:
+                _log.info(" signal ice year =" +
+                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
+                total_new_counts.append(
+                    np.array(self._detector.sim2dec(total_flux,
+                                                    y)['numu']))
+
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours
 
@@ -152,9 +173,10 @@ class Signal(object):
 
         if self.name == 'combined':
             total_counts = self._detector.sim2dec_pone(_flux, boolean_sig=True,
-                                                       boolean_combined=True)
+                                                       boolean_smeared=True)
         else:
-            total_counts = self._detector.sim2dec(_flux, boolean_sig=True)
+            total_counts = self._detector.sim2dec(_flux, boolean_sig=True,
+                                                  boolean_smeared=True)
             # smearing for PONE if needed
 
         return total_counts

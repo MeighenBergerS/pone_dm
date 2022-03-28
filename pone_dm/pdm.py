@@ -5,6 +5,7 @@
 
 # Imports
 # Native modules
+
 from time import time
 import logging
 from limit_calc import Limits
@@ -20,6 +21,7 @@ from pone_aeff import Aeff
 from bkgrd_calc import Background
 from detectors import Detector
 from signal_calc import Signal
+import pickle
 # from .limit_calc import Limits
 
 # unless we put this class in __init__, __name__ will be contagion.contagion
@@ -46,6 +48,7 @@ class PDM(object):
         # Fetching the user inputs
         # Inputs
         self._start = time()
+        self._detector_name = config['general']['detector']
         if userconfig is not None:
             if isinstance(userconfig, dict):
                 config.from_dict(userconfig)
@@ -128,6 +131,12 @@ class PDM(object):
             self.mass_grid, self.sv_grid)
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
+        pickle.dump(self._results, open(
+            '../data/25_03/smeared/limits_results_%s_sm.pkl' %
+            (self._detector_name), 'wb'))
+        pickle.dump(self._signal_data, open(
+            '../data/25_03/smeared/signal_grid_%s_sm.pkl' %
+            (self._detector_name), 'wb'))
         _log.debug(
             "Dumping run settings into %s",
             config["general"]["config location"],
@@ -146,7 +155,6 @@ class PDM(object):
         _log.info('     `*-._`._(__.--*"`./ ')
         _log.info('---------------------------------------------------')
         _log.info('---------------------------------------------------')
-        
 
     @property
     def results(self):
