@@ -30,7 +30,11 @@ _baseconfig = {
         "mass grid": np.logspace(2, 6, 9),
         "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
+<<<<<<< HEAD
         "low enery cutoff": 5e2,  # GeV
+=======
+        "low enery cutoff": 1e3,  # GeV
+>>>>>>> 17a64f712cbfcbbc2ace89713e01970e31bd6caf
         "DM type k": 2
     },
     ###########################################################################

@@ -273,7 +273,11 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
+<<<<<<< HEAD
     low enery cutoff: 500.0
+=======
+    low enery cutoff: 1000.0
+>>>>>>> 17a64f712cbfcbbc2ace89713e01970e31bd6caf
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
