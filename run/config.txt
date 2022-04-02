@@ -173,7 +173,7 @@ dictitems:
   general:
     config location: ../run/config.txt
     debug level: 40
-    detector: POne
+    detector: combined
     log file handler: ../run/pdm.log
     random state seed: 1337
     year:

@@ -72,7 +72,7 @@ class Background(object):
                 _log.info("Calculating tables for background")
                 self._bkgrd = self._detector.sim2dec(self._shower.flux_results,
                                                      boolean_sig=False,
-                                                     boolean_smeared=False)
+                                                     boolean_smeared=True)
                 pickle.dump(self._bkgrd,
                             open("../data/background_pone.pkl", "wb"))
 
@@ -124,7 +124,7 @@ class Background(object):
                     self._bkgrd_PONE = self._detector.sim2dec_pone(
                                         self._shower.flux_results_pone,
                                         boolean_sig=False,
-                                        boolean_smeared=True)
+                                        boolean_smeared=False)
                     # # smearing pars
                     pickle.dump(self._bkgrd_PONE,
                                 open("../data/background_pone.pkl", "wb"))

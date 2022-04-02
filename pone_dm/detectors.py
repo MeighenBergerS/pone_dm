@@ -97,7 +97,7 @@ class Detector(object):
                                          self.days)
         self.name = config["general"]["detector"]
         self.spl_mid_mean = UnivariateSpline([1e3, 1e4], [700., 1e4], k=1)
-        self.spl_mid_sigma = UnivariateSpline([1e3, 1e4], [0.45, 0.35], k=1)
+        self.spl_mid_sigma = UnivariateSpline([1e3, 1e4], [0.15, 0.09], k=1)
         if self.name == "IceCube":
             self._sim2dec = self.sim_to_dec
         elif self.name == "POne":
@@ -262,13 +262,13 @@ class Detector(object):
         """
         if Etrue < 1e3:
             mu = np.log(700)
-            sigma = 0.45
+            sigma = 0.15
         elif 1e3 <= Etrue <= 1e4:
             mu = np.log(self.spl_mid_mean(Etrue))
             sigma = self.spl_mid_sigma(Etrue) * np.log(Etrue)
         else:
             mu = np.log(Etrue)
-            sigma = 0.35
+            sigma = 0.09
         return mu, sigma
 
     def _log_norm(self, E, mu, sigma):

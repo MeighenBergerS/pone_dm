@@ -61,12 +61,16 @@ class Signal(object):
 
     @property
     def signal_calc_pone(self):
-
+        """For combined analysis we need the seperate function
+        for P-ONE
+        """
         return self._s_pone
 
     @property
     def signal_calc_ice(self):
-
+        """For combined analysis we need the seperate function
+        for IceCube
+        """
         return self._s_ice
 
     def _signal_calc_ice(self, egrid: np.array, mass: float,
@@ -173,10 +177,10 @@ class Signal(object):
 
         if self.name == 'combined':
             total_counts = self._detector.sim2dec_pone(_flux, boolean_sig=True,
-                                                       boolean_smeared=True)
+                                                       boolean_smeared=False)
         else:
             total_counts = self._detector.sim2dec(_flux, boolean_sig=True,
-                                                  boolean_smeared=False)
+                                                  boolean_smeared=True)
             # smearing for PONE if needed
 
         return total_counts
