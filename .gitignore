@@ -18,6 +18,10 @@ venv3
 
 
 
-/data/*
+
+
+
+
+\data\*
 
 *.json
