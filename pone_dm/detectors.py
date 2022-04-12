@@ -26,7 +26,6 @@ class Detector(object):
 
         self.name = config["general"]["detector"]
         self._aeff = aeff
-
         self._egrid = self._aeff._egrid
         self._ewidth = self._aeff._ewidth
 
@@ -96,12 +95,22 @@ class Detector(object):
                                                             year])) *
                                          self.days)
         self.name = config["general"]["detector"]
-        self.spl_mid_mean = UnivariateSpline([1e3, 1e4], [700., 1e4], k=1)
-        self.spl_mid_sigma = UnivariateSpline([1e3, 1e4], [0.15, 0.09], k=1)
+        self._low_sigma = config['pone']['low E sigma']
+        self._high_sigma = config['pone']['high E sigma']
+        self.spl_mid_mean = {}
+        self.spl_mid_sigma = {}
+        for p in config['atmospheric showers']['particles of interest']:
+            self.spl_mid_mean[p] = UnivariateSpline([1e3, 1e4], [700., 1e4],
+                                                    k=1)
+            self.spl_mid_sigma[p] = UnivariateSpline([1e3, 1e4], [
+                self._low_sigma[p], self._high_sigma[p]], k=1)
         if self.name == "IceCube":
             self._sim2dec = self.sim_to_dec
         elif self.name == "POne":
-            self._sim2dec = self.simdec_Pone
+            if config['general']['pone type'] == 'old':
+                self._sim2dec = self.simdec_Pone
+            elif config['general']['pone type'] == 'new':
+                self.sim2dec = self.simdec_Pone_new
         elif self.name == 'combined':
             self._sim2dec_pone = self.simdec_Pone
             self._sim2dec_ice = self.sim_to_dec
@@ -205,7 +214,7 @@ class Detector(object):
             _flux = flux
             boolean_sig = False
 
-        at_counts_unsm, as_counts_unsm = self._aeff.effective_area_func(
+        at_counts_unsm, as_counts_unsm, eff_area = self._aeff.effective_area_func(
             _flux, year, boolean_sig)
         log_egrid = np.log10(self._egrid)
         self._count = {}
@@ -213,6 +222,7 @@ class Detector(object):
 
         self._counts_at_eff = at_counts_unsm
         self._counts_as_eff = as_counts_unsm
+        pickle.dump(eff_area, open('../data/eff_area_ice.pkl','wb'))
         if boolean_sig is False:
             pickle.dump(at_counts_unsm,
                         open('../data/counts_unsme/atmo_%f.pkl' % (year),
@@ -242,7 +252,11 @@ class Detector(object):
 
                 tmp_1.append(local_sp * at_counts_unsm[theta][id_check])
                 tmp_2.append(local_sp * as_counts_unsm[theta][id_check])
-            # appending array to a list ( tmp_1(e_bin)_theta )
+            # appending array to a list ( tmp_1(e_bin)_theta ) 
+            # !!!!!!!!!!!!!!!! Here we are not adding the Astro Physical Fluxes
+            #  should be added as I understand !!!!!!!!!!!
+            # tmp_c = np.add(np.array(tmp_1), np.array(tmp_2))
+            # self._tmp_count.append(np.sum(tmp_c, axis=0))
             self._tmp_count.append(np.sum(np.array(tmp_1), axis=0))
         # suming up for all the angles ------ need to check -----
         self._tmp_count = np.sum(self._tmp_count, axis=0)
@@ -260,15 +274,18 @@ class Detector(object):
         return:
         mu, sigma : tuple
         """
-        if Etrue < 1e3:
-            mu = np.log(700)
-            sigma = 0.15
-        elif 1e3 <= Etrue <= 1e4:
-            mu = np.log(self.spl_mid_mean(Etrue))
-            sigma = self.spl_mid_sigma(Etrue) * np.log(Etrue)
-        else:
-            mu = np.log(Etrue)
-            sigma = 0.09
+        mu = {}
+        sigma = {}
+        for p in config['atmospheric showers']['particles of interest']:
+            if Etrue < 1e3:
+                mu[p] = np.log(700)
+                sigma[p] = self._low_sigma[p]
+            elif 1e3 <= Etrue <= 1e4:
+                mu[p] = np.log(self.spl_mid_mean[p](Etrue))
+                sigma[p] = self.spl_mid_sigma[p](Etrue) * np.log(Etrue)
+            else:
+                mu[p] = np.log(Etrue)
+                sigma[p] = self._high_sigma[p]
         return mu, sigma
 
     def _log_norm(self, E, mu, sigma):
@@ -364,12 +381,45 @@ class Detector(object):
 
             if boolean_smeared:
                 tmp_count_mat = []
+                ratio = []
                 for k, e in enumerate(self._egrid):
                     mu, sigma = self._distro_parms(e)
-                    local_log_norm = self._log_norm(self._egrid, mu, sigma)
+                    # print('mu = %.1e, sigma = %.1e' % (mu[i], sigma[i]))
+                    local_log_norm = (self._log_norm(self._egrid,
+                                                     mu[i], sigma[i]))
                     tmp_count_mat.append(self._count[i][k] * local_log_norm)
+                # print('old_counts = %.1e,  new_counts = %.1e' % (np.sum(
+                #    self._count[i]), np.sum(np.array(np.sum(tmp_count_mat,
+                #                                            axis=0)))))
+                ratio = (np.sum(self._count[i]) /
+                         np.sum(np.array(np.sum(tmp_count_mat, axis=0))))
+                tmp_count_mat_r = []
+                for k, e in enumerate(self._egrid):
+                    mu, sigma = self._distro_parms(e)
+
+                    local_log_norm = self._log_norm(self._egrid, mu[i],
+                                                    sigma[i])
+                    tmp_count_mat_r.append(self._count[i][k] *
+                                           local_log_norm * ratio)
+                # pickle.dump(ratio, open('../data/smearing_ratio_pone.pkl',
+                #  'wb'))
+                # print('ratio = %.1e' % (ratio))
+                # print('old_counts = %.1e,  new_counts = %.1e' % (np.sum(
+                #    self._count[i]), np.sum(np.array(np.sum(tmp_count_mat_r,
+                #                                            axis=0)))))
                 # suming over the the energy bin vertically to get combined
                 # value of counts after smearing over all energy bins
-                self._count[i] = np.array(np.sum(tmp_count_mat, axis=0))
-
+                self._count[i] = np.array(np.sum(tmp_count_mat_r, axis=0))
+        pickle.dump(self._aeff.spl_A15(self._egrid), open(
+            '../data/eff_area_15.pkl', 'wb'))
+        pickle.dump(self._aeff.spl_A51(self._egrid), open(
+            '../data/eff_area_51.pkl', 'wb'))
+        pickle.dump(self._aeff.spl_A55(self._egrid), open(
+            '../data/eff_area_55.pkl', 'wb'))
         return self._count
+
+# ------------------------------------------------------
+# P-ONE new effective areas
+# add smearing function for new P-ONE !!!!!
+    def sim2dec_Pone_new(self):
+        return 0

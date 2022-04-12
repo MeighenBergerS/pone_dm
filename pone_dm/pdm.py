@@ -56,6 +56,13 @@ class PDM(object):
                 config.from_yaml(userconfig)
         # --------------------------------------------------------------
         # Constructing random state for reproduciability
+        self._pone_smearing = config['pone']['smearing']
+        if self._pone_smearing == 'smeared':
+            self._smea = 'sm'
+            self._smea_folder = 'smeared'
+        elif self._pone_smearing == 'unsmeared':
+            self._smea = 'un'
+            self._smea_folder = 'unsmeared'
         # Create RandomState
         if config["general"]["random state seed"] is None:
             _log.warning("No random state seed given, constructing new state")
@@ -132,12 +139,13 @@ class PDM(object):
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         pickle.dump(self._results, open(
-            '../data/29_03/unsmeared/limits_results_%s_unsm.pkl' %
-            (self._detector_name), 'wb'))
+            '../data/12_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
+                                                           self._detector_name,
+                                                           self._smea), 'wb'))
         _log.info('Dumping the signal grid and limits result')
         pickle.dump(self._signal_data, open(
-            '../data/29_03/unsmeared/signal_grid_%s_unsm.pkl' %
-            (self._detector_name), 'wb'))
+            '../data/12_04/%s/signal_grid_%s_%s.pkl' %
+            (self._smea_folder, self._detector_name, self._smea), 'wb'))
         _log.debug(
             "Dumping run settings into %s",
             config["general"]["config location"],

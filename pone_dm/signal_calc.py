@@ -41,7 +41,11 @@ class Signal(object):
 
         self._s_pone = self._signal_calc_pone
         self._s_ice = self._signal_calc_ice
-
+        self._pone_smearing = config['pone']['smearing']
+        if self._pone_smearing == 'smeared':
+            self._bool_smea = True
+        elif self._pone_smearing == 'unsmeared':
+            self._bool_smea = False
         if self.name == 'IceCube':
             print(self.name)
             self._signal_calc = self._signal_calc_ice
@@ -177,10 +181,10 @@ class Signal(object):
 
         if self.name == 'combined':
             total_counts = self._detector.sim2dec_pone(_flux, boolean_sig=True,
-                                                       boolean_smeared=False)
+                                                       boolean_smeared=self._bool_smea)
         else:
             total_counts = self._detector.sim2dec(_flux, boolean_sig=True,
-                                                  boolean_smeared=True)
+                                                  boolean_smeared=self._bool_smea)
             # smearing for PONE if needed
 
         return total_counts

@@ -175,6 +175,7 @@ dictitems:
     debug level: 40
     detector: combined
     log file handler: ../run/pdm.log
+    pone type: old
     random state seed: 1337
     year:
     - 1
@@ -188,6 +189,15 @@ dictitems:
     - 9
   pone:
     aeff location: ../data/
+    high E sigma:
+      nue: 0.07
+      numu: 0.09
+      nutau: 0.07
+    low E sigma:
+      nue: 0.25
+      numu: 0.15
+      nutau: 0.25
+    smearing: smeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0

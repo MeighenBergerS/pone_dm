@@ -24,6 +24,7 @@ _baseconfig = {
         # Dump experiment config to this location
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
+        "pone type": ["new", "old"],
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
@@ -61,8 +62,18 @@ _baseconfig = {
             "specific particle scaling": {
                 "numu": 1.,
                 "nue": 1.,
-                "nutau": 1.,
-            },  # Entries: numu, nue, nutau
+                "nutau": 1.},
+            'smearing': ['smeared', 'unsmeared'],
+            'low E sigma': {
+                'numu': [0.45, 0.35, 0.25, 0.15],
+                'nue': [0.55, 0.45, 0.35, 0.25],
+                'nutau': [0.55, 0.45, 0.35, 0.25]},
+            'high E sigma': {
+                'numu': [0.25, 0.15, 0.10, 0.09],
+                'nue': [0.15, 0.12, 0.09, 0.07],
+                'nutau': [0.15, 0.12, 0.09, 0.07]
+                }
+            # Entries: numu, nue, nutau
     },
     ###########################################################################
     # Advanced
