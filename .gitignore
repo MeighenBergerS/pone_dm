@@ -7,24 +7,7 @@ pdm.log
 *.pyc
 .ipynb_checkpoints
 
-
-
-
-
 venv3
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 data/*
 
