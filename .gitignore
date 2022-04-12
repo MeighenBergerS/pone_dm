@@ -9,4 +9,15 @@ pdm.log
 
 venv3
 
+
+
+
+
+
+
+
+
+
+/data/*
+
 *.json
