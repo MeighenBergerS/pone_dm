@@ -7,6 +7,10 @@ pdm.log
 *.pyc
 .ipynb_checkpoints
 
+
+
+
+
 venv3
 
 
@@ -22,6 +26,6 @@ venv3
 
 
 
-\data\*
+data/*
 
 *.json
