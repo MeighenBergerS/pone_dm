@@ -257,7 +257,9 @@ class Detector(object):
             #  should be added as I understand !!!!!!!!!!!
             # tmp_c = np.add(np.array(tmp_1), np.array(tmp_2))
             # self._tmp_count.append(np.sum(tmp_c, axis=0))
-            self._tmp_count.append(np.sum(np.array(tmp_1), axis=0))
+            self._tmp_count.append(np.sum(np.add(np.array(tmp_1),
+                                                 np.array(tmp_2)),
+                                          axis=0))
         # suming up for all the angles ------ need to check -----
         self._tmp_count = np.sum(self._tmp_count, axis=0)
 
