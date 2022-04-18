@@ -90,7 +90,7 @@ class Signal(object):
         #  These steps take a lot of time !!!!
         total_flux = _ours+_extra
         for y in self._year:
-            total_new_counts.append(self._detector.sim2dec(total_flux, y)[
+            total_new_counts.append(self._detector.sim2dec(total_flux, y, boolean_sig=True)[
                 'numu'] / config["advanced"]["scaling correction"])
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours

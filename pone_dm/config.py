@@ -27,17 +27,16 @@ _baseconfig = {
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 16),
-        "sv grid": np.logspace(-25, -21, 16),
+        "mass grid": np.logspace(2, 8, 9),
+        "sv grid": np.logspace(-26, -20, 9),
         "uptime": 5 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 1e3,  # GeV
+        "low energy cutoff": 5e2,  # GeV
         "DM type k": 2
     },
     ###########################################################################
     # Atmospheric showers input
     ###########################################################################
     "atmospheric showers": {
-        # native mceq or built one
         'native mceq': True,
         # Path to the built version
         'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/lib/python3.9' +
@@ -51,7 +50,7 @@ _baseconfig = {
         # Angles of interest currently not custom
         'theta angles': range(0, 91, 1),
         # Particles of interest
-        'particles of interest': ['numu']
+        'particles of interest': ['numu', 'nue', 'nutau']
     },
     ###########################################################################
     # P-ONE

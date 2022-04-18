@@ -1,5 +1,5 @@
 .*.sw*
-
+data/*
 *.p
 
 pdm.log

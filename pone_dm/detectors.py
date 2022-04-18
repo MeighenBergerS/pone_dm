@@ -156,8 +156,8 @@ class Detector(object):
             smearing_fraction.append(np.sum(tmp_sme[all_near_e][:, -1]))
 
         # Normalizing
-        smearing_fraction = (np.array(smearing_fraction) /
-                             np.trapz(smearing_fraction, x=smearing_e_grid)) / 10 # For change in basis from log_10 to Natural numbers 
+        smearing_fraction =( (np.array(smearing_fraction) /
+                             np.trapz(smearing_fraction, x=smearing_e_grid)) / 10 ) # For change in basis from log_10 to Natural numbers 
 
         return smearing_e_grid, smearing_fraction
 
@@ -215,7 +215,7 @@ class Detector(object):
             if boolean_sig:
                 self._tmp_count.append(np.sum(np.array(tmp_1), axis=0))
             else:
-                self._tmp_count.append(np.sum(np.array(tmp_1) + np.array(tmp_2), axis=0))
+                self._tmp_count.append(np.sum(np.add(np.array(tmp_1), np.array(tmp_2)), axis=0))
         # suming up for all the angles ------ need to check -----
         self._tmp_count = np.sum(self._tmp_count, axis=0)
 

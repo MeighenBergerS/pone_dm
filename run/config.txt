@@ -162,6 +162,8 @@ dictitems:
     native mceq: true
     particles of interest:
     - numu
+    - nue
+    - nutau
     path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
     primary model: H4a
     theta angles: !!python/object/apply:builtins.range
@@ -273,7 +275,7 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    low energy cutoff: 1000.0
+    low energy cutoff: 500.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -284,13 +286,12 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 16
+        - 9
       - *id002
       - false
       - !!binary |
-        AAAAAAAAWUCvHNaNHhlnQFAu/jdHV3VAews5pKi3g0Aya8hYqDeSQKodsY/e1KBATn+WtiQar0Cz
-        9uErbLy8QEW/KS7IjMpAgEPwULeH2EAO4z9t/KnmQKgVEHCZ8PRAv+fQjcpYA0Ft6WrTAeARQYN/
-        lw3jgyBBAAAAAICELkE=
+        AAAAAAAAWUDNjrMIu5KBQC89eSmOtKhAXnCK0rJd0UAAAAAAAGr4QHVZf6ZKKSFBwGWA1FIgSEG8
+        MZuhgPVwQQAAAACE15dB
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -301,11 +302,10 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 16
+        - 9
       - *id002
       - false
       - !!binary |
-        2X3a9dDyvjqf9ehSFpjMOi/jxfg1a9o6zqWz6bJo6DqZECkXVI32Oo7ExzYf1gQ7OQH5+1NAEzu+
-        uYiuZ8khO8bgKxcBbzA77TvRduldPjvi46zFgg5MO+7KQ8AZ7Fk7/hxYMULzZzsMLgWM0iB2O+pv
-        k9necYQ7T5sOCrTjkjs=
+        FMuuxEDCiDrq+p61U2exOpWGBEWJd9g69rwSe84yATtRshJAsy0oOwlBXb/n/lA7bWtmDbzkdzuI
+        TDCkncugOyNCkgyhnMc7
     uptime: 157680000
