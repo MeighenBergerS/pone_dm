@@ -9,10 +9,11 @@ import numpy as np
 import pickle
 from scipy.integrate import quad
 from scipy.interpolate import UnivariateSpline
-from .config import config
-from .constants import pdm_constants
+from config import config
+from constants import pdm_constants
 
 _log = logging.getLogger(__name__)
+
 
 class DM2Nu(object):
     """ Class containing all the necessary methods to convert DM to a surface
@@ -29,30 +30,38 @@ class DM2Nu(object):
     def __init__(self):
         _log.info('Initializing DM to Neutrino methods')
         self._const = pdm_constants()
+        self.omega_m = self._const.omega_m
+        self.omega_L = self._const.omega_L
         self._d_constructor()
-
 
     def galactic_flux(self, E: np.array,
                       m_x: float, sv: float,
-                      k: float, J: float) -> np.array:
+                      k: float, J: float):
         """ Fetches the galactic flux
-        Add description
+        E : Energy Grid
+        m_x : Dark Matter mass
+        sv : signma_nu
+        k : k factor (majorana: 2 otherwise 4)
+        J : J-factor
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        )
+        ) * config["advanced"]["scaling correction"]  # TODO: Unit correction need to check which one
 
     def extra_galactic_flux(self, E: np.array,
-                            m_x: float, sv: float) -> np.array:
+                            m_x: float, sv: float):
         """ Fetches the extra-galactic flux
-        Add description
+        E : Energy grid
+        m_x : mass of Dark Matter
+        sv : sigma_nu
         """
         return self._dphide_lopez(
             E, m_x, sv
-        )
-    #---------------------------------------------------------------------------
+        ) * config["advanced"]["scaling correction"]  # Some error in unit conversion 29.11.21
+    # ---------------------------------------------------------------------------
     # Galactic
-    def _dN_nu_E_nu(self, m_x: float, E: np.array) -> np.array:
+
+    def _dN_nu_E_nu(self, m_x: float, E: np.array):
         """ implements a delta function for the decay
 
         Parameters
@@ -69,12 +78,12 @@ class DM2Nu(object):
         """
         tmp = np.zeros_like(E)
         # Since we work on a grid, the delta function is the closest val
-        idE = self._find_nearest(E, m_x)
+        idE = self._find_nearest(E, m_x) - 1
         tmp[idE] = 1 / E[idE]
         return tmp
 
     def _dphi_dE_g(self, sigma: float, k: float,
-                   m: float, E: np.array, J: float) -> np.array:
+                   m: float, E: np.array, J: float):
         """ The galactic contribution for the neutrino flux
 
         Parameters
@@ -83,16 +92,17 @@ class DM2Nu(object):
 
         Returns
         -------
-        Add
+        np.array
         """
         return (
             (1 / (4 * np.pi)) *
             (sigma / (3 * k * m**2)) *
             (self._dN_nu_E_nu(m, E)) * J
         )
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     # Extra-Galactic
-    def _dN_nu_E_nu_Extra(self, m_x: float, E: np.array) -> np.array:
+
+    def _dN_nu_E_nu_Extra(self, m_x: float, E: np.array):
         """ implements a kinematic cut-off for the decay
 
         Parameters
@@ -108,137 +118,84 @@ class DM2Nu(object):
             An array of the same shape as E
         """
         return np.array([
-            1 / (3 * E) if E <= m_x
+            1 / (3 * E) if E < m_x
             else 0
         ])
 
-    def _R(self, rho_b: float, M: np.array) -> np.array: 
-        """ baryon density as per 2008 ZARIJA stdudy
-
-        Parameters
-        ----------
-        Add
-
-        Returns
-        -------
-        Add
-        """
-        return (3  * M / (4 * rho_b * np.pi))**(1/3)
-
-    def _a_z(self, z: np.array) -> np.array:
+    def _a_z(self, z: np.array):
         """ Add description
         """
         return 1 / (1+z)
 
     # TODO: Why is there an H_0 here?
-    def _H(self, a: np.array, H_0: float,
-          Omega_m: float, Omega_L: float) -> np.array:
+    def _H(self, a: np.array, H_0: float):
         """ time dependent Hubble parameter
 
         Parameters
         ----------
-        Add
+        a = 1/(1+z)
 
         Returns
         -------
-        Add
+        H(a)/H_0 normalized
         """
         # The H0 was removed since it cancels later
-        return ((Omega_m / a**3) + Omega_L)**(1/2)
+        return ((self.omega_m / a**3) + self.omega_L)**(1/2)
 
-    def _D_to_inte(self, a: np.array, H_0: float,
-                   Omega_m: float, Omega_L: float) -> np.array:
-        """ Add description
+    def _D_to_inte(self, a: np.array, H_0: float,):
+        """ Integrand for D(a)
         """
-        return 1 / ((a * self._H(a, H_0, Omega_m, Omega_L))**3)
+        return 1 / ((a * self._H(a, H_0))**3)
 
-    def _D(self, a: np.array, H_0: float,
-           Omega_m: float, Omega_L: float) -> np.array:
-        """ Add description
+    def _D(self, a: np.array, H_0: float):
+        """ returns:
+        D(a(z))
         """
-        prefac = 5 * Omega_m * self._H(a, H_0, Omega_m, Omega_L) / (2 * H_0)
+
+        prefac = 5 * self.omega_m * self._H(a, H_0) / (2)
         integral = np.array([
-            quad(self._D_to_inte, 0, a_loc, args=(H_0, Omega_m, Omega_L))[0]
+            quad(self._D_to_inte, 0, a_loc, args=(H_0))[0]
             for a_loc in a
         ])
-        return  prefac * integral
+        return prefac * integral
 
-    def _d_func(self, a: np.array, H_0: float,
-          Omega_m: float,Omega_L: float) -> np.array:
+    def _d_func(self, a: np.array, H_0: float):
         """ Add description
         """
-        t = self._D(a, H_0, Omega_m, Omega_L)
-        return t / self._D(np.ones_like(a), H_0, Omega_m, Omega_L)
+        t = self._D(a, H_0)
+        return t / self._D(np.ones_like(a), H_0)
 
-    def _omega_mz(self, z: np.array,
-                  omega_m: float, omega_L: float) -> np.array:
+    def _omega_mz(self, z: np.array):
         """ I have neglected omega_re and omega_k couldn't find proper values
         Add description
         """
+        a = self._a_z(z)
         return (
-            (omega_m * (1 + z)**3) /
-            (omega_L + (omega_m * (1 + z)**3))
+            (self.omega_m / a**3) /
+            (self.omega_L + (self.omega_m / (a)**3))
         )
 
-    def _A_z(self, z: np.array,
-             omega_m: float, omega_L: float) -> np.array:
-        """ Add description
+    def _sigma_lopez(self, M: float):
+        """ returns
+        sigma_lopez : float
         """
-        return (
-            self._omega_mz(z, omega_m, omega_L) *
-            (0.99 * ((1 + z)**(-3.216)) + 0.074)
-        )
+        return np.exp((2.6 * M**(0.001745)) - 0.2506 * M**0.07536)
 
-    def _alpha_z(self, z: np.array,
-                omega_m: float, omega_L: float) -> np.array:
-        """ Add description
-        """
-        return (
-            self._omega_mz(z, omega_m, omega_L) *
-            (5.907 * ((1 + z)**(-3.599)) + 2.344)
-        )
-
-    def _beta_z(self, z: np.array,
-                omega_m: float, omega_L: float) -> np.array:
-        """ Add description
-        """
-        return (
-            self._omega_mz(z, omega_m, omega_L) *
-            (3.136 * ((1 + z)**(-3.058)) + 2.349)
-        )
-
-    def _rho_s(self, R: float, r_s: float,
-               g: float, rho_0: float) -> float:
-        """ rho_s from rho_0 in GeV cm**-3
+    def _f_178(self, M: float, z: np.array):
+        """ f_178 from lopez eq b19 : numpy array
         Add description
-        """
-        r_r = R / r_s 
-        return (
-            rho_0 * (r_r**g *(1 + r_r)**(3 - g) ) /
-            (2**(3 - g))
-        )
 
-    def _sigma_lopez(self, M: float) -> float:
-        """ Add description
-        """
-        return np.exp((2.6 * M**(0.001745)) -0.2506 * M**0.07536)
-
-    def _f_178(self, M: float, z: np.array,
-               omega_m: float, omega_L: float) -> np.array:
-        """ f_178 from lopez eq b19
-        Add description
-        
         """
         A = (
-            self._omega_mz(z, omega_m, omega_L) *
+            self._omega_mz(z) *
             (1.907 * (1 + z)**(-3.216) + 0.074)
         )
         al = (
-            self._omega_mz(z, omega_m, omega_L) *
+            self._omega_mz(z) *
             (5.907 * (1 + z)**(-3.599) + 2.344)
         )
         beta = (
-            self._omega_mz(z, omega_m, omega_L) *
+            self._omega_mz(z) *
             (3.136 * (1 + z)**(-3.068) + 2.349)
         )
         gamma = self._const.gamma
@@ -250,9 +207,8 @@ class DM2Nu(object):
             A * ((sigma / beta)**(-al) + 1) * np.exp(-gamma / sigma**2)
         )
 
-    def _f_delta(self, M: float, z: np.array,
-                 omega_m: float, omega_L: float) -> np.array:
-        """ f_delta from lopez eq b21
+    def _f_delta(self, M: float, z: np.array):
+        """ f_delta from lopez eq b21 : numpy array
         Add description
         """
         sigma = (
@@ -262,14 +218,15 @@ class DM2Nu(object):
         delta = 200  # TODO: Add this to constants
         b_t = (
             np.exp(((delta / 178) - 1) * (0.023 - (0.072 / sigma**2.13))) *
-            (delta / 178)**((-0.456 * self._omega_mz(z, omega_m, omega_L)) -
+            (delta / 178)**((-0.456 * self._omega_mz(z)) -
                             0.139)
         )
-        return self._f_178(M, z, omega_m, omega_L) * b_t
+        return self._f_178(M, z) * b_t
 
-    def _g_tild(self, M: float, z: np.array,
-                omega_m: float, omega_L: float) -> np.array:
-        """ Add description
+    def _g_tild(self, M: float, z: np.array):
+        """ For Delta = 200 so g^tilda_200
+        returns
+        g_tilda : numpy array
         """
         # TODO: All of these constants need to be placed into the constants
         # File
@@ -286,66 +243,72 @@ class DM2Nu(object):
         b = 1.257
         c = 1.022
         d_2 = 0.060
-        
+
         sigma = (
             self._sigma_lopez(M) *
             self._d(z)
         )
 
-        x = (1 / (1 + z)) * (omega_L / omega_m)**(1/3)
+        x = (1 / (1 + z)) * (self.omega_L / self.omega_m)**(1/3)
         # TODO: All of these need descriptions
+
         def c_min(x):
             return (
-                c_0 + (c_1 - c_0) * ((np.arctan(al * (x - x_0)) / np.pi ) +
+                c_0 + (c_1 - c_0) * ((np.arctan(al * (x - x_0)) / np.pi) +
                                      (1/2))
             )
+
         def s_min(x):
             return (
-                s_0 + (s_1 - s_0) * ((np.arctan(b * (x - x_1)) / np.pi) + (1/2))
+                s_0 + (s_1 - s_0) * ((np.arctan(b * (x - x_1)) / np.pi) +
+                                     (1/2))
             )
         # TODO: This function doesn't seem to be needed
+
         def B_0(x):
             return c_min(x) / c_min(1.393)
+
         def B_1(x):
             return s_min(x) / s_min(1.393)
 
         def s_in(x):
             return B_1(x) * sigma
+
         def C(x):
             aa = (((s_in(x) / b)**c) + 1)
             dd = np.exp(d_2 / s_in(x)**2)
             return A * aa * dd
 
         def c_200(x):
-            return B_1(x) * C(x)
+            return B_0(x) * C(x)
         a_arr = c_200(x)
         # Removing too high values
-        a_arr[a_arr > 100] = 100 
-        return (
-            (a_arr**3) * (1 - (1 + a_arr)**(-3)) / 
-            (3 * (np.log(1 + a_arr) - a_arr * (1 + a_arr)**(-1)))**2
-        )
+        a_arr[a_arr > 100] = 100
+        return ((a_arr**3) * (1 - (1 + a_arr)**(-3)) /
+                (3 * (np.log(1 + a_arr) - a_arr * (1 + a_arr)**(-1)))**2)
 
-    def _dln_sigma_1(self, M: float) -> float:
-        """ Add description
+    def _dln_sigma_1(self, M: float):
+        """returns:
+        dln(sigma)/dM : Float
         """
         return (
             0.2506 * 0.07536 * M**(0.07536 - 1) -
             2.6 * 0.001745 * M**(0.001745 - 1)
         )
 
-    def _G_lopez(self, z: float, omega_m: float, omega_L: float) -> np.array:
-        """ Add description
+    def _G_lopez(self, z: float):
+        """returns
+        G_lopez : numpy array
         """
         def integrand(M):
             return (
                 self._dln_sigma_1(M) *
-                self._f_delta(M, z, omega_m, omega_L) *
-                self._g_tild(M, z, omega_m, omega_L)
+                self._f_delta(M, z) *
+                self._g_tild(M, z)
             )
-        aa=(
-            ((omega_m / self._const.omega_DM)**2) *
-            self._const.Delta / (3 * self._omega_mz(z, omega_m, omega_L))
+        aa = (
+            ((self.omega_m / self._const.omega_DM)**2) *
+            self._const.Delta / (3 * self._omega_mz(z))
         )
         # Using splines to integrate
         function_vals = np.array([
@@ -364,22 +327,25 @@ class DM2Nu(object):
         # )
         return aa * bb
 
-    def _dphide_lopez(self, E: np.array, m_x: float, snu: float) -> np.array:
-        """ Add description
+    def _dphide_lopez(self, E: np.array, m_x: float, snu: float):
+        """ returns
+        dphi/dE_Lopez : numpy array
         """
         z = m_x / E - 1
-        z_tmp  = z[z > 0]
-        omega_m = self._const.omega_m
-        omega_L = self._const.omega_L
+        z_tmp = z[z > 0]
         a_t = (
-            (1 + self._G_lopez(z_tmp, omega_m, omega_L)) *
+            (1 + self._G_lopez(z_tmp)) *
             (1 + z_tmp)**3
         )
-        b_t = self._H(self._a_z(z_tmp), self._const.H_0, omega_m, omega_L)
+
+        # multiplide the H_0 ------
+        b_t = (self._H(self._a_z(z_tmp), self._const.H_0) *
+               self._const.H_0)
+
         a_g = a_t / b_t
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 8 * np.pi * m_x**2
-        res = aaa * a_g / (3 * E[E <= m_x] * b)
+        res = aaa * a_g / (3 * E[E < m_x] * b)
         # Padding with zeros
         result = np.zeros_like(E)
         result[0:len(res)] = res
@@ -409,23 +375,17 @@ class DM2Nu(object):
             _log.debug("Searching for " + load_str)
             loaded_d = pickle.load(open(load_str, "rb"))
             self._d = loaded_d[1]
-        except:
+        except FileNotFoundError:
             _log.debug("Failed to load d data")
             _log.debug("Constructing it, this may take a while")
             z_grid = config["advanced"]["construction grid _d"]
             a_grid = self._a_z(z_grid)
             d_grid = self._d_func(a_grid,
-                self._const.H_0, self._const.omega_m,
-                self._const.omega_L
-            )
+                                  self._const.H_0)
             self._d = UnivariateSpline(z_grid,
-                d_grid, k=1, s=0, ext=3
-            )
+                                       d_grid, k=1, s=0, ext=3)
             _log.debug("Finished construction")
             _log.debug("Dumping the data")
             pickle.dump([d_grid, self._d],
-                open(load_str, "wb" )
-            )
-
-
+                        open(load_str, "wb"))
 

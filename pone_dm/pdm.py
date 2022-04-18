@@ -5,21 +5,26 @@
 
 # Imports
 # Native modules
+from time import time
 import logging
-from pone_dm.limit_calc import Limits
+from limit_calc import Limits
 import sys
 import numpy as np
 import yaml
 # -----------------------------------------
 # Package modules
-from .config import config
-from .atm_shower import Atm_Shower
-from .dm2nu import DM2Nu
-from .pone_aeff import Aeff
-from .limit_calc import Limits
+from config import config
+from atm_shower import Atm_Shower
+from dm2nu import DM2Nu
+from pone_aeff import Aeff
+from bkgrd_calc import Background
+from detectors import Detector
+from signal_calc import Signal
+# from .limit_calc import Limits
 
 # unless we put this class in __init__, __name__ will be contagion.contagion
 _log = logging.getLogger("pone_dm")
+
 
 class PDM(object):
     """
@@ -31,7 +36,7 @@ class PDM(object):
     ----------
     config : dic
         Configuration dictionary for the simulation
-    
+
     Returns
     -------
     None
@@ -40,6 +45,7 @@ class PDM(object):
         # --------------------------------------------------------------
         # Fetching the user inputs
         # Inputs
+        self._start = time()
         if userconfig is not None:
             if isinstance(userconfig, dict):
                 config.from_dict(userconfig)
@@ -98,13 +104,49 @@ class PDM(object):
         self._dm_nu = DM2Nu()
         _log.info('Finished setting up the DM functions')
         # --------------------------------------------------------------
-        # Fetching the effective areas
+        # Fetching the effective areas -> convert to detector
         self._aeff = Aeff()
         _log.info('Finished loading the effective ares')
         # --------------------------------------------------------------
+        # Constructs detector
+        self._Detector = Detector(self._aeff)
+        # --------------------------------------------------------------
+        # Constructs signal
+        self._signal = Signal(self._aeff, self._dm_nu, self._Detector)
+        # --------------------------------------------------------------
+        # Constructs background
+        self._bkgrd = Background(self._shower_sim, self._Detector)
+        # --------------------------------------------------------------
         # Setting up the limit calculations
-        self._limit_calc = Limits(self._aeff, self._dm_nu, self._shower_sim)
+        self._limit_calc = Limits(self._signal, self._shower_sim, self._bkgrd)
         _log.info('Finished loading the limit object')
+        # -------------------------------------------------
+        # Limit Calculation
+        self.mass_grid = config["simulation parameters"]["mass grid"]
+        self.sv_grid = config["simulation parameters"]["sv grid"]
+        self._results, self._signal_data = self._limit_calc.limits(
+            self.mass_grid, self.sv_grid)
+        # --------------------------------------------------------------
+        # Dumping the config settings for later debugging
+        _log.debug(
+            "Dumping run settings into %s",
+            config["general"]["config location"],
+        )
+        self._end = time()
+        _log.info('Time of simulation %.f' % (self._end-self._start))
+        with open(config["general"]["config location"], "w") as f:
+            yaml.dump(config, f)
+        _log.debug("Finished dump")
+        _log.info('---------------------------------------------------')
+        _log.info('---------------------------------------------------')
+        _log.info("Have a great day and until next time!")
+        _log.info('          /"*._         _')
+        _log.info("      .-*'`    `*-.._.-'/")
+        _log.info('    < * ))     ,       ( ')
+        _log.info('     `*-._`._(__.--*"`./ ')
+        _log.info('---------------------------------------------------')
+        _log.info('---------------------------------------------------')
+        
 
     @property
     def results(self):
@@ -120,38 +162,10 @@ class PDM(object):
         """
         return self._results
 
-    def limit_calc(self,
-        mass_grid=config["simulation parameters"]["mass grid"],
-        sv_grid=config["simulation parameters"]["sv grid"]):
-        """ Calculates the limits for the given setup. Results can be
-        found in self.results
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
+    @property
+    def signal(self):
+        """Fetches the signal counts as a 3D array with
+            mass_grid x sv_grid x energy_grid
         """
-        self._results = self._limit_calc.limit_calc(
-            mass_grid=mass_grid, sv_grid=sv_grid
-        )
-        # --------------------------------------------------------------
-        # Dumping the config settings for later debugging
-        _log.debug(
-            "Dumping run settings into %s",
-            config["general"]["config location"],
-        )
-        with open(config["general"]["config location"], "w") as f:
-            yaml.dump(config, f)
-        _log.debug("Finished dump")
-        _log.info('---------------------------------------------------')
-        _log.info('---------------------------------------------------')
-        _log.info("Have a great day and until next time!")
-        _log.info('          /"*._         _')
-        _log.info("      .-*'`    `*-.._.-'/")
-        _log.info('    < * ))     ,       ( ')
-        _log.info('     `*-._`._(__.--*"`.\ ')
-        _log.info('---------------------------------------------------')
-        _log.info('---------------------------------------------------')
+        return self._signal_data
+

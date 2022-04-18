@@ -23,11 +23,13 @@ _baseconfig = {
         "log file handler": "../run/pdm.log",
         # Dump experiment config to this location
         "config location": "../run/config.txt",
+        "detector": ["IceCube",   "POne", 'combined'],
+        "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "simulation parameters": {
-        "mass grid": np.logspace(3, 6, 5),
-        "sv grid": np.logspace(-26, -23, 5),
-        "uptime": 5 * 365 * 24 * 60 * 60,
+        "mass grid": np.logspace(2, 6, 9),
+        "sv grid": np.logspace(-26, -21, 9),
+        "uptime": 10 * 365 * 24 * 60 * 60,
         "low enery cutoff": 5e2,  # GeV
         "DM type k": 2
     },
@@ -36,35 +38,42 @@ _baseconfig = {
     ###########################################################################
     "atmospheric showers": {
         # native mceq or built one
-        'native mceq': False,
+        'native mceq': True,
         # Path to the built version
-        'path to mceq': 'C:\\Users\\steph\\OneDrive\\Documents\\MCEq\\',
+        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/lib/python3.9' +
+        '/site-packages/MCEq/',
         # The atmosphere
-        'atmosphere' : ('CORSIKA', ("Karlsruhe", None)),
+        'atmosphere': ('CORSIKA', ("Karlsruhe", None)),
         # The interaction model
-        'interaction model' : 'SIBYLL2.3c',
+        'interaction model': 'SIBYLL2.3c',
         # Primary model
-        'primary model' : 'H4a',
+        'primary model': 'H4a',
         # Angles of interest currently not custom
-        'theta angles' : np.array([0., 5., 10., 20., 30., 45., 60., 70., 90.]),
+        'theta angles': range(0, 91, 1),
         # Particles of interest
-        'particles of interest' : ['numu', 'nue', 'nutau']
+        'particles of interest': ['numu', 'nue', 'nutau']
     },
     ###########################################################################
     # P-ONE
     ###########################################################################
     "pone": {
-        'aeff location' : '..\\data\\'
+            'aeff location': '../data/',
+            "specific particle scaling": {
+                "numu": 1.,
+                "nue": 1.,
+                "nutau": 1.,
+            },  # Entries: numu, nue, nutau
     },
     ###########################################################################
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez" : np.logspace(-2, 17, 151),
-        "construction grid _d" : np.logspace(-13, 16, 291),
-        "_d storage" : "..\\data\\",
-        "atmospheric storage" : "..\\data\\",
-        "scaling correction" : 1e3
+        "integration grid lopez": np.logspace(-3, 17, 151),
+        "construction grid _d": np.logspace(-13, 16, 600),
+        "_d storage": "../data/",
+        "atmospheric storage": "../data/",
+        "scaling correction": 1e-2
+
     }
 }
 
@@ -120,3 +129,4 @@ class ConfigClass(dict):
 
 
 config = ConfigClass(_baseconfig)
+
