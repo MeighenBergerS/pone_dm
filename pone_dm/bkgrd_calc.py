@@ -57,19 +57,26 @@ class Background(object):
                     2: self.ice_parser(self._ice_data[2]),
                     3: self.ice_parser(self._ice_data[3]),
                     4: self.ice_parser(self._ice_data[4]),
-                    5: self.ice_parser(self._ice_data[4]),
-                    6: self.ice_parser(self._ice_data[4]),
-                    7: self.ice_parser(self._ice_data[4]),
-                    8: self.ice_parser(self._ice_data[4]),
-                    9: self.ice_parser(self._ice_data[4]),
+                    5: self.ice_parser(self._ice_data[5]),
+                    6: self.ice_parser(self._ice_data[6]),
+                    7: self.ice_parser(self._ice_data[7]),
+                    8: self.ice_parser(self._ice_data[8]),
+                    9: self.ice_parser(self._ice_data[9]),
                 }
-            self._ice_dic = self.data_filter(_ice_parse, [2,8], [0,90], range(0,10))
+            self._ice_dic = self.data_filter(
+                _ice_parse, [2, 8], [0, 90], range(0, 10))
             self._bkgrd_ice_data = []
             for i in self._ice_dic.keys():
                 tmp_hist_data, _ = np.histogram(self._ice_dic[i][:, 1],
                                                 bins=np.log10(
-                                                    self._shower.e_grid))
+                                                    self._shower.egrid))
                 self._bkgrd_ice_data.append(tmp_hist_data)
+            self._bkgrd_ice_total = np.sum(self._bkgrd_ice_data, axis=0)
+            pickle.dump(self._bkgrd_ice_total, open(
+                '../data/tmp_files/background_ice_data_total.pkl',
+                'wb'
+            ))
+
             try:
 
                 _log.info("Trying to load pre-calculated tables")
@@ -95,22 +102,41 @@ class Background(object):
                             open("../data/background_ice.pkl", "wb"))
 
         elif self.name == 'POne':
-            try:
-                _log.info("Trying to load pre-calculated tables")
-                _log.debug("Searching for Atmospheric and Astro Fluxes")
-                self._bkgrd = pickle.load(
-                    open("../data/background_pone.pkl", "rb"))
-                # smearing for PONE if needed
+            print('pone background')
+            if config['general']['pone type'] == 'old':
+                try:
+                    _log.info("Trying to load pre-calculated tables")
+                    _log.debug("Searching for Atmospheric and Astro Fluxes")
+                    self._bkgrd = pickle.load(
+                        open("../data/background_pone.pkl", "rb"))
+                    # smearing for PONE if needed
 
-            except FileNotFoundError:
-                _log.info("Failed to load pre-calculated tables")
-                _log.info("Calculating tables for background")
-                self._bkgrd = self._detector.sim2dec(self._shower.flux_results,
-                                                     boolean_sig=False,
-                                                     boolean_smeared=self._smb)
-                pickle.dump(self._bkgrd,
-                            open("../data/background_pone.pkl", "wb"))
-
+                except FileNotFoundError:
+                    _log.info("Failed to load pre-calculated tables")
+                    _log.info("Calculating tables for background")
+                    print('Starting Calculation')
+                    self._bkgrd = (
+                         self._detector.sim2dec(self._shower.flux_results,
+                                                boolean_sig=False,
+                                                boolean_smeared=self._smb)
+                    )
+                    print('Finished Calculating Background')
+                    pickle.dump(self._bkgrd,
+                                open("../data/tmp_files/background_pone.pkl",
+                                     "wb"))
+            elif config['general']['pone type'] == 'new':
+                print('Christians Background calculation started')
+                self._bkgrd, counts_an = (
+                    self._detector.sim2dec(self._shower.flux_results,
+                                           boolean_smeared=self._smb)
+                )
+                print('Calculation finished')
+                pickle.dump(self._bkgrd, open(
+                    '../data/tmp_files/Back_christ.pkl', 'wb'))
+                pickle.dump(counts_an, open(
+                    '../data/tmp_files/Back_christ_ang.pkl', 'wb'))
+                # _log.info("Trying to load pre-calculated tables")
+                # _log.debug("Searching for Atmospheric and Astro Fluxes")
         # background counts for combined
         elif self.name == 'combined':
             self.days = 60. * 24
@@ -135,14 +161,26 @@ class Background(object):
                     2: self.ice_parser(self._ice_data[2]),
                     3: self.ice_parser(self._ice_data[3]),
                     4: self.ice_parser(self._ice_data[4]),
-                    5: self.ice_parser(self._ice_data[4]),
-                    6: self.ice_parser(self._ice_data[4]),
-                    7: self.ice_parser(self._ice_data[4]),
-                    8: self.ice_parser(self._ice_data[4]),
-                    9: self.ice_parser(self._ice_data[4]),
+                    5: self.ice_parser(self._ice_data[5]),
+                    6: self.ice_parser(self._ice_data[6]),
+                    7: self.ice_parser(self._ice_data[7]),
+                    8: self.ice_parser(self._ice_data[8]),
+                    9: self.ice_parser(self._ice_data[9]),
                 }
-            self._ice_dic = self.data_filter(_ice_parse, [2,8], [0,90], range(0,10))
-            
+            self._ice_dic = self.data_filter(
+                _ice_parse, [2, 8], [0, 90], range(0, 10))
+            self._bkgrd_ice_data = []
+            for i in self._ice_dic.keys():
+                tmp_hist_data, _ = np.histogram(self._ice_dic[i][:, 1],
+                                                bins=np.log10(
+                                                    self._shower.egrid))
+                self._bkgrd_ice_data.append(tmp_hist_data)
+            self._bkgrd_ice_total = np.sum(self._bkgrd_ice_data, axis=0)
+            pickle.dump(self._bkgrd_ice_total, open(
+                '../data/tmp_files/background_ice_data_total.pkl',
+                'wb'
+            ))
+
             try:
                 _log.info("Trying to load pre-calculated tables for combined")
                 _log.debug("Searching for Atmospheric and Astro Fluxes" +
@@ -158,18 +196,19 @@ class Background(object):
                     _log.debug("Searching for Atmospheric and Astro Fluxes")
                     self._bkgrd_ice = pickle.load(open(
                         "../data/background_ice.pkl", "rb"))
-                    _log.info("Trying to load observational IceCube Data files")
+                    _log.info(
+                        "Trying to load observational IceCube Data files")
                     _log.debug("Searching for Atmospheric and Astro Fluxes")
-                    #self._bkgrd_ice_data = pickle.load(open(
+                    # self._bkgrd_ice_data = pickle.load(open(
                     #    "../data/background_ice_ob.pkl", "rb"))
                 except FileNotFoundError:
-                    #self._bkgrd_ice_data = []
-                    #for i in self._ice_dic.keys():
-                    #    tmp_hist_data, _ = np.histogram(self._ice_dic[i][:, 1],
+                    # self._bkgrd_ice_data = []
+                    # for i in self._ice_dic.keys():
+                    #    tmp_hist_data, _ = np.histogram(self._ice_
                     #                            bins=np.log10(
                     #                                self._shower.e_grid))
                     #    self._bkgrd_ice_data.append(tmp_hist_data)
-                    #pickle.dump(self._bkgrd_ice_data,
+                    # pickle.dump(self._bkgrd_ice_data,
                     #            open("../data/background_ice.pkl", "wb"))
                     # background for IceCube
                     _log.info("Failed to load pre-calculated tables")
@@ -202,7 +241,8 @@ class Background(object):
                                         boolean_sig=False,
                                         boolean_smeared=self._smb)
                     pickle.dump(self._bkgrd_PONE,
-                                open("../data/background_pone.pkl", "wb"))
+                                open("../data/tmp_files/background_pone.pkl",
+                                     "wb"))
 
                 # combinning the background for further analysis
                 for i in config['atmospheric showers']['particles ' +
@@ -213,9 +253,15 @@ class Background(object):
                     self._bkgrd[i] = np.add(self._bkgrd_ice[i],
                                             self._bkgrd_PONE[i])
                 pickle.dump(self._bkgrd, open(
-                    '../data/background_combined.pkl', 'wb'))
+                    '../data/tmp_files/background_combined.pkl', 'wb'))
 
     # TODO: bkgrd() -> returns
+    @property
+    def bkgrd_data(self):
+        """Returns the background IceCube observed data (counts) combined over
+         the years
+        """
+        return self._bkgrd_ice_total
 
     @property
     def bkgrd(self):
@@ -247,12 +293,19 @@ class Background(object):
         filtered_dic = {}
         for year in years:
             # where method is faster as basic slicing
-            energy_filter_1 = event_dic[year][np.where(event_dic[year][:, 1] < energy_range[1])]
-            energy_filter_2 = energy_filter_1[np.where(energy_filter_1[:, 1] > energy_range[0])]
+            energy_filter_1 = (
+             event_dic[year][np.where(event_dic[year][:, 1] < energy_range[1])]
+            )
+            energy_filter_2 = (
+             energy_filter_1[np.where(energy_filter_1[:, 1] > energy_range[0])]
+            )
             high_angle = angle_range[1]
-            angle_filter_1 = energy_filter_2[np.where(energy_filter_2[:, 4] < high_angle)]
+            angle_filter_1 = (
+             energy_filter_2[np.where(energy_filter_2[:, 4] < high_angle)]
+            )
             low_angle = angle_range[0]
-            angle_filter_2 = angle_filter_1[np.where(angle_filter_1[:, 4] > low_angle)]
+            angle_filter_2 = (
+             angle_filter_1[np.where(angle_filter_1[:, 4] > low_angle)]
+            )
             filtered_dic[year] = angle_filter_2
         return filtered_dic
-

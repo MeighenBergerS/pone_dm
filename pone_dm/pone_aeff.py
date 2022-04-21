@@ -30,7 +30,7 @@ class Aeff(object):
         self._const = pdm_constants()
         _log.info('Loading the effective area data')
         shower = Atm_Shower()
-        self._egrid = shower.egrid  # ###########
+        self._egrid = shower._egrid  # ###########
         self._ewidth = shower._ewidth
         self.days = 60. * 24.
         self.minutes = 60.
@@ -64,9 +64,17 @@ class Aeff(object):
                                               self._const.msq2cmsq,
                                               k=1, s=0, ext=3)
             elif config["general"]["pone type"] == "new":
-                a_eff_christ = pickle.load(open(
-                    "../data/aeff_cluster_nuecc.pkl", 'rb'))
-                self._aeff_hist = a_eff_christ["aeff_hist"]
+                a_eff_file = pickle.load(open(
+                                              "../data/aeff_cluster_nuecc.pkl",
+                                              'rb'))
+                cos_zen_edges, log10E_edges, aeff_hist = a_eff_file
+                self._aeff_cos_grid = cos_zen_edges
+                self._aeff_e_grid = log10E_edges
+                self._aeff_hist = aeff_hist
+                self._hit = config['pone_christian']['hit']
+                self._module = config['pone_christian']['module']
+                self._spacing = config['pone_christian']['spacing']
+                self._pos_res = config['pone_christian']['pos res']
 
         elif config["general"]["detector"] == "IceCube":
             print("Loading Effective Area")
@@ -281,6 +289,22 @@ class Aeff(object):
 
     @property
     def aeff_hist(self):
+        """"Effective Area histogram
+        parameters:
+        ---------------------
+        histogram with indices :
+        hit threshold
+        module threshold
+        min position resolution
+        spacing
+
+        return:
+        ---------------------
+        aeff_matrix = aeff_hist.loc[ hit, module, min pos res,
+                                     spacing]['aeff_hist']
+        aeff_matrix [ cos_zen_edges, log10E_edges]
+
+        """
         return self._aeff_hist
 
     @property

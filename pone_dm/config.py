@@ -25,7 +25,7 @@ _baseconfig = {
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
         "pone type": ["new", "old"],
-        "year": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        "year": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     },
     "simulation parameters": {
         "mass grid": np.logspace(2, 6, 9),
@@ -52,7 +52,7 @@ _baseconfig = {
         # Angles of interest currently not custom
         'theta angles': range(0, 91, 1),
         # Particles of interest
-        'particles of interest': ['numu', "nue", "nutau"]
+        'particles of interest': ['numu']  # , "nue", "nutau"]
     },
     ###########################################################################
     # P-ONE
@@ -74,6 +74,20 @@ _baseconfig = {
                 'nutau': [0.15, 0.12, 0.09, 0.07]
                 }
             # Entries: numu, nue, nutau
+    },
+    'pone_christian': {
+        'aeff location': '../data/',
+        'angles': [0, 1.46928358,  4.41172579,  7.36588583, 10.33989089,
+                   13.3423638, 16.38266985, 19.47122063, 22.61986495,
+                   25.84241287, 29.15536543, 32.57897039, 36.13881466,
+                   39.86834155, 43.81306146, 48.03811117,
+                   52.64314803, 57.7957725, 63.82304783, 71.5713304, 90],
+        'spacing': [],
+        'hit': [],
+        'module': [],
+        'pos res': [],
+
+
     },
     ###########################################################################
     # Advanced

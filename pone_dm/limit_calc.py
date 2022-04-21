@@ -176,7 +176,7 @@ class Limits(object):
                              for k in self._signal_grid[i]])
         # Dumping the signal_grid
         pickle.dump(self._signal_grid, open(
-            '../data/limits_signal_POne.pkl', "wb"
+            '../data/tmp_files/limits_signal_POne.pkl', "wb"
         ))
         return y, self._signal_grid
 
@@ -238,10 +238,10 @@ class Limits(object):
                                         self._signal_grid_pone[i],
                                         self._signal_grid_ice)
                 pickle.dump(self._signal_grid_pone, open(
-                    '../data/limists_signal_POne.pkl', 'wb'
+                    '../data/tmp_files/limists_signal_POne.pkl', 'wb'
                 ))
                 pickle.dump(self._signal_grid, open(
-                   '../data/limits_signal_combined.pkl', 'wb'
+                   '../data/tmp_files/limits_signal_combined.pkl', 'wb'
                 ))
             elif pone_signal_bool is True and ice_signal_bool is False:
                 self._signal_grid_pone = pickle.load(open(

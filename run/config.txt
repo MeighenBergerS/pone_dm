@@ -187,16 +187,17 @@ dictitems:
     - 7
     - 8
     - 9
+    - 10
   pone:
     aeff location: ../data/
     high E sigma:
-      nue: 0.07
-      numu: 0.09
-      nutau: 0.07
-    low E sigma:
-      nue: 0.25
+      nue: 0.12
       numu: 0.15
-      nutau: 0.25
+      nutau: 0.12
+    low E sigma:
+      nue: 0.45
+      numu: 0.35
+      nutau: 0.45
     smearing: smeared
     specific particle scaling:
       nue: 1.0
@@ -296,12 +297,12 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 10
+        - 9
       - *id002
       - false
       - !!binary |
-        AAAAAAAAWUAR28VUGGRxQLJfqgUcMohAqh2xj97UoEBJ/Umu12q3QLfNA1hAStBADuM/bfyp5kC6
-        Q8p2L4j/QKJwLHdV7xVBAAAAAICELkE=
+        AAAAAAAAWUBZl/rtpMNzQAAAAAAAQI9ALz15KY60qEAAAAAAAIjDQHqM17Ox4d5AAAAAAABq+EDM
+        t2YQD00TQQAAAACAhC5B
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -312,10 +313,10 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 10
+        - 9
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDoORe8DoD6mOnk4avda/MM6fAL+ks704TpfMdhSBCIAO8/iomxB/Rw7srV5BKcLOjsX
-        ktU4k2ZXO3pKo61ABnU7T5sOCrTjkjs=
+        FMuuxEDCiDpSYAA+DBqqOryUt5F9hMs6OTZrsJcC7To6qEWWa5UOO9waBocMHzA7CUFdv+f+UDuS
+        fiJi5+pxO0+bDgq045I7
     uptime: 315360000

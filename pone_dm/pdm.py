@@ -139,12 +139,12 @@ class PDM(object):
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         pickle.dump(self._results, open(
-            '../data/12_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
+            '../data/14_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
                                                            self._detector_name,
                                                            self._smea), 'wb'))
         _log.info('Dumping the signal grid and limits result')
         pickle.dump(self._signal_data, open(
-            '../data/12_04/%s/signal_grid_%s_%s.pkl' %
+            '../data/14_04/%s/signal_grid_%s_%s.pkl' %
             (self._smea_folder, self._detector_name, self._smea), 'wb'))
         _log.debug(
             "Dumping run settings into %s",

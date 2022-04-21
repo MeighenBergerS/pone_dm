@@ -8,7 +8,7 @@ import logging
 import sys
 import pickle
 from config import config
-import numpy as np
+# import numpy as np
 _log = logging.getLogger("pone_dm")
 
 
@@ -31,20 +31,25 @@ class Atm_Shower(object):
     """
 
     def __init__(self):
-
-        self._load_str = config["advanced"]["atmospheric storage"] + "shower.p"
+        if config['general']['detector'] == 'POne':
+            if config['general']['pone type'] == 'old':
+                self._load_str = (
+                    config["advanced"]["atmospheric storage"] + "shower.p")
+            elif config['general']['pone type'] == 'new':
+                self._load_str = (
+                 config["advanced"]["atmospheric storage"] + "shower_chris.p")
+        else:
+            self._load_str = (
+             config["advanced"]["atmospheric storage"] + "shower.p")
         self.particle_name = ["numu", "nue", "nutau"]
 
         if config['general']['detector'] == 'POne':
-            if config['general']['pone type'] == 'old':
+            if config['general']['pone type'] == 'old' or 'new':
                 try:
                     _log.info("Trying to load pre-calculated tables")
                     _log.debug("Searching for " + self._load_str)
-
                     loaded_atm = pickle.load(open(self._load_str, "rb"))
-
                     self._egrid = loaded_atm[0]
-
                     self._ewidth = loaded_atm[1]
                     self._particle_fluxes = loaded_atm[2]
                 except FileNotFoundError:
@@ -81,16 +86,11 @@ class Atm_Shower(object):
                         primary_model=self._p_model,
                         theta_deg=0,
                     )
-
                     self._egrid = self._mceq_instance.e_grid
                     self._ewidth = self._mceq_instance.e_widths
                     self._mceq_instance.set_density_model(self._atmosphere)
                     # Running simulations
                     self._run_mceq()
-            # new functions for new effective areas
-            elif config['general']['pone type'] == 'new':
-                self._egrid = np.linspace(2, 6, 21)
-                self._ewidth = loaded_atm[1]
 
         elif config['general']['detector'] == 'IceCube':
             self.surface_fluxes = pickle.load(open("../data/" +
@@ -153,7 +153,7 @@ class Atm_Shower(object):
                 # Running simulations
                 self._run_mceq()
 
-            # particle fluxes for IceCube    
+            # particle fluxes for IceCube
             self.surface_fluxes = pickle.load(open("../data/" +
                                                    "surf_store_v1.p", "rb"))
             # Adding 90 deg
@@ -220,7 +220,11 @@ class Atm_Shower(object):
         _log.debug('Running %d simulations for the angles' % (
             len(config['atmospheric showers']['theta angles']))
         )
-        for angle in config['atmospheric showers']['theta angles']:
+        if config['general']['pone type'] == 'old':
+            angles = config['atmospheric showers']['theta angles']
+        elif config['general']['pone type'] == 'new':
+            angles = config['pone_christian']['angles']
+        for angle in angles:
             # Temporary storage
             tmp_particle_store = {}
             _log.debug('Currently at angle %.2f' % angle)

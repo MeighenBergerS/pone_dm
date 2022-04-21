@@ -46,7 +46,8 @@ class DM2Nu(object):
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        ) * config["advanced"]["scaling correction"]  # TODO: Unit correction need to check which one
+        ) * config["advanced"]["scaling correction"]  # TODO: Unit correction
+        # need to check which one
 
     def extra_galactic_flux(self, E: np.array,
                             m_x: float, sv: float):
@@ -57,7 +58,8 @@ class DM2Nu(object):
         """
         return self._dphide_lopez(
             E, m_x, sv
-        ) * config["advanced"]["scaling correction"]  # Some error in unit conversion 29.11.21
+        ) * config["advanced"]["scaling correction"]  # Some error in unit
+        # conversion 29.11.21
     # ---------------------------------------------------------------------------
     # Galactic
 
@@ -310,6 +312,8 @@ class DM2Nu(object):
             ((self.omega_m / self._const.omega_DM)**2) *
             self._const.Delta / (3 * self._omega_mz(z))
         )
+        # ------ Here the dNdlogx should be included in the
+        # integrand for W, b chanels ----- 19.04.22
         # Using splines to integrate
         function_vals = np.array([
             integrand(M)
