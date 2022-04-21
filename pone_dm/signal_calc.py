@@ -50,8 +50,17 @@ class Signal(object):
             print(self.name)
             self._signal_calc = self._signal_calc_ice
         elif self.name == 'POne':
-            print(self.name)
-            self._signal_calc = self._signal_calc_pone
+            if config['general']['pone type'] == 'old':
+                print(self.name)
+                self._signal_calc = self._signal_calc_pone
+            elif config['general']['pone type'] == 'new':
+                print('Christians Effective Areas are being used')
+                self._hit = config['pone_christian']['hit']
+                self._module = config['pone_christian']['module']
+                self._spacing = config['pone_christian']['spacing']
+                self._pos_res = config['pone_christian']['pos res']
+                self._signal_calc = self._signal_calc_pone_christ
+
         elif self.name == 'combined':
             print(self.name)
             self._signal_calc = self._signal_calc_combined
@@ -131,6 +140,16 @@ class Signal(object):
         # same for all neutrino flavours
 
         return total_new_counts
+
+    def _signal_calc_pone_christ(self, egrid:np.array, mass: float,
+                                 sv:float):
+        """Calculates the expected signal given the mass, sigma*v
+        with christian's effective area file
+        
+        
+        """
+        
+        return 0
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,
                           sv: float):

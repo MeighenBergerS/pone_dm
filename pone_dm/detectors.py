@@ -4,9 +4,11 @@
 # Quick and dirty interface to MCEq for the pdm package
 
 # Imports
+# from asyncio.constants import SENDFILE_FALLBACK_READBUFFER_SIZE
 import logging
 from pone_aeff import Aeff
 from config import config
+from constants import pdm_constants
 import numpy as np
 from tqdm import tqdm
 import csv
@@ -26,13 +28,18 @@ class Detector(object):
 
         self.name = config["general"]["detector"]
         self._aeff = aeff
+        self._const = pdm_constants()
         self._egrid = self._aeff._egrid
         self._ewidth = self._aeff._ewidth
-
+        self._particles = (
+            config['atmospheric showers']['particles of interest']
+        )
         self._uptime = config['simulation parameters']['uptime']
         self.days = 60. * 24
+        self.name = config["general"]["detector"]
 
-        self.smearing_sets = [
+        if self.name == "IceCube":
+            self.smearing_sets = [
                 '../data/icecube_10year_ps/irfs/IC40_smearing.csv',
                 '../data/icecube_10year_ps/irfs/IC59_smearing.csv',
                 '../data/icecube_10year_ps/irfs/IC79_smearing.csv',
@@ -45,72 +52,75 @@ class Detector(object):
                 '../data/icecube_10year_ps/irfs/IC86_II_smearing.csv',
             ]
 
-        self.smearing_dic = {
-                0: self.ice_parser(self.smearing_sets[0]),
-                1: self.ice_parser(self.smearing_sets[1]),
-                2: self.ice_parser(self.smearing_sets[2]),
-                3: self.ice_parser(self.smearing_sets[3]),
-                4: self.ice_parser(self.smearing_sets[4]),
-                5: self.ice_parser(self.smearing_sets[5]),
-                6: self.ice_parser(self.smearing_sets[6]),
-                7: self.ice_parser(self.smearing_sets[7]),
-                8: self.ice_parser(self.smearing_sets[8]),
-                9: self.ice_parser(self.smearing_sets[9]),
+            self.smearing_dic = {
+                    0: self.ice_parser(self.smearing_sets[0]),
+                    1: self.ice_parser(self.smearing_sets[1]),
+                    2: self.ice_parser(self.smearing_sets[2]),
+                    3: self.ice_parser(self.smearing_sets[3]),
+                    4: self.ice_parser(self.smearing_sets[4]),
+                    5: self.ice_parser(self.smearing_sets[5]),
+                    6: self.ice_parser(self.smearing_sets[6]),
+                    7: self.ice_parser(self.smearing_sets[7]),
+                    8: self.ice_parser(self.smearing_sets[8]),
+                    9: self.ice_parser(self.smearing_sets[9]),
+                    }
+    # MJ    D, log10(E/GeV), AngErr[deg], RA[deg], Dec[deg],
+    # Az    imuth[deg], Zenith[deg]
+
+            self.uptime_sets = [
+                    '../data/icecube_10year_ps/uptime/IC40_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC59_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC79_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC86_I_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC86_II_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC86_III_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC86_IV_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC86_V_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC86_VI_exp.csv',
+                    '../data/icecube_10year_ps/uptime/IC86_VII_exp.csv',
+                ]
+
+            self.uptime_dic = {
+                    0: self.ice_parser(self.uptime_sets[0]),
+                    1: self.ice_parser(self.uptime_sets[1]),
+                    2: self.ice_parser(self.uptime_sets[2]),
+                    3: self.ice_parser(self.uptime_sets[3]),
+                    4: self.ice_parser(self.uptime_sets[4]),
+                    5: self.ice_parser(self.uptime_sets[5]),
+                    6: self.ice_parser(self.uptime_sets[6]),
+                    7: self.ice_parser(self.uptime_sets[7]),
+                    8: self.ice_parser(self.uptime_sets[8]),
+                    9: self.ice_parser(self.uptime_sets[9]),
                 }
-    # MJD, log10(E/GeV), AngErr[deg], RA[deg], Dec[deg],
-    # Azimuth[deg], Zenith[deg]
 
-        self.uptime_sets = [
-                '../data/icecube_10year_ps/uptime/IC40_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC59_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC79_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC86_I_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC86_II_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC86_III_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC86_IV_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC86_V_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC86_VI_exp.csv',
-                '../data/icecube_10year_ps/uptime/IC86_VII_exp.csv',
-            ]
+            self.uptime_tot_dic = {}
 
-        self.uptime_dic = {
-                0: self.ice_parser(self.uptime_sets[0]),
-                1: self.ice_parser(self.uptime_sets[1]),
-                2: self.ice_parser(self.uptime_sets[2]),
-                3: self.ice_parser(self.uptime_sets[3]),
-                4: self.ice_parser(self.uptime_sets[4]),
-                5: self.ice_parser(self.uptime_sets[5]),
-                6: self.ice_parser(self.uptime_sets[6]),
-                7: self.ice_parser(self.uptime_sets[7]),
-                8: self.ice_parser(self.uptime_sets[8]),
-                9: self.ice_parser(self.uptime_sets[9]),
-            }
+            for year in range(10):
 
-        self.uptime_tot_dic = {}
-
-        for year in range(10):
-
-            self.uptime_tot_dic[year] = (np.sum(np.diff(
-                                                        self.uptime_dic[
-                                                            year])) *
-                                         self.days)
-        self.name = config["general"]["detector"]
-        self._low_sigma = config['pone']['low E sigma']
-        self._high_sigma = config['pone']['high E sigma']
-        self.spl_mid_mean = {}
-        self.spl_mid_sigma = {}
-        for p in config['atmospheric showers']['particles of interest']:
-            self.spl_mid_mean[p] = UnivariateSpline([1e3, 1e4], [700., 1e4],
-                                                    k=1)
-            self.spl_mid_sigma[p] = UnivariateSpline([1e3, 1e4], [
-                self._low_sigma[p], self._high_sigma[p]], k=1)
-        if self.name == "IceCube":
+                self.uptime_tot_dic[year] = (np.sum(np.diff(
+                                                            self.uptime_dic[
+                                                                year])) *
+                                             self.days)
             self._sim2dec = self.sim_to_dec
+
         elif self.name == "POne":
+            if config["pone"]['smearing'] == 'smearing':
+                self._low_sigma = config['pone']['low E sigma']
+                self._high_sigma = config['pone']['high E sigma']
+                self.spl_mid_mean = {}
+                self.spl_mid_sigma = {}
+                for p in config['atmospheric showers'][
+                                'particles of interest']:
+                    self.spl_mid_mean[p] = UnivariateSpline([1e3, 1e4],
+                                                            [700., 1e4],
+                                                            k=1)
+                    self.spl_mid_sigma[p] = UnivariateSpline([1e3, 1e4], [
+                        self._low_sigma[p], self._high_sigma[p]], k=1)
             if config['general']['pone type'] == 'old':
                 self._sim2dec = self.simdec_Pone
             elif config['general']['pone type'] == 'new':
-                self.sim2dec = self.simdec_Pone_new
+                self._sim2dec = self.simdec_Pone_new
+
         elif self.name == 'combined':
             self._sim2dec_pone = self.simdec_Pone
             self._sim2dec_ice = self.sim_to_dec
@@ -214,15 +224,18 @@ class Detector(object):
             _flux = flux
             boolean_sig = False
 
-        at_counts_unsm, as_counts_unsm, eff_area = self._aeff.effective_area_func(
-            _flux, year, boolean_sig)
+        at_counts_unsm, as_counts_unsm, eff_area = (
+            self._aeff.effective_area_func(_flux,
+                                           year,
+                                           boolean_sig)
+        )
         log_egrid = np.log10(self._egrid)
         self._count = {}
         self._tmp_count = []
 
         self._counts_at_eff = at_counts_unsm
         self._counts_as_eff = as_counts_unsm
-        pickle.dump(eff_area, open('../data/eff_area_ice.pkl','wb'))
+        pickle.dump(eff_area, open('../data/eff_area_ice.pkl', 'wb'))
         if boolean_sig is False:
             pickle.dump(at_counts_unsm,
                         open('../data/counts_unsme/atmo_%f.pkl' % (year),
@@ -252,7 +265,7 @@ class Detector(object):
 
                 tmp_1.append(local_sp * at_counts_unsm[theta][id_check])
                 tmp_2.append(local_sp * as_counts_unsm[theta][id_check])
-            # appending array to a list ( tmp_1(e_bin)_theta ) 
+            # appending array to a list ( tmp_1(e_bin)_theta )s
             # !!!!!!!!!!!!!!!! Here we are not adding the Astro Physical Fluxes
             #  should be added as I understand !!!!!!!!!!!
             # tmp_c = np.add(np.array(tmp_1), np.array(tmp_2))
@@ -308,7 +321,7 @@ class Detector(object):
         Returns particle counts for P-One Detector
         parameter
         ------------------
-        flux : dict ( label : angle: flavour)
+        flux : dict ( label : [angle][flavour])
 
         returns
         ------------------
@@ -320,10 +333,6 @@ class Detector(object):
         self.count_horizon = {}
         # backgorund dictionary repositioned
         self._count = {}
-
-        #  From here the bakgound flux has many thetas whereas for signal
-        # we have dfined it differently:::: ??????
-
         thetas = np.array([i for i in flux.keys()])
         # Differentiation between Background and signal Counts conversion
         if boolean_sig:
@@ -331,7 +340,7 @@ class Detector(object):
         else:
             Astro = np.array(self.astro_flux())
 
-        for i in (config['atmospheric showers']['particles of interest']):
+        for i in self._particels:
             self.count_down[i] = []
             down_angles = []
             self.count_horizon[i] = []
@@ -386,13 +395,9 @@ class Detector(object):
                 ratio = []
                 for k, e in enumerate(self._egrid):
                     mu, sigma = self._distro_parms(e)
-                    # print('mu = %.1e, sigma = %.1e' % (mu[i], sigma[i]))
                     local_log_norm = (self._log_norm(self._egrid,
                                                      mu[i], sigma[i]))
                     tmp_count_mat.append(self._count[i][k] * local_log_norm)
-                # print('old_counts = %.1e,  new_counts = %.1e' % (np.sum(
-                #    self._count[i]), np.sum(np.array(np.sum(tmp_count_mat,
-                #                                            axis=0)))))
                 ratio = (np.sum(self._count[i]) /
                          np.sum(np.array(np.sum(tmp_count_mat, axis=0))))
                 tmp_count_mat_r = []
@@ -403,25 +408,86 @@ class Detector(object):
                                                     sigma[i])
                     tmp_count_mat_r.append(self._count[i][k] *
                                            local_log_norm * ratio)
-                # pickle.dump(ratio, open('../data/smearing_ratio_pone.pkl',
-                #  'wb'))
-                # print('ratio = %.1e' % (ratio))
-                # print('old_counts = %.1e,  new_counts = %.1e' % (np.sum(
-                #    self._count[i]), np.sum(np.array(np.sum(tmp_count_mat_r,
-                #                                            axis=0)))))
-                # suming over the the energy bin vertically to get combined
-                # value of counts after smearing over all energy bins
+
                 self._count[i] = np.array(np.sum(tmp_count_mat_r, axis=0))
-        pickle.dump(self._aeff.spl_A15(self._egrid), open(
-            '../data/eff_area_15.pkl', 'wb'))
-        pickle.dump(self._aeff.spl_A51(self._egrid), open(
-            '../data/eff_area_51.pkl', 'wb'))
-        pickle.dump(self._aeff.spl_A55(self._egrid), open(
-            '../data/eff_area_55.pkl', 'wb'))
+
         return self._count
 
 # ------------------------------------------------------
 # P-ONE new effective areas
 # add smearing function for new P-ONE !!!!!
-    def sim2dec_Pone_new(self):
-        return 0
+    def simdec_Pone_new(self, flux: dict, boolean_sig=False,
+                        boolean_smeared=False):
+        """Converts the fluxes to counts with the Chriostian's effective
+        areas.
+
+        paramters:
+        ----------------------
+        flux: Dictionary [ angle] [flavour]
+        boolean_sig: bool , if signal fluxes are being calculated then True
+        booolean_smeared: bool, if smearing is needed to be included
+
+        return:
+        ----------------------
+        count: Dictionary, label:[ Neutrino Flavour]
+        counts_ang: dictionray, label:[angle, Neutrino flavour]
+
+        """
+        self._hit = config['pone_christian']['hit']
+        self._module = config['pone_christian']['module']
+        self._spacing = config['pone_christian']['spacing']
+        self._pos_res = config['pone_christian']['pos res']
+        if type(self._spacing) is not list:
+            zen_thetas = self._aeff._aeff_cos_grid
+            aeff_log10e = self._aeff._aeff_e_grid
+            zen_grid = self.width2grid(zen_thetas)
+            aeff_log_e_grid = self.width2grid(aeff_log10e)
+            aeff_mat = (
+             self._aeff.aeff_hist.loc[self._hit, self._module,
+                                      self._pos_res,
+                                      self._spacing]["aeff_hist"]
+            )
+
+            if boolean_sig:
+                Astro = np.zeros_like(self.astro_flux())
+            else:
+                Astro = np.array(self.astro_flux())
+            counts = {}
+            counts_ang = {}
+            rad = np.arccos(zen_grid)
+            for p in self._particles:
+                tmp_counts = []
+                angles = flux.keys()
+                for i_t, theta in tqdm(enumerate(angles)):
+                    spl_aeff = UnivariateSpline(aeff_log_e_grid,
+                                                (self._const.msq2cmsq *
+                                                 aeff_mat[i_t]),
+                                                s=0, k=1)
+                    aeff_eval = spl_aeff(np.log10(self._egrid))
+                    aeff_eval[self._egrid < 10**min(aeff_log_e_grid)] = 0
+                    aeff_eval[self._egrid > 10**max(aeff_log_e_grid)] = 0
+                    tmp_counts.append(aeff_eval *
+                                      (flux[theta][p] + Astro) *
+                                      self._uptime *
+                                      rad[i_t] *
+                                      self._ewidth *
+                                      2  # Since the theta angles are not
+                                         # allowed all the way through but
+                                         #  we have symmetry
+                                      )
+                counts_ang[p] = tmp_counts
+                counts[p] = np.trapz(counts_ang[p],
+                                     x=np.array([i for i in flux.keys()]),
+                                     axis=0)
+        return counts, counts_ang
+
+    def width2grid(self, a: np.array):
+        m_a = []
+        for i, e in enumerate(a):
+            if i == 0:
+                m_a.append(a[i])
+            elif i == len(a)-1:
+                break
+            else:
+                m_a.append((a[i] + a[i+1]) / 2)
+        return m_a
