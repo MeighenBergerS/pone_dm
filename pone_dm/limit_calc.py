@@ -15,6 +15,7 @@ import pickle
 import os
 from scipy.stats import chi2
 from bkgrd_calc import Background
+from CL_s import CL_scan
 _log = logging.getLogger("pone_dm")
 
 
@@ -54,16 +55,21 @@ class Limits(object):
         self._signal = self._sig._signal_calc
         self._t_d = self._find_nearest(self._egrid,
                                        config['simulation paramet' +
-                                              'ers']['low enery cutoff'])
-
+                                              'ers']['low energy cutoff'])
+        self._t_u = self._find_nearest(self._egrid,
+                                       config['simulation paramet' +
+                                              'ers']['high energy cutoff'])
         if self.name == 'IceCube':
-            self._ice_data = np.sum(self._background.ice_data, axis=0)
+            self._ice_data = (self._background.bkgrd_data)
             self.limit = self.limit_calc_ice
-            for i in self.particles:
-                self._bkgrd[i] = np.sum(self._bkgrd[i], axis=0)
+            # for i in self.particles:
+            #    self._bkgrd[i] = np.sum(self._bkgrd[i], axis=0)
 
         elif self.name == 'POne':
-            self.limit = self.limit_calc_POne
+            if config['general']['pone type'] == 'old':
+                self.limit = self.limit_calc_POne
+            elif config['general']['pone type'] == 'new':
+                self.limit = self.limit_calc_christ
 
         elif self.name == 'combined':
             self.limit = self.limit_calc_combined
@@ -78,7 +84,9 @@ class Limits(object):
     def limit_calc_ice(self, mass_grid,
                        sv_grid):
 
-        y = {}
+        # y = {}
+        y_p = {}
+        prob_mat = {}
         try:
             _log.info('Fetching precalculated signal grid for IceCube')
             self._signal_grid = pickle.load(open(
@@ -89,61 +97,63 @@ class Limits(object):
             # for more generations adding the loop ----
             self._signal_grid = np.array([[
                      np.sum(self._signal(self._egrid, mass, sv),
-                            axis=0)[self._t_d:]
+                            axis=0)
                      for mass in mass_grid]
                      for sv in sv_grid]
                      )
-        for i in tqdm(self.particles):
-            y[i] = np.array([[chi2.sf(np.sum(
-                np.nan_to_num(x**2 /
-                              self._bkgrd[i][self._t_d:])), 2)
-                            for x in k]
-                             for k in self._signal_grid])
-        return y, self._signal_grid
 
-    def limit_calc_ice_data(self, mass_grid,
-                            sv_grid):
-        y = {}
-        CL_data_b = {}
-        CL_data_sb = {}
-        CL_b_b = {}
-        try:
-            _log.info('Fetching precalculated signal grid for IceCube')
-            self._signal_grid = pickle.load(open(
-                            '../data/limits_signal_IceCube.pkl', 'rb'))
-        except FileNotFoundError:
-            _log.info('No precalculated signal grid found')
-            _log.info('Calculating the signal grid for IceCube')
-            # for more generations adding the loop ----
-            self._signal_grid = np.array([[
-                     np.sum(self._signal(self._egrid, mass, sv),
-                            axis=0)[self._t_d:]
-                     for mass in mass_grid]
-                     for sv in sv_grid]
-                     )
-        for i in tqdm(self.particles):
-            y[i] = np.array([[chi2.sf(np.sum(
-                np.nan_to_num(x**2 /
-                              self._bkgrd[i][self._t_d:])), 2)
-                            for x in k]
-                             for k in self._signal_grid])
-            CL_data_b[i] = np.array([chi2.sf(np.sum(
-                np.nan_to_num(x**2 /
-                              self._bkgrd[i][self._t_d:])), 2)
-                            for x in self._ice_data])
-            CL_b_b[i] = np.array([chi2.sf(np.sum(
-                np.nan_to_num(x**2 /
-                              self._bkgrd[i][self._t_d:])), 2)
-                            for x in self._bkgrd[i][self._t_d:]])
-            CL_data_sb[i] = np.array([[chi2.sf(np.sum(
-                np.nan_to_num((x + self._bkgrd[i][self._t_d:])**2 /
-                              self._bkgrd[i][self._t_d:])), 2)
-                            for x in k]
-                             for k in self._signal_grid])
+        for i in (self.particles):
 
-        return y, self._signal_grid
+            # Poissonian Method for Likelihood analysis
+            # y_p[i], prob_mat[i] = CL_scan(
+            #     self._signal_grid[:, :, self._t_d:self._t_u],
+            #     self._bkgrd[self._t_d:self._t_u],
+            #     self._ice_data[self._t_d:self._t_u],
+            #     sv_grid, mass_grid,
+            #     sample_count=10000)
+            # With only data no projections for background -------
+            y_p[i], prob_mat[i] = CL_scan(
+                self._signal_grid[:, :, self._t_d:self._t_u],
+                self._ice_data[self._t_d:self._t_u],
+                self._ice_data[self._t_d:self._t_u],
+                sv_grid, mass_grid,
+                sample_count=10000)
+            # Chi2 Method for Likelihood analysis
+            # y[i] = np.array([[chi2.sf(np.sum(
+            #     np.nan_to_num(x**2 /
+            #                   self._bkgrd[self._t_d:])), 2)
+            #                 for x in k]
+            #                  for k in self._signal_grid])
+
+        return y_p, self._signal_grid, prob_mat
 
     # P-ONE Limit calculation
+
+    def limit_calc_christ(self, mass_grid,
+                          sv_grid):
+
+        y = {}
+        try:
+            _log.info('Fetching precalculated signal grid for IceCube')
+            self._signal_grid = pickle.load(open(
+                            '../data/signal_grid_christ.pkl', 'rb'))
+        except FileNotFoundError:
+            _log.info('No precalculated signal grid found')
+            _log.info('Calculating the signal grid for IceCube')
+            # for more generations adding the loop ----
+            self._signal_grid = np.array([[
+                     self._signal(self._egrid, mass, sv)
+                     for mass in mass_grid]
+                     for sv in sv_grid]
+                     )
+        for i in (self.particles):
+
+            y[i] = np.array([[chi2.sf(np.sum(
+                 np.nan_to_num(x[self._t_d:]**2 /
+                               self._bkgrd[i][self._t_d:])), 2)
+                             for x in k]
+                             for k in self._signal_grid])
+        return y, self._signal_grid
 
     def limit_calc_POne(self,
                         mass_grid,
@@ -154,7 +164,7 @@ class Limits(object):
         tmp_dic = {}
         for i in self.particles:
             self._signal_grid[i] = np.empty((len(sv_grid), len(mass_grid),
-                                             len(self._egrid[self._t_d:])))
+                                             len(self._egrid)))
         tmp_sig_dic = {}
         for _, sv in enumerate(sv_grid):
             for _, mass in enumerate(mass_grid):
@@ -165,12 +175,12 @@ class Limits(object):
             for j, sv in enumerate(sv_grid):
                 tmp_dic[i] = []
                 for mass in mass_grid:
-                    tmp_dic[i].append(tmp_sig_dic[sv, mass][i][self._t_d:])
+                    tmp_dic[i].append(tmp_sig_dic[sv, mass][i])
                 self._signal_grid[i][j] = (tmp_dic[i])
 
         for i in tqdm(self.particles):
             y[i] = np.array([[chi2.sf(np.sum(
-                np.nan_to_num(x**2 /
+                np.nan_to_num(x[self._t_d:]**2 /
                               self._bkgrd[i][self._t_d:])), 2)
                             for x in k]
                              for k in self._signal_grid[i]])
@@ -217,7 +227,7 @@ class Limits(object):
                 for i in self.particles:
                     self._signal_grid_pone[i] = np.empty(
                         (len(sv_grid), len(mass_grid),
-                         len(self._egrid[self._t_d:])))
+                         len(self._egrid)))
                 tmp_sig_dic = {}
                 for _, sv in enumerate(sv_grid):
                     for _, mass in enumerate(mass_grid):
@@ -231,7 +241,7 @@ class Limits(object):
                         tmp_dic[i] = []
                         for mass in mass_grid:
                             tmp_dic[i].append(
-                                tmp_sig_dic[sv, mass][i][self._t_d:])
+                                tmp_sig_dic[sv, mass][i])
                         self._signal_grid_pone[i][j] = (tmp_dic[i])
                 for i in self.particles:
                     self._signal_grid[i] = np.add(
@@ -293,7 +303,7 @@ class Limits(object):
 
         for i in tqdm(self.particles):
             y[i] = np.array([[chi2.sf(np.sum(
-                np.nan_to_num(x**2 /
+                np.nan_to_num(x[self._t_d:]**2 /
                               self._bkgrd[i][self._t_d:])), 2)
                             for x in k]
                              for k in self._signal_grid[i]])

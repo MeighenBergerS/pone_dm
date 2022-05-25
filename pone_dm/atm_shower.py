@@ -31,6 +31,11 @@ class Atm_Shower(object):
     """
 
     def __init__(self):
+        
+        self._load_str = (
+             config["advanced"]["atmospheric storage"] + "shower.p")
+        self.particle_name = ["numu", "nue", "nutau"]
+
         if config['general']['detector'] == 'POne':
             if config['general']['pone type'] == 'old':
                 self._load_str = (
@@ -38,12 +43,6 @@ class Atm_Shower(object):
             elif config['general']['pone type'] == 'new':
                 self._load_str = (
                  config["advanced"]["atmospheric storage"] + "shower_chris.p")
-        else:
-            self._load_str = (
-             config["advanced"]["atmospheric storage"] + "shower.p")
-        self.particle_name = ["numu", "nue", "nutau"]
-
-        if config['general']['detector'] == 'POne':
             if config['general']['pone type'] == 'old' or 'new':
                 try:
                     _log.info("Trying to load pre-calculated tables")
@@ -93,6 +92,8 @@ class Atm_Shower(object):
                     self._run_mceq()
 
         elif config['general']['detector'] == 'IceCube':
+            _log.info('Trying to load Effective areas for IceCube....')
+            print('ICeCube... Effective Areas')
             self.surface_fluxes = pickle.load(open("../data/" +
                                                    "surf_store_v1.p", "rb"))
             # Adding 90 deg

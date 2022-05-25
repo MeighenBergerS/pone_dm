@@ -29,9 +29,9 @@ class Aeff(object):
     def __init__(self):
         self._const = pdm_constants()
         _log.info('Loading the effective area data')
-        shower = Atm_Shower()
-        self._egrid = shower._egrid  # ###########
-        self._ewidth = shower._ewidth
+        self._shower = Atm_Shower()
+        self._egrid = self._shower._egrid  # ###########
+        self._ewidth = self._shower._ewidth
         self.days = 60. * 24.
         self.minutes = 60.
         if config["general"]["detector"] == "POne":

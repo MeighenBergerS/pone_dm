@@ -134,18 +134,35 @@ class PDM(object):
         # Limit Calculation
         self.mass_grid = config["simulation parameters"]["mass grid"]
         self.sv_grid = config["simulation parameters"]["sv grid"]
-        self._results, self._signal_data = self._limit_calc.limits(
-            self.mass_grid, self.sv_grid)
-        # --------------------------------------------------------------
-        # Dumping the config settings for later debugging
-        pickle.dump(self._results, open(
-            '../data/14_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
-                                                           self._detector_name,
-                                                           self._smea), 'wb'))
-        _log.info('Dumping the signal grid and limits result')
-        pickle.dump(self._signal_data, open(
-            '../data/14_04/%s/signal_grid_%s_%s.pkl' %
-            (self._smea_folder, self._detector_name, self._smea), 'wb'))
+        if self._detector_name == "IceCube":
+            self._results, self._signal_data, self.prob_mat = self._limit_calc.limits(
+                self.mass_grid, self.sv_grid)
+            # --------------------------------------------------------------
+            # Dumping the config settings for later debugging
+            pickle.dump(self._results, open(
+                '../data/14_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
+                                                               self._detector_name,
+                                                               self._smea), 'wb'))
+            _log.info('Dumping the signal grid and limits result')
+            pickle.dump(self._signal_data, open(
+                '../data/14_04/%s/signal_grid_%s_%s.pkl' %
+                (self._smea_folder, self._detector_name, self._smea), 'wb'))
+            pickle.dump(self.prob_mat, open(
+                '../data/14_04/%s/Prob_grid_%s_%s.pkl' %
+                (self._smea_folder, self._detector_name, self._smea), 'wb'))
+        else:
+            self._results, self._signal_data = self._limit_calc.limits(
+                self.mass_grid, self.sv_grid)
+            # --------------------------------------------------------------
+            # Dumping the config settings for later debugging
+            pickle.dump(self._results, open(
+                '../data/14_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
+                                                               self._detector_name,
+                                                               self._smea), 'wb'))
+            _log.info('Dumping the signal grid and limits result')
+            pickle.dump(self._signal_data, open(
+                '../data/14_04/%s/signal_grid_%s_%s.pkl' %
+                (self._smea_folder, self._detector_name, self._smea), 'wb'))
         _log.debug(
             "Dumping run settings into %s",
             config["general"]["config location"],

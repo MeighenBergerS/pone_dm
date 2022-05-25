@@ -12,7 +12,7 @@ class pdm_constants(object):
     def __init__(self):
         # ----------------------------------------------------------------------
         # '# ##' == used in the simulation code----
-        self.rho_c_mpc = 2.7754e11  # h^-2 M_0 Mpc^-3-------------> Mpc!!!!!  # ##
+        self.rho_c_mpc = 2.7754e11  # h^-2 M_0 Mpc^-3-------------> Mpc!!!!!
         self.gamma = 1.3186  # NFW parameter --- slope parameter -----  # ##
         # ----------------------------------------------------------------------
         # P-ONE
@@ -46,10 +46,15 @@ class pdm_constants(object):
         # ----------------------------------------------------------------------
         self.Delta = 200  # Lopez et al. ---------- M_min=10e-5------  # ##
         self.msq2cmsq = 1e4  # Converts m^2 to cm^2 # ##
+        self.r_s = 20  # kpc,
+        self.rho_0 = 0.4  # GeV/cm**3
+        self.R_0 = 0.8134  # kpc
+        self.c_200 = 100
 
     @property
     def omega_m(self):
         return self._omega_m
+
     @property
     def omega_L(self):
         return self._omega_L

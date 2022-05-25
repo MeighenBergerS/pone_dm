@@ -25,13 +25,15 @@ _baseconfig = {
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
         "pone type": ["new", "old"],
-        "year": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        "year": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        'density': ['NFW', 'Burkert']
     },
     "simulation parameters": {
         "mass grid": np.logspace(2, 6, 9),
         "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low enery cutoff": 5e2,  # GeV
+        "low energy cutoff": 3.0e3,  # GeV
+        "high energy cutoff": 1e6,  # GeV
         "DM type k": 2
     },
     ###########################################################################

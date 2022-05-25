@@ -162,8 +162,6 @@ dictitems:
     native mceq: true
     particles of interest:
     - numu
-    - nue
-    - nutau
     path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
     primary model: H4a
     theta angles: !!python/object/apply:builtins.range
@@ -173,6 +171,7 @@ dictitems:
   general:
     config location: ../run/config.txt
     debug level: 40
+    density: Burkert
     detector: POne
     log file handler: ../run/pdm.log
     pone type: old
@@ -203,6 +202,34 @@ dictitems:
       nue: 1.0
       numu: 1.0
       nutau: 1.0
+  pone_christian:
+    aeff location: ../data/
+    angles:
+    - 0
+    - 1.46928358
+    - 4.41172579
+    - 7.36588583
+    - 10.33989089
+    - 13.3423638
+    - 16.38266985
+    - 19.47122063
+    - 22.61986495
+    - 25.84241287
+    - 29.15536543
+    - 32.57897039
+    - 36.13881466
+    - 39.86834155
+    - 43.81306146
+    - 48.03811117
+    - 52.64314803
+    - 57.7957725
+    - 63.82304783
+    - 71.5713304
+    - 90
+    hit: []
+    module: []
+    pos res: []
+    spacing: []
   runtime:
     random state: !!python/object/apply:numpy.random._pickle.__randomstate_ctor
       args:
@@ -286,7 +313,8 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    low enery cutoff: 500.0
+    high energy cutoff: 1000000.0
+    low energy cutoff: 3000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001

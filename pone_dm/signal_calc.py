@@ -42,10 +42,17 @@ class Signal(object):
         self._s_pone = self._signal_calc_pone
         self._s_ice = self._signal_calc_ice
         self._pone_smearing = config['pone']['smearing']
+        self._density_prof = config['general']['density']
         if self._pone_smearing == 'smeared':
             self._bool_smea = True
         elif self._pone_smearing == 'unsmeared':
             self._bool_smea = False
+
+        if self._density_prof == 'NFW':
+            self._extra_dm = self._dmnu.extra_galactic_flux_nfw
+        elif self._density_prof == 'Burkert':
+            self._extra_dm = self._dmnu.extra_galactic_flux_burkert
+
         if self.name == 'IceCube':
             print(self.name)
             self._signal_calc = self._signal_calc_ice
@@ -107,7 +114,7 @@ class Signal(object):
             The total new counts
         """
         # Extra galactic
-        _extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
+        _extra = self._extra_dm(egrid, mass, sv)
 
         # Galactic
         total_new_counts = []
@@ -141,15 +148,38 @@ class Signal(object):
 
         return total_new_counts
 
-    def _signal_calc_pone_christ(self, egrid:np.array, mass: float,
-                                 sv:float):
+    def _signal_calc_pone_christ(self, egrid: np.array, mass: float,
+                                 sv: float):
         """Calculates the expected signal given the mass, sigma*v
         with christian's effective area file
-        
-        
+        total_new_counts : np.array (len(year),len(E_grid))
+            The total new counts
         """
-        
-        return 0
+        _extra = self._extra_dm(egrid, mass, sv)
+
+        # Galactic
+        # TODO: Need to configure for IceCube ------
+
+        _ours = self._dmnu.galactic_flux(
+            egrid, mass, sv,
+            config['simulation parameters']["DM type k"],
+            self._const.J_d + self._const.J_p + self._const.J_s
+        )
+        # Converting fluxes into counts with effective area of IceCube !!!!
+        #  These steps take a lot of time !!!!
+        total_flux = _ours+_extra
+        total_flux_dict = {}
+        # Assuming the same signals for all flavours
+        for i in config['atmospheric showers']['particles of interest']:
+            total_flux_dict[i] = total_flux
+        tmp_y_counts = (
+                self._detector.sim2dec(total_flux_dict,
+                                       boolean_sig=True,
+                                       boolean_smeared=self._bool_smea))
+        total_new_counts = (tmp_y_counts['numu'])
+        # print(np.array(total_new_counts).shape)
+        # the sim_to_dec omits the dict but we assume
+        return total_new_counts
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,
                           sv: float):
@@ -173,7 +203,7 @@ class Signal(object):
 
         # Extra galactic
 
-        extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
+        extra = self._extra_dm(egrid, mass, sv)
         _flux = {}
         _flux[15] = {}
         _flux[85] = {}
@@ -199,11 +229,14 @@ class Signal(object):
             )
 
         if self.name == 'combined':
-            total_counts = self._detector.sim2dec_pone(_flux, boolean_sig=True,
-                                                       boolean_smeared=self._bool_smea)
+            total_counts = (
+                self._detector.sim2dec_pone(_flux,
+                                            boolean_sig=True,
+                                            boolean_smeared=self._bool_smea))
         else:
-            total_counts = self._detector.sim2dec(_flux, boolean_sig=True,
-                                                  boolean_smeared=self._bool_smea)
+            total_counts = (
+                self._detector.sim2dec(_flux, boolean_sig=True,
+                                       boolean_smeared=self._bool_smea))
             # smearing for PONE if needed
 
         return total_counts
