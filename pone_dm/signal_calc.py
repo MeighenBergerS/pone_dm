@@ -43,16 +43,21 @@ class Signal(object):
         self._s_ice = self._signal_calc_ice
         self._pone_smearing = config['pone']['smearing']
         self._density_prof = config['general']['density']
+        self._channel = config['general']["channel"]
         if self._pone_smearing == 'smeared':
             self._bool_smea = True
         elif self._pone_smearing == 'unsmeared':
             self._bool_smea = False
 
-        if self._density_prof == 'NFW':
+        if self._density_prof == 'NFW' and self._channel == "All":
             self._extra_dm = self._dmnu.extra_galactic_flux_nfw
-        elif self._density_prof == 'Burkert':
+            self._galac_dm = self._dmnu.galactic_flux
+        elif self._density_prof == 'Burkert' and self._channel == "All":
             self._extra_dm = self._dmnu.extra_galactic_flux_burkert
-
+            self._galac_dm = self._dmnu.galactic_flux
+        elif self._channel == "W":
+            self._extra_dm = self._dmnu.extra_galactic_flux_c
+            self._galac_dm = self._dmnu.galactic_flux_c
         if self.name == 'IceCube':
             print(self.name)
             self._signal_calc = self._signal_calc_ice
@@ -120,7 +125,7 @@ class Signal(object):
         total_new_counts = []
         # TODO: Need to configure for IceCube ------
 
-        _ours = self._dmnu.galactic_flux(
+        _ours = self._galac_dm(
             egrid, mass, sv,
             config['simulation parameters']["DM type k"],
             self._const.J_d + self._const.J_p + self._const.J_s
@@ -160,7 +165,7 @@ class Signal(object):
         # Galactic
         # TODO: Need to configure for IceCube ------
 
-        _ours = self._dmnu.galactic_flux(
+        _ours = self._galac_dm(
             egrid, mass, sv,
             config['simulation parameters']["DM type k"],
             self._const.J_d + self._const.J_p + self._const.J_s
@@ -210,19 +215,19 @@ class Signal(object):
         _flux[120] = {}
         # Galactic
         for i in config['atmospheric showers']['particles of interest']:
-            _flux[15][i] = np.array(extra) + self._dmnu.galactic_flux(
+            _flux[15][i] = np.array(extra) + self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d1 + self._const.J_p1 + self._const.J_s1
             )
 
-            _flux[85][i] = np.array(extra) + self._dmnu.galactic_flux(
+            _flux[85][i] = np.array(extra) + self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d2 + self._const.J_p2 + self._const.J_s2
             )
 
-            _flux[120][i] = np.array(extra) + self._dmnu.galactic_flux(
+            _flux[120][i] = np.array(extra) + self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d3 + self._const.J_p3 + self._const.J_s3
