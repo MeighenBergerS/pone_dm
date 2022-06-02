@@ -169,6 +169,7 @@ dictitems:
     - 91
     - 1
   general:
+    channel: W
     config location: ../run/config.txt
     debug level: 40
     density: Burkert
@@ -190,14 +191,38 @@ dictitems:
   pone:
     aeff location: ../data/
     high E sigma:
-      nue: 0.12
-      numu: 0.15
-      nutau: 0.12
+      nue:
+      - 0.15
+      - 0.12
+      - 0.09
+      - 0.07
+      numu:
+      - 0.25
+      - 0.15
+      - 0.1
+      - 0.09
+      nutau:
+      - 0.15
+      - 0.12
+      - 0.09
+      - 0.07
     low E sigma:
-      nue: 0.45
-      numu: 0.35
-      nutau: 0.45
-    smearing: smeared
+      nue:
+      - 0.55
+      - 0.45
+      - 0.35
+      - 0.25
+      numu:
+      - 0.45
+      - 0.35
+      - 0.25
+      - 0.15
+      nutau:
+      - 0.55
+      - 0.45
+      - 0.35
+      - 0.25
+    smearing: unsmeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0

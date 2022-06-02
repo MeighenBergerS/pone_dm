@@ -147,10 +147,11 @@ class Limits(object):
                      for sv in sv_grid]
                      )
         for i in (self.particles):
-
+            print(self._signal_grid.shape)
+            print(self._bkgrd[i].shape)
             y[i] = np.array([[chi2.sf(np.sum(
-                 np.nan_to_num(x[self._t_d:]**2 /
-                               self._bkgrd[i][self._t_d:])), 2)
+                 np.nan_to_num(x**2 /
+                               self._bkgrd[i])), 2)
                              for x in k]
                              for k in self._signal_grid])
         return y, self._signal_grid

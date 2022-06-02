@@ -71,6 +71,7 @@ class PDM(object):
             rstate = np.random.RandomState(
                 config["general"]["random state seed"]
             )
+        self._profile = config['general']['density']
         config["runtime"] = {"random state": rstate}
         # --------------------------------------------------------------
         # Constructing the loggers
@@ -140,9 +141,10 @@ class PDM(object):
             # --------------------------------------------------------------
             # Dumping the config settings for later debugging
             pickle.dump(self._results, open(
-                '../data/14_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
-                                                               self._detector_name,
-                                                               self._smea), 'wb'))
+                '../data/14_04/%s/limits_results_%s_%s.pkl' % (
+                    self._smea_folder,
+                    self._detector_name,
+                    self._smea), 'wb'))
             _log.info('Dumping the signal grid and limits result')
             pickle.dump(self._signal_data, open(
                 '../data/14_04/%s/signal_grid_%s_%s.pkl' %
@@ -156,13 +158,16 @@ class PDM(object):
             # --------------------------------------------------------------
             # Dumping the config settings for later debugging
             pickle.dump(self._results, open(
-                '../data/14_04/%s/limits_results_%s_%s.pkl' % (self._smea_folder,
-                                                               self._detector_name,
-                                                               self._smea), 'wb'))
+                '../data/14_04/%s/limits_results_%s_%s_%s.pkl' % (
+                    self._smea_folder,
+                    self._detector_name,
+                    self._smea,
+                    self._profile), 'wb'))
             _log.info('Dumping the signal grid and limits result')
             pickle.dump(self._signal_data, open(
-                '../data/14_04/%s/signal_grid_%s_%s.pkl' %
-                (self._smea_folder, self._detector_name, self._smea), 'wb'))
+                '../data/14_04/%s/signal_grid_%s_%s_%s.pkl' %
+                (self._smea_folder, self._detector_name, self._smea,
+                 self._profile), 'wb'))
         _log.debug(
             "Dumping run settings into %s",
             config["general"]["config location"],

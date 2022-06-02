@@ -26,7 +26,8 @@ _baseconfig = {
         "detector": ["IceCube",   "POne", 'combined'],
         "pone type": ["new", "old"],
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        'density': ['NFW', 'Burkert']
+        'density': ['NFW', 'Burkert'],
+        "channel": ["W", "All"],
     },
     "simulation parameters": {
         "mass grid": np.logspace(2, 6, 9),
