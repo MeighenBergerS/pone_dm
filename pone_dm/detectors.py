@@ -342,7 +342,7 @@ class Detector(object):
         ( standard deviation as per definition )
         """
         pdf = (np.exp(- (np.log(E) - mu)**2 / (2 * sigma**2)) /
-               (E * sigma * np.sqrt(2 * np.pi)))
+               (E * sigma * np.sqrt(2 * np.pi)))  # E
 
         return pdf
 
@@ -377,7 +377,7 @@ class Detector(object):
             self.count_horizon[i] = []
             horizon_angles = []
             # Astrophysical is the same everywhere
-            for angle in flux.keys():
+            for angle in thetas:
                 rad = np.deg2rad(np.abs(angle - 90.))
                 # Downgoing
                 if np.pi / 3 <= rad <= np.pi / 2:
@@ -423,24 +423,15 @@ class Detector(object):
 
             if boolean_smeared:
                 tmp_count_mat = []
-                ratio = []
                 for k, e in enumerate(self._egrid):
                     mu, sigma = self._distro_parms(e)
                     local_log_norm = (self._log_norm(self._egrid,
                                                      mu[i], sigma[i]))
-                    tmp_count_mat.append(self._count[i][k] * local_log_norm)
-                ratio = (np.sum(self._count[i]) /
-                         np.sum(np.array(np.sum(tmp_count_mat, axis=0))))
-                tmp_count_mat_r = []
-                for k, e in enumerate(self._egrid):
-                    mu, sigma = self._distro_parms(e)
+                    tmp_norm = np.sum(local_log_norm)
+                    tmp_count_mat.append(self._count[i][k] * local_log_norm
+                                         / tmp_norm)
 
-                    local_log_norm = self._log_norm(self._egrid, mu[i],
-                                                    sigma[i])
-                    tmp_count_mat_r.append(self._count[i][k] *
-                                           local_log_norm * ratio)
-
-                self._count[i] = np.array(np.sum(tmp_count_mat_r, axis=0))
+                self._count[i] = np.array(np.sum(tmp_count_mat, axis=0))
 
         return self._count
 
@@ -485,34 +476,35 @@ class Detector(object):
             Astro = np.zeros_like(self.astro_flux())
         else:
             Astro = np.array(self.astro_flux())
+            print(flux[0].keys())
         counts = {}
         counts_ang = {}
         rad = np.arccos(zen_grid)
         if boolean_sig:
             for p in self._particles:
                 tmp_counts = []
-            angles = config['pone_christian']['angles']
-            for i_t, theta in (enumerate(angles)):
-                spl_aeff = UnivariateSpline(aeff_log_e_grid,
-                                            (self._const.msq2cmsq *
-                                             aeff_mat[i_t]),
-                                            s=0, k=1)
-                aeff_eval = spl_aeff(np.log10(self._egrid))
-                aeff_eval[self._egrid < 10**min(aeff_log_e_grid)] = 0
-                aeff_eval[self._egrid > 10**max(aeff_log_e_grid)] = 0
-                tmp_counts.append(aeff_eval *
-                                  (flux[p] + Astro) *
-                                  self._uptime *
-                                  rad[i_t] *
-                                  self._ewidth *
-                                  2  # Since the theta angles are not
-                                     # allowed all the way through but
-                                     #  we have symmetry
-                                  )
-            counts_ang[p] = tmp_counts
-            counts[p] = np.trapz(counts_ang[p],
-                                 x=np.array([i for i in angles]),
-                                 axis=0)
+                angles = config['pone_christian']['angles']
+                for i_t, theta in (enumerate(angles)):
+                    spl_aeff = UnivariateSpline(aeff_log_e_grid,
+                                                (self._const.msq2cmsq *
+                                                 aeff_mat[i_t]),
+                                                s=0, k=1)
+                    aeff_eval = spl_aeff(np.log10(self._egrid))
+                    aeff_eval[self._egrid < 10**min(aeff_log_e_grid)] = 0
+                    aeff_eval[self._egrid > 10**max(aeff_log_e_grid)] = 0
+                    tmp_counts.append(aeff_eval *
+                                      (flux[p] + Astro) *
+                                      self._uptime *
+                                      rad[i_t] *
+                                      self._ewidth *
+                                      2  # Since the theta angles are not
+                                         # allowed all the way through but
+                                         #  we have symmetry
+                                      )
+                counts_ang[p] = tmp_counts
+                counts[p] = np.trapz(counts_ang[p],
+                                     x=np.array([i for i in angles]),
+                                     axis=0)
         else:
             for p in self._particles:
                 tmp_counts = []
@@ -538,31 +530,6 @@ class Detector(object):
                 counts[p] = np.trapz(counts_ang[p],
                                      x=np.array([i for i in flux.keys()]),
                                      axis=0)
-
-        # if boolean_smeared:
-        #    for p in self._particles:
-        #        spl_log10Esigmas = (UnivariateSpline(self._energies,
-        #                                             self._log10Esigmas, k=1,
-        #                                             s=0, ext=3)(self._egrid))
-        #        tmp_count_mat = []
-        #        ratio = []
-        #        for k, e in enumerate(self._egrid):
-        #            local_log_norm = (self._log_norm_chris(self._egrid,
-        #                                             np.log10(e),
-        #                                             spl_log10Esigmas[k]))
-        #            tmp_count_mat.append(counts[p][k] * local_log_norm)
-        #        ratio = (np.sum(counts[p]) /
-        #                 np.sum(np.array(np.sum(tmp_count_mat, axis=0))))
-        #        tmp_count_mat_r = []
-        #        for k, e in enumerate(self._egrid):
-        #            local_log_norm = (self._log_norm_chris(self._egrid,
-        #                                             np.log10(e),
-        #                                             spl_log10Esigmas[k]))
-        #            tmp_count_mat_r.append(counts[p][k] *
-        #                                   local_log_norm * ratio)
-#
-        #        counts[p] = np.array(np.sum(tmp_count_mat_r, axis=0))
-
         if boolean_smeared:
             for p in self._particles:
                 spl_log10Esigmas = (UnivariateSpline(self._energies,
@@ -580,16 +547,13 @@ class Detector(object):
                                                            spl_log10Esigmas[k])
                                       )
                     Norm.append(np.sum(local_log_norm))
-                    # print(Norm)
-                    local_log.append(local_log_norm)
 
-                    # pickle.dump(local_log_norm / Norm, open(
-                    #     '../data/tmp_files/smearing_mat_chris.pkl', 'wb'))
+                    local_log.append(local_log_norm)
 
                 tmp_count_mat.append(np.dot(counts[p], local_log) / Norm)
 
                 counts[p] = np.sum(tmp_count_mat, axis=0)
-        counts[p] = counts[p][self._t_d:]
+
         return counts
 
     def width2grid(self, a: np.array):

@@ -27,13 +27,13 @@ _baseconfig = {
         "pone type": ["new", "old"],
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         'density': ['NFW', 'Burkert'],
-        "channel": ["W", "All"],
+        "channel": ["W", "\[Tau]", "b", "All"],
     },
     "simulation parameters": {
         "mass grid": np.logspace(2, 6, 9),
         "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 3.0e3,  # GeV
+        "low energy cutoff": 1.0e3,  # GeV
         "high energy cutoff": 1e6,  # GeV
         "DM type k": 2
     },
@@ -55,7 +55,7 @@ _baseconfig = {
         # Angles of interest currently not custom
         'theta angles': range(0, 91, 1),
         # Particles of interest
-        'particles of interest': ['numu']  # , "nue", "nutau"]
+        'particles of interest': ['numu', "nue", "nutau"]
     },
     ###########################################################################
     # P-ONE
@@ -96,11 +96,11 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez": np.logspace(-3, 17, 151),
+        "integration grid lopez": np.logspace(-3, 12, 151),
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 1e-2
+        "scaling correction": 1e-3
 
     }
 }

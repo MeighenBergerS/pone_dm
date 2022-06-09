@@ -13,7 +13,7 @@ from detectors import Detector
 import pickle
 import csv
 import numpy as np
-from scipy.interpolate import UnivariateSpline
+# from scipy.interpolate import UnivariateSpline
 _log = logging.getLogger("pone_dm")
 
 
@@ -141,7 +141,8 @@ class Background(object):
                 )
                 print('Calculation finished')
                 pickle.dump(self._bkgrd, open(
-                 '../data/tmp_files/Christian_/Back_christ_%f.pkl' % (_spacing),
+                 '../data/tmp_files/Christian_' +
+                 '/Back_christ_%f.pkl' % (_spacing),
                  'wb'))
 
                 # _log.info("Trying to load pre-calculated tables")
@@ -260,15 +261,6 @@ class Background(object):
                                             self._bkgrd_PONE[i])
                 pickle.dump(self._bkgrd, open(
                     '../data/tmp_files/background_combined.pkl', 'wb'))
-
-    # TODO: bkgrd() -> returns
-
-    def odr_fit_phi(self, A, x):
-        spl_phi = UnivariateSpline(self._shower._egrid,
-                                   np.sum(np.array(self._bkgrd['numu']),
-                                          axis=0),
-                                   k=1, s=0)
-        return (A[0] * spl_phi(x + A[1]) + A[2])
 
     @property
     def bkgrd_data(self):

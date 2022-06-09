@@ -129,29 +129,29 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        /Knx0k1iUD/rAITPjUVWP7OOqZxxRl4/GB9jws6TZD+0dsz30/hrP4+Z3gMPA3M/wNyNORHYeT/H
-        t7/yy5CBP+0Y19G/4Ic/xMIr0bM6kD8m9maluA+WPxojERlE/Z0/KuqQ/xFipD+GLJ+bN7WrPzQs
-        cuYa1bI/mpmZmZmZuT+4IB/KVmbBP3x3ZMIIp8c/S3Ddh3kT0D+8vJeZZdrVP/DPC3bHtN0/dtT2
-        dM0w5D8fj0urPnLrP3YL8NuVp/I/VWDU9rhb+T9QcDhBSDwBQHBjlTPdbQdA4W1SHzzZD0DJWpRx
-        k6UVQBFlEgj6bB1AAAAAAAAAJEAYo9Cb5y8rQFl93td+ejJAfP9J5G0eOUBzi/5fnxJBQHo6OdQ7
-        NUdA+KvBBkGMT0DXB9P1QHFVQOkRpyfaJV1AQ+vVgKjPY0B2L+jlMO5qQK+1TNDUTXJA0WV4+Lbh
-        eEDt5rswW+mAQO9eTlYj/YZAAAAAAABAj0Bq/7rxbD2VQNujSzFm35xAmc9Z2sWfo0Dkuf0FGa2q
-        QK+1zL2WIbJAWk5HzZKluEAg3gzAesDAQP6F+m6SxcZAmD9OSXf0zkAUZZ0zFgrVQOLbd4WcmdxA
-        iw8e8lZw40DSmCV8nmzqQCs6bZvD9fFAAAAAAABq+ECLF9oc/ZcAQfYXg9aHjgZBX1QsJaWpDkE6
-        Oa6MO9cUQdHbj4h7VBxBQbVfsFpBI0ERGxTMvywqQa64s2ZayjFBoSFFMf0uOEEB91JY4W9AQcij
-        RUgCWEZBSvhO2odfTkFYX/3Q26RUQfOq2qIBEFxBAAAAANASY0HJxBR9e+1pQbhqlh9an3FB66EK
-        BYn0d0G1HOiFJkiAQbxjsIIAIoZBNouVsx0WjkEmtW/X9XKUQZDQeEAtzJtBRgJ+zrXkokHyoQEa
-        0K6pQfVndsjBdLFB+bGNIqK6t0F98kW7yyDAQY7VOkeB7MVBAAAAAGXNzUG9Obh5iEHUQcAGW9H8
-        iNtBf07wCwu34kHbrDoxvHDpQevNGWaQSvFBwtRMNEeB90ELi54goPP/QfFiXlqDtwVCjeOkElyF
-        DUKFRlGUkhAUQm4COcluRhtCC7P+qs6JIkLjSp1UPjMpQtf2pf/EIDFCAAAA6HZIN0I42i8+ZaY/
-        QkYdj4MFg0VCp3qnQgE+TUIL13UGE+BTQr9RiJ+BBFtCIgbcoP9cYkKg3HsZVfZoQky9mZ5e93BC
-        xtGQ7i8Qd0Iw/r4H5Vl/QuaJNI0GT4VCwfct61L3jEKB4hqyCLCTQq9Rc88zw5pCAABA5ZwwokJ8
-        YpUY/7moQt7Ox05czrBCuNcS/HDYtkLeHxi6HQ6/QvV/okSFG8VCt8lXa0+xzEJdxOh7coDTQsc3
-        0NeDgtpC4yNhcqUE4kJ5Ng3uOn7oQqkLUR69pfBCqem7xzih9kIOAkqWDcP+QtEXEnqA6ARDAAA0
-        JvVrDEPxtDRLT1ETQzwzGDtwQhpDiLjuRBjZIUPm2GI5B0MoQ/jznh2AfTBDl5XcC4ZqNkPSspvh
-        sng+Q5SrmgD3tURDEsi3gkInTEOPUvoJniJTQzeiXn/3AlpDjM4KXPStYUOb0WmdYghoQ5siXl+k
-        VXBDAKDYhVc0dkM=
-    scaling correction: 0.01
+        /Knx0k1iUD/YTTHeUKBUP6M3eRuG91k/ebB4TF5YYD8YH2PCzpNkP7eQM+TG52k/iO5zzHROcD9X
+        kmo8VId0P8DcjTkR2Hk/sAI8T5FEgD97FK5H4XqEP06hvRVlyIk/xsIr0bM6kD+a3JbfdW6UP+Lm
+        +3LCuJk/cjqgTtwwoD8q6pD/EWKkP+02hUspqak/+qn4wwonsD9fAwujtVW0P5qZmZmZmbk/0YSW
+        LT8dwD94s3bFYEnEP8STfFcTisk/UHDdh3kT0D8PSUhiEz3UP7QkdX+Wetk/VEIzz7kJ4D971PZ0
+        zTDkPzrEzQsja+k/AAAAAAAA8D8FJvz4jiT0P1Vg1Pa4W/k/tbhbLZjs/z9kzNTpVxgEQFNb2jpY
+        TAlA4W1SHzzZD0DpEgBDKAwUQJqJNNIAPRlASDXBzuvFH0AAAAAAAAAkQI0vO7eyLSlAa3iJNKey
+        L0BrU1kc3/MzQHz/SeRtHjlAJ/KQSW6fP0CzhJOTxedDQKQXwFMyD0lACqzBBkGMT0BNwThhs9tT
+        QAAAAAAAAFlAcfsJZR95X0BD69WAqM9jQFWob+PW8GhAXH9cXQlmb0BZl/rtpMNzQN9lePi24XhA
+        jB2w6P5Sf0CGCzmkqLeDQKHxhjmg0ohAAAAAAABAj0AmPSafs6uTQBNmC6GSw5hAapJLnAwtn0CZ
+        z1naxZ+jQC89eSmOtKhAV3+WtiQar0B4Em5R35OzQGhOR82SpbhACa7oR0gHv0AAAAAAAIjDQHDM
+        74aglshAmD9OSXf0zkCCO6/hJ3zTQIBD8FC3h9hAeozXs7Hh3kCWDx7yVnDjQBaXySXXeOhAAiKZ
+        gPfO7kDFbPEsjWTzQAAAAAAAavhAer+rqEi8/kDK59CNylgDQWMKG9oxWwhBX1QsJaWpDkHMt2YQ
+        D00TQW6Tpa5sTBhB7fw77wyXHkFBtV+wWkEjQffHLXiwPShBAAAAAICELkGsV2tprTUzQb0hRTH9
+        LjhB+8yhUP5xPkG8tDs3BypDQcBlgNRSIEhBbfhO2odfTkEUfoUVaB5TQZGid1yxEVhB9Tk5lhxN
+        XkEAAAAA0BJjQbMtxsMYA2hBLGqWfbw6bkEdIGXyPgdzQeuhCgWJ9HdBL3+giWcofkFEW3HotPuC
+        QZnd5hoC5odBNouVsx0WjkE5xOPdMfCSQQAAAACE15dBILm39N4DnkFcAn7OteSiQSRo/q4OyadB
+        ZUpNRqvxrUF+TwS2QNmyQRWyjSKiurdB/5SgoYLfvUECdz2Q0s3CQUe1XFU+rMdBAAAAAGXNzUG0
+        0/JYa8LSQfKCHULjnddBLQK+WlK73UF/TvALC7fiQV1jheOQj+dBmh4xq0qp7UEgXQSlsavyQcLU
+        TDRHgfdBmeKz6k2X/UEAAAAgX6ACQqGILy8GcwdCr+OkElyFDUJcwbZ4E5USQh9i7M7NZBdCNLxm
+        HHVzHUIgs/6qzokiQmd0RQ6eVidC8glgAZlhLUKgbbCykH4yQgAAAOh2SDdCyWr7usdPPUJNDqeL
+        WXNCQrNx5FZYOkdCp3qnQgE+TUKhNcAxKWhSQuhfvlVCLFdCgdHWkUUsXUI4Btyg/1xiQgeJXN80
+        HmdCAAAAopQabUI=
+    scaling correction: 0.001
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -162,6 +162,8 @@ dictitems:
     native mceq: true
     particles of interest:
     - numu
+    - nue
+    - nutau
     path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
     primary model: H4a
     theta angles: !!python/object/apply:builtins.range
@@ -169,10 +171,10 @@ dictitems:
     - 91
     - 1
   general:
-    channel: W
+    channel: All
     config location: ../run/config.txt
     debug level: 40
-    density: Burkert
+    density: NFW
     detector: POne
     log file handler: ../run/pdm.log
     pone type: old
@@ -191,38 +193,14 @@ dictitems:
   pone:
     aeff location: ../data/
     high E sigma:
-      nue:
-      - 0.15
-      - 0.12
-      - 0.09
-      - 0.07
-      numu:
-      - 0.25
-      - 0.15
-      - 0.1
-      - 0.09
-      nutau:
-      - 0.15
-      - 0.12
-      - 0.09
-      - 0.07
+      nue: 0.12
+      numu: 0.15
+      nutau: 0.12
     low E sigma:
-      nue:
-      - 0.55
-      - 0.45
-      - 0.35
-      - 0.25
-      numu:
-      - 0.45
-      - 0.35
-      - 0.25
-      - 0.15
-      nutau:
-      - 0.55
-      - 0.45
-      - 0.35
-      - 0.25
-    smearing: unsmeared
+      nue: 0.45
+      numu: 0.25
+      nutau: 0.45
+    smearing: smeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0
@@ -339,7 +317,7 @@ dictitems:
   simulation parameters:
     DM type k: 2
     high energy cutoff: 1000000.0
-    low energy cutoff: 3000.0
+    low energy cutoff: 1000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001

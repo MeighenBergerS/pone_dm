@@ -172,7 +172,7 @@ class Signal(object):
         )
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
-        total_flux = _ours+_extra
+        total_flux = _ours + _extra
         total_flux_dict = {}
         # Assuming the same signals for all flavours
         for i in config['atmospheric showers']['particles of interest']:
@@ -184,7 +184,7 @@ class Signal(object):
         total_new_counts = (tmp_y_counts['numu'])
         # print(np.array(total_new_counts).shape)
         # the sim_to_dec omits the dict but we assume
-        return total_new_counts
+        return tmp_y_counts
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,
                           sv: float):

@@ -131,7 +131,9 @@ class Limits(object):
 
     def limit_calc_christ(self, mass_grid,
                           sv_grid):
-
+        """Limit calculation with chi2 method for P-ONE Chris's Eff.Area
+        Signal_grid for this case is a dictionary
+        """
         y = {}
         try:
             _log.info('Fetching precalculated signal grid for IceCube')
@@ -141,19 +143,30 @@ class Limits(object):
             _log.info('No precalculated signal grid found')
             _log.info('Calculating the signal grid for IceCube')
             # for more generations adding the loop ----
-            self._signal_grid = np.array([[
-                     self._signal(self._egrid, mass, sv)
-                     for mass in mass_grid]
-                     for sv in sv_grid]
-                     )
-        for i in (self.particles):
-            print(self._signal_grid.shape)
-            print(self._bkgrd[i].shape)
+            self._signal_grid = {}
+            tmp_dic = {}
+            for i in self.particles:
+                self._signal_grid[i] = np.empty((len(sv_grid), len(mass_grid),
+                                                 len(self._egrid)))
+            tmp_sig_dic = {}
+            for _, sv in enumerate(sv_grid):
+                for _, mass in enumerate(mass_grid):
+                    tmp_sig_dic[sv, mass] = (self._signal(self._egrid,
+                                             mass, sv))
+            for i in config['atmospheric showers']['particles' +
+                                                   ' of interest']:
+                for j, sv in enumerate(sv_grid):
+                    tmp_dic[i] = []
+                    for mass in mass_grid:
+                        tmp_dic[i].append(tmp_sig_dic[sv, mass][i])
+                    self._signal_grid[i][j] = (tmp_dic[i])
+
+        for i in tqdm(self.particles):
             y[i] = np.array([[chi2.sf(np.sum(
-                 np.nan_to_num(x**2 /
-                               self._bkgrd[i])), 2)
-                             for x in k]
-                             for k in self._signal_grid])
+                np.nan_to_num(x[self._t_d:]**2 /
+                              self._bkgrd[i][self._t_d:])), 2)
+                            for x in k]
+                             for k in self._signal_grid[i]])
         return y, self._signal_grid
 
     def limit_calc_POne(self,
