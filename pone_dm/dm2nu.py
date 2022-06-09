@@ -13,7 +13,7 @@ from scipy.integrate import quad
 from scipy.interpolate import UnivariateSpline
 from config import config
 from constants import pdm_constants
-
+from collections import Counter
 _log = logging.getLogger(__name__)
 
 
@@ -35,6 +35,17 @@ class DM2Nu(object):
         self.omega_m = self._const.omega_m
         self.omega_L = self._const.omega_L
         self._d_constructor()
+        self.nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
+                                delim_whitespace=True)
+        if config['general']['density'] == 'Burlket':
+            self._dphi_de_c = self._dphi_de_c_burkert
+        else:
+            self._dphi_de_c = self.dphide_channel
+        if config['general']["channel"] == 'W':
+            # self._channel = "\[Tau]"
+            self.m_keys = Counter(self.nu_e['mDM'].values).keys()
+            config['simulation parameters']['mass grid'] = (
+                [i for i in self.m_keys])
 
     def galactic_flux(self, E: np.array,
                       m_x: float, sv: float,
@@ -48,7 +59,7 @@ class DM2Nu(object):
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        ) * self._dN_nu_E_nu(m_x, E) * config["advanced"]["scaling correction"]
+        ) * self._dN_nu_E_nu(m_x, E)
         # need to check which one
 
     def galactic_flux_c(self, E: np.array,
@@ -61,10 +72,9 @@ class DM2Nu(object):
         k : k factor (majorana: 2 otherwise 4)
         J : J-factor
         """
-        nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
-                           delim_whitespace=True)
-        e_grid = m_x * 10**nu_e[nu_e['mDM'] == m_x]['Log[10,x]']
-        dNdlogE = nu_e[nu_e['mDM'] == m_x]['b']
+
+        e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x]["\[Tau]"]
         # phi_nue.append((
         # self.extra_galactic_flux(e_grid, m, 1e-26)) *
         # np.array(dNdlogE) / np.array(e_grid))
@@ -73,7 +83,7 @@ class DM2Nu(object):
 
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        ) * dNdE(m_x, E) * config["advanced"]["scaling correction"]
+        ) * dNdE(E)
         # need to check which one
 
     def extra_galactic_flux_nfw(self, E: np.array,
@@ -99,7 +109,7 @@ class DM2Nu(object):
         """
         return self._dphide_burkret(
             E, m_x, sv
-        ) * config["advanced"]["scaling correction"]
+        ) * config["advanced"]["scaling correction"] * 10 # Scaling factor different than nfw Reason unkown !!
 
     def extra_galactic_flux_c(self, E: np.array, m_x: float, snu: float, k=2):
         """Fetches the extra-galactic flux with burkert profile for particluar
@@ -108,8 +118,9 @@ class DM2Nu(object):
         m_x : mass of Dark Matter
         sv : sigma_nu
         """
-        return (self._dphi_de_c_burkert(E, m_x, snu, k) *
-                config["advanced"]["scaling correction"])
+        # the mass factor unaccounted for as of now
+        return (self._dphi_de_c(E, m_x, snu, k) *
+                config["advanced"]["scaling correction"]) / m_x**2
 
     def _dN_nu_E_nu(self, m_x: float, E: np.array):
         """ implements a delta function for the decay
@@ -350,11 +361,11 @@ class DM2Nu(object):
 
         def c_200(x):
             return B_0(x) * C(x)
-        a_arr = c_200(x)
+        c_arr = c_200(x)
         # Removing too high values
-        a_arr[a_arr > 100] = 100
-        return ((a_arr**3) * (1 - (1 + a_arr)**(-3)) /
-                (3 * (np.log(1 + a_arr) - a_arr * (1 + a_arr)**(-1)))**2)
+        c_arr[c_arr > 100] = 100
+        return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
+                (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
 
     def _dln_sigma_1(self, M: float):
         """returns:
@@ -400,6 +411,11 @@ class DM2Nu(object):
                       integrand(rho_s, r_s, 0))
         return int_result * 4 * np.pi
 
+    def trapz_rho_halo(self):
+        """Try trapzoidal method for integral
+        """
+        return 0
+
     def _G_burkert(self, z: float):
         """returns
         G_burkert : numpy array
@@ -415,7 +431,7 @@ class DM2Nu(object):
                                            )
                     )
 
-        aa = (
+        aa = (np.pi *
             ((self.omega_m / self._const.omega_DM)**2) *
             self._const.Delta / (3 * self._omega_mz(z))
         )
@@ -431,11 +447,7 @@ class DM2Nu(object):
             x=config["advanced"]["integration grid lopez"],
             axis=0
         )
-        # bb = (
-        #     quad(integrand, 1e-2, 1e1)[0] +
-        #     quad(integrand, 1e1, 1e10)[0] +
-        #     quad(integrand, 1e10, 1e17)[0]
-        # )
+
         return aa * bb
 
     def _dphide_burkret(self, E: np.array, m_x: float, snu: float):
@@ -467,7 +479,7 @@ class DM2Nu(object):
 
     def _G_lopez(self, z: float):
         """returns
-        G_lopez : numpy array
+        G_lopez : ++py array
         """
         def integrand(M):
             return (
@@ -475,10 +487,9 @@ class DM2Nu(object):
                 self._f_delta(M, z) *
                 self._g_tild(M, z)
             )
-        aa = (
-            ((self.omega_m / self._const.omega_DM)**2) *
-            self._const.Delta / (3 * self._omega_mz(z))
-        )
+        aa = (np.pi *  # After looking at the literature plots of Watson
+              ((self.omega_m / self._const.omega_DM)**2) *
+              self._const.Delta / (3 * self._omega_mz(z)))
         # ------ Here the dNdlogx should be included in the
         # integrand for W, b chanels ----- 19.04.22
         # Using splines to integrate
@@ -516,7 +527,7 @@ class DM2Nu(object):
 
         a_g = a_t / b_t
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
-        b = 8 * np.pi * m_x**2
+        b = 8 * m_x**2
         res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
         # the factor of 2 for
         # annihiliation to 2 neutrino
@@ -532,37 +543,28 @@ class DM2Nu(object):
         """
         # What is the z for T = 1 MeV
 
-        # z = m_x / E - 1
-        nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
-                           delim_whitespace=True)
-        e_grid = m_x * 10**nu_e[nu_e['mDM'] == m_x]['Log[10,x]']
-        dNdlogE = nu_e[nu_e['mDM'] == m_x]['b']
+        z = m_x / E - 1
+        # z = np.linspace(0, self.z_T(), 121)
+        e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x]["\[Tau]"]
         # phi_nue.append((
-        # self.extra_galactic_flux(e_grid, m, 1e-26)) *
-        # np.array(dNdlogE) / np.array(e_grid))
+        # self.extra_galactic_flux(e_grid, m, 1e-26))
         dNdE = np.array(dNdlogE) / np.array(e_grid)
         dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0)
-        T = 1  # MeV
-        T = T
-        # z_up = self.z_T()
-        # z_log = np.logspace(0, np.log(z_up), 121)
-        z = m_x / E - 1
-        # a_t = (
-        #     (1 + self._G_lopez(z)) *
-        #     (1 + z)**3
-        # )
+        EW = []
+        for i, e in enumerate(E):
+            if i == 0:
+                EW.append(e)
+            else:
+                EW.append(e - E[i-1])
+        EW = np.array(EW)
 
-        # multiplide the H_0 ------
-        # b_t = (self._H(self._a_z(z), self._const.H_0) *
-        #        self._const.H_0)
-
-        def a_g_tmp(z_):
-            # e = (z_+1)/m_x
-            return (((1 + self._G_lopez(z_)) * (1 + z_)**3) /
-                    (self._H(self._a_z(z_),
-                     self._const.H_0) *
-                     self._const.H_0)
-                    )
+        def a_t(z_):
+            # multiplide the H_0 ------
+            b_t = (self._H(self._a_z(z_), self._const.H_0) *
+                   self._const.H_0)
+            return ((1 + self._G_lopez(z_)) *
+                    (1 + z_)**3 / b_t)
         a_g = []
         for i, Z in enumerate(z):
             if Z <= 0:
@@ -570,32 +572,32 @@ class DM2Nu(object):
                     a_g.append(0)
                 break
             else:
-                tmp_a = a_g_tmp(z[:i])
-                a_g.append(np.trapz(tmp_a,
-                                    z[:i]))
-
+                tmp_a_g = a_t(z[:i])
+            # a_g.append(np.trapz(tmp_a_g, z[:i]))
+                a_g.append(np.dot(tmp_a_g * dNdE(E[i])/(1+z[:i])**2,
+                                  m_x / EW[:i] - 1))
         a_g = np.array(a_g)
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 4 * k * np.pi * m_x**2
-        res = aaa * a_g * dNdE(E) / (3 * b)
+        res = aaa * a_g / (3 * b)
+        # the factor of 2 for
+        # annihiliation to 2 neutrino
+
         # Padding with zeros
         result = np.zeros_like(E)
         result[0:len(res)] = res
-        return result * config["advanced"]["scaling correction"]
+        return result
 
     def _dphi_de_c_burkert(self, E: np.array, m_x: float, snu: float, k=2):
         """ returns
         dphi/dE_brukert : numpy array
         """
         z = m_x / E - 1
-
-        nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
-                           delim_whitespace=True)
-        e_grid = m_x * 10**nu_e[nu_e['mDM'] == m_x]['Log[10,x]']
-        dNdlogE = nu_e[nu_e['mDM'] == m_x]['W']
+        # z = np.linspace(0, self.z_T(), 121)
+        e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x]["\[Tau]"]
         # phi_nue.append((
-        # self.extra_galactic_flux(e_grid, m, 1e-26)) *
-        # np.array(dNdlogE) / np.array(e_grid))
+        # self.extra_galactic_flux(e_grid, m, 1e-26))
         dNdE = np.array(dNdlogE) / np.array(e_grid)
         dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0)
         EW = []
@@ -620,26 +622,27 @@ class DM2Nu(object):
                 break
             else:
                 tmp_a_g = a_t(z[:i])
-                # a_g.append(np.trapz(tmp_a_g, z[:i]))
-                a_g.append(np.dot(tmp_a_g, (m_x / EW[:i] - 1)))
+            # a_g.append(np.trapz(tmp_a_g, z[:i]))
+                a_g.append(np.dot(tmp_a_g * dNdE(E[i])/(1+z[:i])**2,
+                                  m_x / EW[:i] - 1))
         a_g = np.array(a_g)
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 4 * k * np.pi * m_x**2
-        res = aaa * a_g * dNdE(E) / (3 * b)
+        res = aaa * a_g / (3 * b)
         # the factor of 2 for
         # annihiliation to 2 neutrino
 
         # Padding with zeros
         result = np.zeros_like(E)
         result[0:len(res)] = res
-        return result * m_x**(-2)
+        return result
 
     def z_T(self):
         T0 = 2.725  # in Kelvin , From Mather et. al 1999 (saw in Luzzi)
         # In standard Model (1+z)^(1 + alpha), alpha=0 !!!!!
         # in Luzzi they found alpha =
-        T_MeV = 11604525006.1657
-        return (T_MeV / (T0)) - 1
+        T_MeV_K = 11604525006.1657
+        return (T_MeV_K / (T0)) - 1
 
     def _find_nearest(self, array, value):
         """ Add description
