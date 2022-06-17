@@ -180,12 +180,12 @@ class Detector(object):
     def smearing_function(self, true_e, true_dec, year):
         """"
         parameters:
-        tru_e : log_10( E )
+        tru_e : log( E )
         true_dec : Declanation
         year : year in interset
 
         return:
-        smearing_e : log_10(E)
+        smearing_e : log(E)
         smearing_fraction : smearing distribution for true over log_10( E )
         grid
         """
@@ -329,7 +329,7 @@ class Detector(object):
         sigma = fraction of E
         ( standard deviation as per definition )
         """
-        pdf = (np.exp(- (np.log10(E) - mu)**2 / (2 * sigma**2)) /
+        pdf = (np.exp(- (np.log(E) - mu)**2 / (2 * sigma**2)) /
                (sigma * np.sqrt(2 * np.pi)))
 
         return pdf
@@ -419,7 +419,8 @@ class Detector(object):
                  Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
-            self._count[i] = self._count[i]
+            # if boolean_sig:
+            #     print(self._count[i].shape)
 
             if boolean_smeared:
                 tmp_count_mat = []

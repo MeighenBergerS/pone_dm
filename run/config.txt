@@ -200,7 +200,7 @@ dictitems:
       nue: 0.45
       numu: 0.25
       nutau: 0.45
-    smearing: smeared
+    smearing: unsmeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0
@@ -328,12 +328,12 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 9
+        - 10
       - *id002
       - false
       - !!binary |
-        AAAAAAAAWUBZl/rtpMNzQAAAAAAAQI9ALz15KY60qEAAAAAAAIjDQHqM17Ox4d5AAAAAAABq+EDM
-        t2YQD00TQQAAAACAhC5B
+        AAAAAAAAWUAR28VUGGRxQLJfqgUcMohAqh2xj97UoEBJ/Umu12q3QLfNA1hAStBADuM/bfyp5kC6
+        Q8p2L4j/QKJwLHdV7xVBAAAAAICELkE=
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -344,10 +344,10 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 9
+        - 10
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDpSYAA+DBqqOryUt5F9hMs6OTZrsJcC7To6qEWWa5UOO9waBocMHzA7CUFdv+f+UDuS
-        fiJi5+pxO0+bDgq045I7
+        FMuuxEDCiDoORe8DoD6mOnk4avda/MM6fAL+ks704TpfMdhSBCIAO8/iomxB/Rw7srV5BKcLOjsX
+        ktU4k2ZXO3pKo61ABnU7T5sOCrTjkjs=
     uptime: 315360000

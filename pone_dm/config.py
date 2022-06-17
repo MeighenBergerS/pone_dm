@@ -30,8 +30,8 @@ _baseconfig = {
         "channel": ["W", "\[Tau]", "b", "All"],
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 9),
-        "sv grid": np.logspace(-26, -21, 9),
+        "mass grid": np.logspace(2, 6, 10),
+        "sv grid": np.logspace(-26, -21, 10),
         "uptime": 10 * 365 * 24 * 60 * 60,
         "low energy cutoff": 1.0e3,  # GeV
         "high energy cutoff": 1e6,  # GeV
@@ -101,7 +101,6 @@ _baseconfig = {
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
         "scaling correction": 1e-3
-
     }
 }
 
