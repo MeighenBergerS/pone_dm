@@ -35,8 +35,10 @@ class Background(object):
         self._pone_smearing = config['pone']['smearing']
         if self._pone_smearing == 'smeared':
             self._smb = True
+            self._name_sm = "sm"
         elif self._pone_smearing == 'unsmeared':
             self._smb = False
+            self._name_sm = "unsm"
 
         # Check this again
         if self.name == "IceCube":
@@ -142,7 +144,7 @@ class Background(object):
                 print('Calculation finished')
                 pickle.dump(self._bkgrd, open(
                  '../data/tmp_files/Christian_' +
-                 '/Back_christ_%f.pkl' % (_spacing),
+                 '/Back_christ_%s_%i.pkl' % (self._name_sm, _spacing),
                  'wb'))
 
                 # _log.info("Trying to load pre-calculated tables")

@@ -367,6 +367,10 @@ class DM2Nu(object):
         return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
                 (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
 
+    def _lnsigma_1(self, M: float):
+        lnsigma_1 = (0.2506 * (M)**(0.07536)) - (2.6 * (M)**(0.001745))
+        return lnsigma_1
+
     def _dln_sigma_1(self, M: float):
         """returns:
         dln(sigma)/dM : Float
@@ -474,7 +478,7 @@ class DM2Nu(object):
                     self._g_tild(M, z)
                     )
 
-        aa = (np.pi *
+        aa = (
               ((self.omega_m / self._const.omega_DM)**2) *
               self._const.Delta / (3 * self._omega_mz(z)))
         # ------ Here the dNdlogx should be included in the
@@ -650,7 +654,8 @@ class DM2Nu(object):
             else:
                 tmp_a_g = a_t(z[:i])
             # a_g.append(np.trapz(tmp_a_g, z[:i]))
-                a_g.append(np.dot(tmp_a_g * dNdE(E[i]) / (1 + z[:i])**2,  # redshift factor from DM for spectrum
+                a_g.append(np.dot(tmp_a_g * dNdE(E[i]) / (1 + z[:i])**2,
+                           # redshift factor from DM for spectrum
                                   m_x / EW[:i] - 1))
         a_g = np.array(a_g)
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2

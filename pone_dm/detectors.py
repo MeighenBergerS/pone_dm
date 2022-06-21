@@ -543,15 +543,15 @@ class Detector(object):
                 tmp_count_mat = []
                 Norm = []
                 for k, e in enumerate(self._egrid):
-                    local_log_norm = (self._log_norm_chris(self._egrid,
-                                                           np.log10(e),
-                                                           spl_log10Esigmas[k])
+                    local_log_norm = (self._log_norm(self._egrid,
+                                                     np.log10(e),
+                                                     spl_log10Esigmas[k])
                                       )
                     Norm.append(np.sum(local_log_norm))
 
                     local_log.append(local_log_norm)
 
-                tmp_count_mat.append(np.dot(counts[p], local_log) / Norm)
+                tmp_count_mat.append(np.dot(counts[p], local_log) / Norm)  # 
 
                 counts[p] = np.sum(tmp_count_mat, axis=0)
 

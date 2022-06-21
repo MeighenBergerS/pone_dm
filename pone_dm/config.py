@@ -30,10 +30,10 @@ _baseconfig = {
         "channel": ["W", "\[Tau]", "b", "All"],
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 10),
-        "sv grid": np.logspace(-26, -21, 10),
+        "mass grid": np.logspace(2, 6, 9),
+        "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 1.0e3,  # GeV
+        "low energy cutoff": 5.0e2,  # GeV
         "high energy cutoff": 1e6,  # GeV
         "DM type k": 2
     },
