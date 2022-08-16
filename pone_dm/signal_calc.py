@@ -55,7 +55,7 @@ class Signal(object):
         elif self._density_prof == 'Burkert' and self._channel == "All":
             self._extra_dm = self._dmnu.extra_galactic_flux_burkert
             self._galac_dm = self._dmnu.galactic_flux
-        elif self._channel == "W":
+        elif self._channel != "All":
             self._extra_dm = self._dmnu.extra_galactic_flux_c
             self._galac_dm = self._dmnu.galactic_flux_c
         if self.name == 'IceCube':

@@ -42,7 +42,8 @@ class DM2Nu(object):
             self._dphi_de_c = self._dphi_de_c_burkert
         else:
             self._dphi_de_c = self.dphide_channel
-        if config['general']["channel"] == 'W':
+        self.channel = config['general']["channel"]
+        if config['general']["channel"] != 'All':
             # self._channel = "\[Tau]"
             self.m_keys = Counter(self.nu_e['mDM'].values).keys()
             config['simulation parameters']['mass grid'] = (
@@ -73,9 +74,9 @@ class DM2Nu(object):
         k : k factor (majorana: 2 otherwise 4)
         J : J-factor
         """
-
+        ch = self.channel
         e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
-        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x]["\[Tau]"]
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
         # phi_nue.append((
         # self.extra_galactic_flux(e_grid, m, 1e-26)) *
         # np.array(dNdlogE) / np.array(e_grid))
@@ -679,11 +680,11 @@ class DM2Nu(object):
         dphi/dE_Lopez * dN/dlog(E/m_x)
         """
         # What is the z for T = 1 MeV
-
+        ch = self.channel
         z = m_x / E - 1
         # z = np.linspace(0, self.z_T(), 121)
         e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
-        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x]["\\[Nu]\\[Mu]"]
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
         # phi_nue.append((
         # self.extra_galactic_flux(e_grid, m, 1e-26))
         dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
