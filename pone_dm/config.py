@@ -33,7 +33,7 @@ _baseconfig = {
         "mass grid": np.logspace(2, 6, 9),
         "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 5.0e2,  # GeV
+        "low energy cutoff": 1e1,  # GeV
         "high energy cutoff": 1e6,  # GeV
         "DM type k": 2
     },
@@ -100,7 +100,7 @@ _baseconfig = {
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 1e-3
+        "scaling correction": 1e-2
     }
 }
 

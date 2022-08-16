@@ -151,7 +151,7 @@ dictitems:
         HHVzHUIgs/6qzokiQmd0RQ6eVidC8glgAZlhLUKgbbCykH4yQgAAAOh2SDdCyWr7usdPPUJNDqeL
         WXNCQrNx5FZYOkdCp3qnQgE+TUKhNcAxKWhSQuhfvlVCLFdCgdHWkUUsXUI4Btyg/1xiQgeJXN80
         HmdCAAAAopQabUI=
-    scaling correction: 0.001
+    scaling correction: 0.01
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -200,7 +200,7 @@ dictitems:
       nue: 0.45
       numu: 0.25
       nutau: 0.45
-    smearing: smeared
+    smearing: unsmeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0
@@ -317,7 +317,7 @@ dictitems:
   simulation parameters:
     DM type k: 2
     high energy cutoff: 1000000.0
-    low energy cutoff: 500.0
+    low energy cutoff: 10.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001

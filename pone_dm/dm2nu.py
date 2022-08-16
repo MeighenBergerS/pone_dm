@@ -34,6 +34,7 @@ class DM2Nu(object):
         self._const = pdm_constants()
         self.omega_m = self._const.omega_m
         self.omega_L = self._const.omega_L
+        self.omega_r = self._const.omega_r
         self._d_constructor()
         self.nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
                                 delim_whitespace=True)
@@ -220,7 +221,8 @@ class DM2Nu(object):
         H(a)/H_0 normalized
         """
         # The H0 was removed since it cancels later
-        return ((self.omega_m / a**3) + self.omega_L)**(1/2)
+        return ((self.omega_m / a**3) + self.omega_L + self.omega_r/a**4
+                )**(1/2)
 
     def _D_to_inte(self, a: np.array, H_0: float,):
         """ Integrand for D(a)
@@ -252,7 +254,7 @@ class DM2Nu(object):
         a = self._a_z(z)
         return (
             (self.omega_m / a**3) /
-            (self.omega_L + (self.omega_m / (a)**3))
+            (self.omega_L + (self.omega_m / (a)**3) + self.omega_r/a**4)
         )
 
     def _sigma_lopez(self, M: float):
@@ -287,7 +289,7 @@ class DM2Nu(object):
             A * ((sigma / beta)**(-al) + 1) * np.exp(-gamma / sigma**2)
         )
 
-    def _f_delta(self, M: float, z: np.array):
+    def _f_delta(self, M: float, z: np.array, Delta):
         """ f_delta Watson et.al. : numpy array
         Add description
         """
@@ -295,10 +297,10 @@ class DM2Nu(object):
             self._sigma_lopez(M) *
             self._d(z)
         )
-        delta = 200  # TODO: Add this to constants
+        # TODO: Add this to constants
         b_t = (
-            np.exp(((delta / 178) - 1) * (0.023 - (0.072 / sigma**2.13))) *
-            (delta / 178)**((-0.456 * self._omega_mz(z)) -
+            np.exp(((Delta / 178) - 1) * (0.023 - (0.072 / sigma**2.13))) *
+            (Delta / 178)**((-0.456 * self._omega_mz(z)) -
                             0.139)
         )
         return self._f_178(M, z) * b_t
@@ -367,6 +369,65 @@ class DM2Nu(object):
         return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
                 (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
 
+    def c_delta(self, M, z):
+        # TODO: All of these constants need to be placed into the constants
+        # File
+        c_0 = 3.681
+        c_1 = 5.033
+        al = 6.948
+        x_0 = 0.424
+        s_0 = 1.047
+        s_1 = 1.646
+        b = 7.386
+        x_1 = 0.526
+
+        A = 2.881
+        b = 1.257
+        c = 1.022
+        d_2 = 0.060
+
+        sigma = (
+            self._sigma_lopez(M) *
+            self._d(z)
+        )
+
+        x = (1 / (1 + z)) * (self.omega_L / self.omega_m)**(1/3)
+        # TODO: All of these need descriptions
+
+        def c_min(x):
+            return (
+                c_0 + (c_1 - c_0) * ((np.arctan(al * (x - x_0)) / np.pi) +
+                                     (1/2))
+            )
+
+        def s_min(x):
+            return (
+                s_0 + (s_1 - s_0) * ((np.arctan(b * (x - x_1)) / np.pi) +
+                                     (1/2))
+            )
+        # TODO: This function doesn't seem to be needed
+
+        def B_0(x):
+            return c_min(x) / c_min(1.393)
+
+        def B_1(x):
+            return s_min(x) / s_min(1.393)
+
+        def s_in(x):
+            return B_1(x) * sigma
+
+        def C(x):
+            aa = (((s_in(x) / b)**c) + 1)
+            dd = np.exp(d_2 / s_in(x)**2)
+            return A * aa * dd
+
+        def c_200(x):
+            return B_0(x) * C(x)
+        c_arr = c_200(x)
+        # Removing too high values
+        c_arr[c_arr > 100] = 100
+        return c_arr
+
     def _lnsigma_1(self, M: float):
         lnsigma_1 = (0.2506 * (M)**(0.07536)) - (2.6 * (M)**(0.001745))
         return lnsigma_1
@@ -388,7 +449,7 @@ class DM2Nu(object):
     def rho_dm_artsen(self, r):  # 10.06.22-----------------------------------
         """Returns the rho_halo according to the Burkert profile
         """
-        delta = 0
+
         rho_0 = 1.4e7  # [M_sun / kpc^3]
         r_s = 16.1  # kpc
         # rho_local = 0.471  # [GeV / cm^3]
@@ -396,16 +457,17 @@ class DM2Nu(object):
         beta = 3
         gamma = 1
         rho_x = rho_0 / (
-            ((delta +
-             r/r_s)**gamma) * (1 +
-                               (r/r_s)**alpha)**((beta-gamma)/alpha))
+            ((r/r_s)**gamma) * (1 +
+                                (r/r_s)**alpha)**((beta-gamma)/alpha))
         return rho_x
 
-    def integral_rho_artsen(self, r_s):
+    def integral_rho_artsen(self, M, z):
         """Returns the integral over the rho_halo for the burkert
         DM density profile
         """
-        r = np.linspace(0.01, self.r_delta(100, r_s), 300)
+        r = np.linspace(0.01, self.r_delta(self.c_delta(M, z),
+                        self._const.r_s),
+                        300)
 
         rho_dm = self.rho_dm_artsen(r)
         int_rho2 = np.trapz(4 * np.pi * (r**2) * rho_dm**2,
@@ -414,16 +476,18 @@ class DM2Nu(object):
         return int_rho2
 
     def _G_artsen(self, z):
-
+        """The NFW profile without other approximations but r_delta
+        """
         def integrand(M):
             return (
                     self._dln_sigma_1(M) *
-                    self._f_delta(M, z)
-                    )
+                    self._f_delta(M, z, Delta=self._const.Delta) *
+                    self.integral_rho_artsen(M, z) /
+                    M)
 
         aa = (
               (1 / (self._const.omega_DM * self._const.rho_c_mpc *
-                    (1+z)**3)**2
+                    (1+z)**3)
                )
               )
 
@@ -437,10 +501,10 @@ class DM2Nu(object):
             axis=0
         )
 
-        return aa * bb * self.integral_rho_artsen(self._const.r_s)
+        return aa * bb
 
     def _dphide_artsen(self, E: np.array, m_x: float, snu: float):
-        """ returns
+        """ returns fluxes wih artsen
         dphi/dE_Lopez : numpy array
         """
         z = m_x / E - 1
@@ -474,13 +538,14 @@ class DM2Nu(object):
         def integrand(M):
             return (
                     self._dln_sigma_1(M) *
-                    self._f_delta(M, z) *
+                    self._f_delta(M, z, Delta=self._const.Delta) *
                     self._g_tild(M, z)
                     )
 
         aa = (
-              ((self.omega_m / self._const.omega_DM)**2) *
-              self._const.Delta / (3 * self._omega_mz(z)))
+            ((self.omega_m*(1+z)**3 + self.omega_L + self.omega_r*(1+z)**4) *
+             self._const.Delta) /
+            (3 * self._const.omega_DM * (1+z)**3))
         # ------ Here the dNdlogx should be included in the
         # integrand for W, b chanels ----- 19.04.22
         # Using splines to integrate
@@ -504,11 +569,10 @@ class DM2Nu(object):
         """ returns
         dphi/dE_Lopez : numpy array
         """
-        z = m_x / E - 1
+        z = m_x / E - 1  # To apply the delta function integral  
         z_tmp = z[z > 0]
-
         a_G = (
-            (1 + self._G_lopez(z_tmp)) *
+            (1 + self._G_deimer(z_tmp)) *
             (1 + z_tmp)**3
         )
 
@@ -539,21 +603,19 @@ class DM2Nu(object):
                  r_s**3)
         return rho_s
 
-    def integral_rho_burkert(self, r_s, rho_0, R_0, r_up):
+    def integral_rho_burkert(self, M, z):
         """Returns the integral over the rho_halo for the burkert
         DM density profile
         """
+        r_s = self._const.r_s
+        rho_0 = self._const.rho_0,
+        R_0 = self._const.R_0
         rho_s = self.Rho_s(rho_0, R_0, r_s)
-        r = np.linspace(0, self.r_delta(100, r_s), 121)
+        r = np.linspace(0, self.r_delta(self.c_delta(M, z), r_s), 121)
         rho_dm = self.rho_dm_burkert(r_s, rho_s, r)
         int_rho2 = np.trapz(4 * np.pi * r**2 * rho_dm**2, x=r, axis=0)
 
         return int_rho2
-
-    def trapz_rho_halo(self):
-        """Try trapzoidal method for integral
-        """
-        return 0
 
     def _G_burkert(self, z: float):
         """returns
@@ -562,19 +624,13 @@ class DM2Nu(object):
         def integrand(M):
             return (
                     self._dln_sigma_1(M) *
-                    self._f_delta(M, z) *
-                    self.integral_rho_burkert(self._const.r_s,
-                                              self._const.rho_0,
-                                              self._const.R_0,
-                                              self.r_delta(
-                                                  self._const.c_200,
-                                                  self._const.r_s))
-                                             )
+                    self._f_delta(M, z, Delta=self._const.Delta) *
+                    self.integral_rho_burkert(M, z) /
+                    M)
 
-        aa = (
-            ((1 / self._const.omega_DM)**2) / (self._const.rho_c_mpc**2) /
-            (1+z)**6
-        )
+        aa = (1 / (self._const.omega_DM * self._const.rho_c_mpc *
+                   (1+z)**3))
+
         # ------ Here the dNdlogx should be included in the
         # integrand for W, b chanels ----- 19.04.22
         # Using splines to integrate
@@ -582,6 +638,7 @@ class DM2Nu(object):
             integrand(M)
             for M in config["advanced"]["integration grid lopez"]
         ])
+
         bb = np.trapz(
             function_vals,
             x=config["advanced"]["integration grid lopez"],
@@ -670,7 +727,7 @@ class DM2Nu(object):
         return result
 
     def _dphi_de_c_burkert(self, E: np.array, m_x: float, snu: float, k=2):
-        """ returns
+        """ returns Channel dependent
         dphi/dE_brukert : numpy array
         """
         z = m_x / E - 1
@@ -763,3 +820,116 @@ class DM2Nu(object):
             _log.debug("Dumping the data")
             pickle.dump([d_grid, self._d],
                         open(load_str, "wb"))
+
+# The approximations from Deimer et. al. ---------
+    def _peak_height(self, M, z):
+        sigma = (
+            self._sigma_lopez(M) *
+            self._d(z)
+        )
+        delta_c = self._const.delta_c
+        return delta_c / sigma
+
+    def rho_dm_einasto(self, M, z, r):
+        rho_s = 1
+        r_s = 1
+        nu = self._peak_height(M, z)
+        # alpha_G08 = 0.155 + (0.0095 * nu**2)  # G08  Chiamaka Okolo et.al
+        alpha_K16 = 0.115 + (0.014 * nu**2)  # K16
+
+        alpha = alpha_K16
+        rho = rho_s * np.exp(-(2 / alpha) * ((r/r_s)**(alpha) - 1))
+        return rho
+
+    def _c_einasto_K16(self, M, z):
+        nu = self._peak_height(M, z)
+        c = 6.5 * ((nu)**(-1.6)) * (1 + 0.21 * (nu**2))
+        return c
+
+    def B_einasto(self, M, z):
+        A, B, C = (0.1, 4.5, 2.5)
+        c_p = self._c_nfw_peak_height(M, z)
+        G = A * (c_p + B)**C
+        return G
+
+    def _c_nfw(self, M, z):
+        sigma = (
+            self._sigma_lopez(M) *
+            self._d(z)
+        )
+        c = 0.522 * ((1 + 7.37 * (sigma / 0.95)**(3/4)) *
+                     (1 + 0.14 * (sigma / 0.95)**(-2)))
+        return c
+
+    def _c_nfw_peak_height(self, M, z):
+        nu = self._peak_height(M, z)
+        c = (3.2 + (0.696 / nu)**(2.32) + (1.71 / nu)**(1.31))
+        return c
+
+    def B_nfw(self, M, z):
+        A, B, C = (0.08, 3.0, 2.5)
+        c_p = self._c_nfw_peak_height(M, z)
+        B_h = A * (c_p + B)**C
+        return B_h
+
+    def _G_deimer(self, z: float):
+        """returns
+        G_lopez : numpy array
+        """
+        def integrand(M):
+            return (
+                    self._dln_sigma_1(M) *
+                    self._f_delta(M, z, Delta=self._const.Delta) *
+                    self.B_einasto(M, z)
+                    )
+
+        aa = (
+            ((self.omega_m*(1+z)**3 + self.omega_L + self.omega_r*(1+z)**4) *
+             self._const.Delta) /
+            (3 * self._const.omega_DM * (1+z)**3))
+        # ------ Here the dNdlogx should be included in the
+        # integrand for W, b chanels ----- 19.04.22
+        # Using splines to integrate
+        function_vals = np.array([
+            integrand(M)
+            for M in config["advanced"]["integration grid lopez"]
+        ])
+        bb = np.trapz(
+            function_vals,
+            x=config["advanced"]["integration grid lopez"],
+            axis=0
+        )
+        # bb = (
+        #     quad(integrand, 1e-2, 1e1)[0] +
+        #     quad(integrand, 1e1, 1e10)[0] +
+        #     quad(integrand, 1e10, 1e17)[0]_dphi_de_c
+        # )
+        return aa * bb
+
+    def _dphide_diemer(self, E: np.array, m_x: float, snu: float):
+        """ returns
+        dphi/dE_Lopez : numpy array
+        """
+        z = m_x / E - 1
+        z_tmp = z[z > 0]
+
+        a_G = (
+            (1 + self._G_lopez(z_tmp)) *
+            (1 + z_tmp)**3
+        )
+
+        # multiplide the H_0 ------
+        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
+               self._const.H_0)
+
+        a_g = a_G / H_z
+        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        b = 8 * np.pi * m_x**2
+        res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
+        # the factor of 2 for
+        # annihiliation to 2 neutrino
+
+        # Padding with zeros
+        result = np.zeros_like(E)
+        result[0:len(res)] = res
+        return result  # reason for factor unkown -------

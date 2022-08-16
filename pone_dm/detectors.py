@@ -326,10 +326,9 @@ class Detector(object):
         """Distribution function
         x = E_grid
         mu = log(E)
-        sigma = fraction of E
         ( standard deviation as per definition )
         """
-        pdf = (np.exp(- (np.log(E) - mu)**2 / (2 * sigma**2)) /
+        pdf = (np.exp(- (np.log10(E) - mu)**2 / (2 * sigma**2)) /
                (sigma * np.sqrt(2 * np.pi)))
 
         return pdf
@@ -489,7 +488,7 @@ class Detector(object):
                     spl_aeff = UnivariateSpline(aeff_log_e_grid,
                                                 (self._const.msq2cmsq *
                                                  aeff_mat[i_t]),
-                                                s=0, k=1)
+                                                s=0, k=1, ext=1)
                     aeff_eval = spl_aeff(np.log10(self._egrid))
                     aeff_eval[self._egrid < 10**min(aeff_log_e_grid)] = 0
                     aeff_eval[self._egrid > 10**max(aeff_log_e_grid)] = 0
@@ -514,7 +513,7 @@ class Detector(object):
                     spl_aeff = UnivariateSpline(aeff_log_e_grid,
                                                 (self._const.msq2cmsq *
                                                  aeff_mat[i_t]),
-                                                s=0, k=1)
+                                                s=0, k=1, ext=1)
                     aeff_eval = spl_aeff(np.log10(self._egrid))
                     aeff_eval[self._egrid < 10**min(aeff_log_e_grid)] = 0
                     aeff_eval[self._egrid > 10**max(aeff_log_e_grid)] = 0
@@ -535,25 +534,34 @@ class Detector(object):
             for p in self._particles:
                 spl_log10Esigmas = (UnivariateSpline(self._energies,
                                                      self._log10Esigmas, k=1,
-                                                     s=0, ext=3)(self._egrid))
+                                                     s=0, ext=1)(self._egrid))
                 for i, s in enumerate(spl_log10Esigmas):
                     if s < 0.5:
                         spl_log10Esigmas[i] = 0.5
-                local_log = []
+                # local_log = []
                 tmp_count_mat = []
-                Norm = []
+                # Norm = []
                 for k, e in enumerate(self._egrid):
-                    local_log_norm = (self._log_norm(self._egrid,
-                                                     np.log10(e),
-                                                     spl_log10Esigmas[k])
+                    local_log_norm = (self._norm(self._egrid,
+                                                 np.log10(e),
+                                                 spl_log10Esigmas[k])
                                       )
-                    Norm.append(np.sum(local_log_norm))
+                    tmp_norm = np.sum(local_log_norm)
+                    # print(tmp_norm)
+                    # tmp_norm = 1
+                    tmp_count_mat.append(counts[p][k] * local_log_norm
+                                         / tmp_norm)
 
-                    local_log.append(local_log_norm)
-
-                tmp_count_mat.append(np.dot(counts[p], local_log) / Norm)  # 
-
-                counts[p] = np.sum(tmp_count_mat, axis=0)
+                counts[p] = np.array(np.sum(tmp_count_mat, axis=0))
+   
+                #
+                #    Norm.append(np.sum(local_log_norm))
+#
+                #    local_log.append(local_log_norm)
+#
+                # tmp_count_mat.append(np.dot(counts[p], local_log) / Norm)
+#
+                # counts[p] = np.sum(tmp_count_mat, axis=0)
 
         return counts
 

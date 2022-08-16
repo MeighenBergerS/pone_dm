@@ -35,21 +35,35 @@ class pdm_constants(object):
         self.J_p = 2.2e17  # ##
         self.J_d = 3.6e11  # ##
         # ----------------------------------------------------------------------
-        self.H_0 = 71  # km/(Mpc*s) hubble time --- # ##
-        self.omega_k = -0.09
+        self.h = 0.71
+        self.H_0 = 100  # h km s^-1 Mpc^-1 hubble time --- # ##
+
         self._omega_m = 0.27   # ##
-        self.omega_c = 0.2589
+        self._omega_L = 0.721  # ##
+        self.omega_r = 4.75e-5  # ##
         self.omega_DM = 0.23   # ##
-        self._omega_L = 0.721  # dark energy density # ##
-        self.omega_B = 0.046
-        self.omega_re = 9.8e-5
+        # self.omega_c = 0.2589
+        # 
+        # self.omega_B = 0.045
+        # self.omega_k = -0.09
+        
         # ----------------------------------------------------------------------
         self.Delta = 200  # Lopez et al. ---------- M_min=10e-5------  # ##
         self.msq2cmsq = 1e4  # Converts m^2 to cm^2 # ##
+
+        # for particular profiles I used these which are in kpc and
+        # their units cancels out so not much of difference but still should
+        # be checked again
+
         self.r_s = 20  # kpc,
+
         self.rho_0 = 0.4  # GeV/cm**3
+
         self.R_0 = 0.8134  # kpc
-        self.c_200 = 100
+
+        # The concentation parameters for DM halos
+        self.c_200 = 100  # Parada et. al
+        self.delta_c = 1.686  # Diemer et. al 2015
 
     @property
     def omega_m(self):

@@ -181,7 +181,7 @@ class Signal(object):
                 self._detector.sim2dec(total_flux_dict,
                                        boolean_sig=True,
                                        boolean_smeared=self._bool_smea))
-        total_new_counts = (tmp_y_counts['numu'])
+        # total_new_counts = (tmp_y_counts['numu'])
         # print(np.array(total_new_counts).shape)
         # the sim_to_dec omits the dict but we assume
         return tmp_y_counts
