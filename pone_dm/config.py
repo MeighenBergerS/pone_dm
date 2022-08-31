@@ -27,13 +27,14 @@ _baseconfig = {
         "pone type": ["new", "old"],
         "year": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         'density': ['NFW', 'Burkert'],
-        "channel": ["W", "\[Tau]", "b", "All"],
+        "channel": ["W", "\[Tau]", "b", "All", "\\[Nu]\\[Mu]", "\\[Nu]\\[Tau]",
+                    "\\[Nu]e"],
     },
     "simulation parameters": {
         "mass grid": np.logspace(2, 6, 9),
         "sv grid": np.logspace(-26, -21, 9),
-        "uptime": 10 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 1e1,  # GeV
+        "uptime": 50 * 365 * 24 * 60 * 60,
+        "low energy cutoff": 500,  # GeV
         "high energy cutoff": 1e6,  # GeV
         "DM type k": 2
     },

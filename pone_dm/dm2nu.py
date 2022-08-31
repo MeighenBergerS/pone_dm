@@ -95,7 +95,7 @@ class DM2Nu(object):
         m_x : mass of Dark Matter
         sv : sigma_nu
         """
-        return self._dphide_lopez(
+        return self._dphide_lopez(  # ################### okoli testing!
             E, m_x, sv
         ) * config["advanced"]["scaling correction"]  # Some error in unit
         # conversion 29.11.21
@@ -573,7 +573,7 @@ class DM2Nu(object):
         z = m_x / E - 1  # To apply the delta function integral  
         z_tmp = z[z > 0]
         a_G = (
-            (1 + self._G_deimer(z_tmp)) *
+            (1 + self._G_lopez(z_tmp)) *
             (1 + z_tmp)**3
         )
 
@@ -853,10 +853,14 @@ class DM2Nu(object):
         G = A * (c_p + B)**C
         return G
 
-    def _c_nfw(self, M, z):
-        sigma = (
+    def _c_nfw(self, M, Z):
+        """"
+        0-axis= M
+        1-axis= Z
+        """
+        sigma = np.array([
             self._sigma_lopez(M) *
-            self._d(z)
+            self._d(z) for z in Z] 
         )
         c = 0.522 * ((1 + 7.37 * (sigma / 0.95)**(3/4)) *
                      (1 + 0.14 * (sigma / 0.95)**(-2)))
@@ -867,11 +871,41 @@ class DM2Nu(object):
         c = (3.2 + (0.696 / nu)**(2.32) + (1.71 / nu)**(1.31))
         return c
 
-    def B_nfw(self, M, z):
+    def B_nfw(self, z):
+        Mass = config["advanced"]["integration grid lopez"]
         A, B, C = (0.08, 3.0, 2.5)
-        c_p = self._c_nfw_peak_height(M, z)
-        B_h = A * (c_p + B)**C
+        c_p = self._c_nfw(Mass,np.array(z))
+        B_h = np.array([ m * A * (c_p + B)**C for m in Mass])
+        B_h = np.sum(B_h,
+                        axis=0)
         return B_h
+
+    def _dphide_okoli_nfw(self, E: np.array, m_x: float, snu: float):
+        """ returns
+        dphi/dE_Lopez : numpy array
+        """
+        z = m_x / E - 1  # To apply the delta function integral  
+        z_tmp = z[z > 0]
+        a_G = (
+            (1 + self.B_nfw(z_tmp)) *
+            (1 + z_tmp)**3
+        )
+
+        # multiplide the H_0 ------
+        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
+               self._const.H_0)
+
+        a_g = np.sum(self.B_nfw(z)) * self._const.Delta * self._const.rho_c_mpc
+        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        b = 8 * np.pi * m_x**2
+        res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
+        # the factor of 2 for
+        # annihiliation to 2 neutrino
+
+        # Padding with zeros
+        result = np.zeros_like(E)
+        result[0:len(res)] = res
+        return result  # reason for factor unkown -------
 
     def _G_deimer(self, z: float):
         """returns

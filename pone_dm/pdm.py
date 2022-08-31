@@ -63,6 +63,7 @@ class PDM(object):
         elif self._pone_smearing == 'unsmeared':
             self._smea = 'un'
             self._smea_folder = 'unsmeared'
+            print('unsmeared')
         # Create RandomState
         if config["general"]["random state seed"] is None:
             _log.warning("No random state seed given, constructing new state")
@@ -141,16 +142,16 @@ class PDM(object):
             # --------------------------------------------------------------
             # Dumping the config settings for later debugging
             pickle.dump(self._results, open(
-                '../data/14_04/%s/limits_results_%s_%s.pkl' % (
+                '../data/tmp_files/%s/limits_results_%s_%s.pkl' % (
                     self._smea_folder,
                     self._detector_name,
                     self._smea), 'wb'))
             _log.info('Dumping the signal grid and limits result')
             pickle.dump(self._signal_data, open(
-                '../data/14_04/%s/signal_grid_%s_%s.pkl' %
+                '../data/tmp_files/%s/signal_grid_%s_%s.pkl' %
                 (self._smea_folder, self._detector_name, self._smea), 'wb'))
             pickle.dump(self.prob_mat, open(
-                '../data/14_04/%s/Prob_grid_%s_%s.pkl' %
+                '../data/tmp_files/%s/Prob_grid_%s_%s.pkl' %
                 (self._smea_folder, self._detector_name, self._smea), 'wb'))
         else:
             self._results, self._signal_data = self._limit_calc.limits(
@@ -158,14 +159,14 @@ class PDM(object):
             # --------------------------------------------------------------
             # Dumping the config settings for later debugging
             pickle.dump(self._results, open(
-                '../data/14_04/%s/limits_results_%s_%s_%s.pkl' % (
+                '../data/tmp_files/%s/limits_results_%s_%s_%s.pkl' % (
                     self._smea_folder,
                     self._detector_name,
                     self._smea,
                     self._profile), 'wb'))
             _log.info('Dumping the signal grid and limits result')
             pickle.dump(self._signal_data, open(
-                '../data/14_04/%s/signal_grid_%s_%s_%s.pkl' %
+                '../data/tmp_files/%s/signal_grid_%s_%s_%s.pkl' %
                 (self._smea_folder, self._detector_name, self._smea,
                  self._profile), 'wb'))
         _log.debug(
