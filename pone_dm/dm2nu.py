@@ -33,6 +33,14 @@ class DM2Nu(object):
         self.omega_m = self._const.omega_m
         self.omega_L = self._const.omega_L
         self._d_constructor()
+        self.nu_e = pd.read_csv(open('../data/nu_e.dat', 'rb'),
+                                delim_whitespace=True)
+        self._dphi_de_c = self.dphide_channel
+        self.channel = config['general']["channel"]
+        if config['general']["channel"] != 'All':
+            self.m_keys = Counter(self.nu_e['mDM'].values).keys()
+            config['simulation parameters']['mass grid'] = (
+                [i for i in self.m_keys])
 
     def galactic_flux(self, E: np.array,
                       m_x: float, sv: float,
@@ -48,6 +56,29 @@ class DM2Nu(object):
             sv, k, m_x, E, J
         ) * config["advanced"]["scaling correction"]  # TODO: Unit correction need to check which one
 
+    def galactic_flux_c(self, E: np.array,
+                        m_x: float, sv: float,
+                        k: float, J: float):
+        """ Fetches the galactic flux
+        E : Energy Grid
+        m_x : Dark Matter mass
+        sv : signma_nu
+        k : k factor (majorana: 2 otherwise 4)
+        J : J-factor
+        """
+        ch = self.channel
+        e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
+        # phi_nue.append((
+        # self.extra_galactic_flux(e_grid, m, 1e-26)) *
+        # np.array(dNdlogE) / np.array(e_grid))
+        dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
+        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
+
+        return self._dphi_dE_g(
+            sv, k, m_x, E, J
+        ) * dNdE(E)
+
     def extra_galactic_flux(self, E: np.array,
                             m_x: float, sv: float):
         """ Fetches the extra-galactic flux
@@ -60,6 +91,18 @@ class DM2Nu(object):
         ) * config["advanced"]["scaling correction"]  # Some error in unit conversion 29.11.21
     # ---------------------------------------------------------------------------
     # Galactic
+
+    def extra_galactic_flux_c(self, E: np.array, m_x: float, snu: float, k=2):
+        """Fetches the extra-galactic flux with burkert profile for particluar
+           annihilation channel
+        E : Energy grid
+        m_x : mass of Dark Matter
+        sv : sigma_nu
+        """
+        # the mass factor unaccounted for as of now
+        return (self._dphi_de_c(E, m_x, snu, k) *
+                config["advanced"]["scaling correction"])  # / m_x**2
+
 
     def _dN_nu_E_nu(self, m_x: float, E: np.array):
         """ implements a delta function for the decay
@@ -350,6 +393,61 @@ class DM2Nu(object):
         result = np.zeros_like(E)
         result[0:len(res)] = res
         return result
+
+# Cook book -------------------------------------------------------------
+
+    def dphide_channel(self, E: np.array, m_x: float, snu: float, k=2):
+        """ returns
+        dphi/dE_Lopez * dN/dlog(E/m_x)
+        """
+        # What is the z for T = 1 MeV
+        ch = self.channel
+        z = m_x / E - 1
+        # z = np.linspace(0, self.z_T(), 121)
+        e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
+        # phi_nue.append((
+        # self.extra_galactic_flux(e_grid, m, 1e-26))
+        dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
+        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
+        EW = []
+        for i, e in enumerate(E):
+            if i == 0:
+                EW.append(e)
+            else:
+                EW.append(e - E[i-1])
+        EW = np.array(EW)
+
+        def a_t(z_):
+            # multiplide the H_0 ------
+            b_t = (self._H(self._a_z(z_), self._const.H_0) *
+                   self._const.H_0)
+            return ((1 + self._G_lopez(z_)) *
+                    (1 + z_)**3 / b_t)
+        a_g = []
+        for i, Z in enumerate(z):
+            if Z <= 0:
+                for j in z[i:]:
+                    a_g.append(0)
+                break
+            else:
+                tmp_a_g = a_t(z[:i])
+            # a_g.append(np.trapz(tmp_a_g, z[:i]))
+                a_g.append(np.dot(tmp_a_g * dNdE(E[i]) / (1 + z[:i])**2,
+                           # redshift factor from DM for spectrum
+                                  m_x / EW[:i] - 1))
+        a_g = np.array(a_g)
+        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        b = 4 * k * np.pi * m_x**2
+        res = aaa * a_g / (b)
+        # the factor of 2 for
+        # annihiliation to 2 neutrino
+
+        # Padding with zeros
+        result = np.zeros_like(E)
+        result[0:len(res)] = res
+        return result
+
 
     def _find_nearest(self, array, value):
         """ Add description

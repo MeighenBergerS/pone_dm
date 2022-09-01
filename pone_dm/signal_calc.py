@@ -11,7 +11,6 @@ from pone_aeff import Aeff
 from dm2nu import DM2Nu
 from constants import pdm_constants
 from detectors import Detector
-import pickle
 _log = logging.getLogger("pone_dm")
 
 
@@ -38,17 +37,38 @@ class Signal(object):
         self._year = year
         self._ewidth = self._aeff._ewidth
         self._egrid = self._aeff._egrid
-
         self.name = config['general']['detector']
+
+        self._s_pone = self._signal_calc_pone
+        self._s_ice = self._signal_calc_ice
+        self._pone_smearing = config['pone']['smearing']
+        self._channel = config['general']["channel"]
+        if self._pone_smearing == 'smeared':
+            self._bool_smea = True
+        elif self._pone_smearing == 'unsmeared':
+            self._bool_smea = False
         if self.name == 'IceCube':
             print(self.name)
             self._signal_calc = self._signal_calc_ice
         elif self.name == 'POne':
-            print(self.name)
-            self._signal_calc = self._signal_calc_pone
+            if config['general']['pone type'] == 'old':
+                print(self.name)
+                self._signal_calc = self._signal_calc_pone
+            elif config['general']['pone type'] == 'new':
+                print('Christians Effective Areas are being used')
+                self._hit = config['pone_christian']['hit']
+                self._module = config['pone_christian']['module']
+                self._spacing = config['pone_christian']['spacing']
+                self._pos_res = config['pone_christian']['pos res']
+                self._signal_calc = self._signal_calc_pone_christ
+
         elif self.name == 'combined':
             print(self.name)
             self._signal_calc = self._signal_calc_combined
+
+        if self._channel != "All":
+            self._extra_dm = self._dmnu.extra_galactic_flux_c
+            self._galac_dm = self._dmnu.galactic_flux_c
 
     @property
     def signal_calc(self):
@@ -56,6 +76,20 @@ class Signal(object):
         total_counts : np.array
         """
         return self._signal_calc
+
+    @property
+    def signal_calc_pone(self):
+        """For combined analysis we need the seperate function
+        for P-ONE
+        """
+        return self._s_pone
+
+    @property
+    def signal_calc_ice(self):
+        """For combined analysis we need the seperate function
+        for IceCube
+        """
+        return self._s_ice
 
     def _signal_calc_ice(self, egrid: np.array, mass: float,
                          sv: float):
@@ -92,17 +126,57 @@ class Signal(object):
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
         total_flux = _ours+_extra
-        pickle.dump(total_flux,open('../data/signal_flux/extra_%.1e_%.1e.pkl' % (mass,sv),'wb'))
+        if self.name == 'combined':
+            for y in self._year:
+                _log.info("combined signal ice year =" +
+                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
+                total_new_counts.append(
+                    np.array(self._detector.sim2dec_ice(total_flux,
+                                                        y)['numu']))
+        elif self.name == 'IceCube':
+            for y in self._year:
+                _log.info(" signal ice year =" +
+                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
+                total_new_counts.append(
+                    np.array(self._detector.sim2dec(total_flux,
+                                                    y)['numu']))
 
+        # the sim_to_dec omits the dict but we assume
+        # same for all neutrino flavours
+
+        return total_new_counts
+
+    def _signal_calc_pone_christ(self, egrid: np.array, mass: float,
+                                 sv: float):
+        """Calculates the expected signal given the mass, sigma*v
+        with christian's effective area file
+        total_new_counts : 
+        """
+        _extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
+
+        # Galactic
+        total_new_counts = []
+        # TODO: Need to configure for IceCube ------
+
+        _ours = self._dmnu.galactic_flux(
+            egrid, mass, sv,
+            config['simulation parameters']["DM type k"],
+            self._const.J_d + self._const.J_p + self._const.J_s
+        )
+        # Converting fluxes into counts with effective area of IceCube !!!!
+        #  These steps take a lot of time !!!!
+        total_flux = _ours+_extra
         for y in self._year:
-            tmp_counts = (self._detector.sim2dec(total_flux, y, boolean_sig=True)[
-                    'numu'])
-            total_new_counts.append(tmp_counts)
-            # the sim_to_dec omits the dict but we assume
-            # same for all neutrino flavours
-        print(np.array(total_new_counts).shape)
-        pickle.dump(total_new_counts, open('../data/signal_counts/counts_%.1e_%.1e_.pkl' % (mass, sv), 'wb'))
-        
+            _log.info(" signal ice year =" +
+                      "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
+            tmp_y_counts, tmp_counts_y_ang = (
+                self._detector.sim2dec(total_flux,
+                                       boolean_sig=True,
+                                       boolean_smeared=self._bool_smea))
+
+            total_new_counts.append(np.array(tmp_y_counts['numu']))
+
+        # the sim_to_dec omits the dict but we assume
         return total_new_counts
 
     def _signal_calc_pone(self, egrid: np.array, mass: float,
@@ -153,10 +227,14 @@ class Signal(object):
             )
 
         if self.name == 'combined':
-            total_counts = self._detector.sim2dec_pone(_flux, boolean_sig=True,
-                                                       boolean_combined=True)
+            total_counts = (
+                self._detector.sim2dec_pone(_flux,
+                                            boolean_sig=True,
+                                            boolean_smeared=self._bool_smea))
         else:
-            total_counts = self._detector.sim2dec(_flux, boolean_sig=True)
+            total_counts = (
+                self._detector.sim2dec(_flux, boolean_sig=True,
+                                       boolean_smeared=self._bool_smea))
             # smearing for PONE if needed
 
         return total_counts

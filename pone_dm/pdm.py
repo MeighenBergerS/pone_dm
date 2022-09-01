@@ -20,6 +20,7 @@ from pone_aeff import Aeff
 from bkgrd_calc import Background
 from detectors import Detector
 from signal_calc import Signal
+import pickle
 # from .limit_calc import Limits
 
 # unless we put this class in __init__, __name__ will be contagion.contagion
@@ -124,8 +125,13 @@ class PDM(object):
         # Limit Calculation
         self.mass_grid = config["simulation parameters"]["mass grid"]
         self.sv_grid = config["simulation parameters"]["sv grid"]
-        self._results, self._signal_data = self._limit_calc.limits(
-            self.mass_grid, self.sv_grid)
+        if config["general"]["detector"] == "IceCube":
+            self._results, self._signal_data, self.prob_mat = self._limit_calc.limits(
+             self.mass_grid, self.sv_grid)
+            pickle.dump(self.prob_mat, open("../data/Probability_matrix_ice.pkl" , "wb"))
+        else:
+            self._results, self._signal_data = self._limit_calc.limits(
+             self.mass_grid, self.sv_grid)
         # --------------------------------------------------------------
         # Dumping the config settings for later debugging
         _log.debug(
