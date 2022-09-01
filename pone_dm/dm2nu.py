@@ -258,6 +258,8 @@ class DM2Nu(object):
             (self.omega_L + (self.omega_m / (a)**3) + self.omega_r/a**4)
         )
 
+# Lpoez ------------------------------------------------------------------
+
     def _sigma_lopez(self, M: float):
         """ returns
         sigma_lopez : float
@@ -447,91 +449,6 @@ class DM2Nu(object):
         """
         return c_delta * r_0
 
-    def rho_dm_artsen(self, r):  # 10.06.22-----------------------------------
-        """Returns the rho_halo according to the Burkert profile
-        """
-
-        rho_0 = 1.4e7  # [M_sun / kpc^3]
-        r_s = 16.1  # kpc
-        # rho_local = 0.471  # [GeV / cm^3]
-        alpha = 1
-        beta = 3
-        gamma = 1
-        rho_x = rho_0 / (
-            ((r/r_s)**gamma) * (1 +
-                                (r/r_s)**alpha)**((beta-gamma)/alpha))
-        return rho_x
-
-    def integral_rho_artsen(self, M, z):
-        """Returns the integral over the rho_halo for the burkert
-        DM density profile
-        """
-        r = np.linspace(0.01, self.r_delta(self.c_delta(M, z),
-                        self._const.r_s),
-                        300)
-
-        rho_dm = self.rho_dm_artsen(r)
-        int_rho2 = np.trapz(4 * np.pi * (r**2) * rho_dm**2,
-                            x=r, axis=0)
-
-        return int_rho2
-
-    def _G_artsen(self, z):
-        """The NFW profile without other approximations but r_delta
-        """
-        def integrand(M):
-            return (
-                    self._dln_sigma_1(M) *
-                    self._f_delta(M, z, Delta=self._const.Delta) *
-                    self.integral_rho_artsen(M, z) /
-                    M)
-
-        aa = (
-              (1 / (self._const.omega_DM * self._const.rho_c_mpc *
-                    (1+z)**3)
-               )
-              )
-
-        function_vals = np.array([
-            integrand(M)
-            for M in config["advanced"]["integration grid lopez"]
-        ])
-        bb = np.trapz(
-            function_vals,
-            x=config["advanced"]["integration grid lopez"],
-            axis=0
-        )
-
-        return aa * bb
-
-    def _dphide_artsen(self, E: np.array, m_x: float, snu: float):
-        """ returns fluxes wih artsen
-        dphi/dE_Lopez : numpy array
-        """
-        z = m_x / E - 1
-        z_tmp = z[z > 0]
-
-        a_G = (
-            (1 + self._G_artsen(z_tmp)) *
-            (1 + z_tmp)**3
-        )
-
-        # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
-               self._const.H_0)
-
-        a_g = a_G / H_z
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
-        b = 8 * np.pi * m_x**2
-        res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
-        # the factor of 2 for
-        # annihiliation to 2 neutrino
-
-        # Padding with zeros
-        result = np.zeros_like(E)
-        result[0:len(res)] = res
-        return result
-
     def _G_lopez(self, z: float):
         """returns
         G_lopez : numpy array
@@ -570,7 +487,7 @@ class DM2Nu(object):
         """ returns
         dphi/dE_Lopez : numpy array
         """
-        z = m_x / E - 1  # To apply the delta function integral  
+        z = m_x / E - 1  # To apply the delta function integral
         z_tmp = z[z > 0]
         a_G = (
             (1 + self._G_lopez(z_tmp)) *
@@ -592,6 +509,139 @@ class DM2Nu(object):
         result = np.zeros_like(E)
         result[0:len(res)] = res
         return result  # reason for factor unkown -------
+
+# Cook book -------------------------------------------------------------
+
+    def dphide_channel(self, E: np.array, m_x: float, snu: float, k=2):
+        """ returns
+        dphi/dE_Lopez * dN/dlog(E/m_x)
+        """
+        # What is the z for T = 1 MeV
+        ch = self.channel
+        z = m_x / E - 1
+        # z = np.linspace(0, self.z_T(), 121)
+        e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
+        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
+        # phi_nue.append((
+        # self.extra_galactic_flux(e_grid, m, 1e-26))
+        dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
+        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
+        EW = []
+        for i, e in enumerate(E):
+            if i == 0:
+                EW.append(e)
+            else:
+                EW.append(e - E[i-1])
+        EW = np.array(EW)
+
+        def a_t(z_):
+            # multiplide the H_0 ------
+            b_t = (self._H(self._a_z(z_), self._const.H_0) *
+                   self._const.H_0)
+            return ((1 + self._G_lopez(z_)) *
+                    (1 + z_)**3 / b_t)
+        a_g = []
+        for i, Z in enumerate(z):
+            if Z <= 0:
+                for j in z[i:]:
+                    a_g.append(0)
+                break
+            else:
+                tmp_a_g = a_t(z[:i])
+            # a_g.append(np.trapz(tmp_a_g, z[:i]))
+                a_g.append(np.dot(tmp_a_g * dNdE(E[i]) / (1 + z[:i])**2,
+                           # redshift factor from DM for spectrum
+                                  m_x / EW[:i] - 1))
+        a_g = np.array(a_g)
+        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        b = 4 * k * np.pi * m_x**2
+        res = aaa * a_g / (b)
+        # the factor of 2 for
+        # annihiliation to 2 neutrino
+
+        # Padding with zeros
+        result = np.zeros_like(E)
+        result[0:len(res)] = res
+        return result
+
+# Artsen ---------------------------------------------------------------------
+    def rho_dm_artsen(self, r):  # 10.06.22-----------------------------------
+        """Returns the rho_halo according to the Burkert profile
+        """
+
+        rho_0 = 1.4e7  # [M_sun / kpc^3]
+        r_s = 16.1  # kpc
+        # rho_local = 0.471  # [GeV / cm^3]
+        alpha = 1
+        beta = 3
+        gamma = 1
+        rho_x = rho_0 / (
+            ((r/r_s)**gamma) * (1 +
+                                (r/r_s)**alpha)**((beta-gamma)/alpha))
+        return rho_x
+
+    def integral_rho_artsen(self, M, z):
+        """Returns the integral over the rho_halo for the burkert
+        DM density profile
+        """
+        r = np.linspace(0.01, self.r_delta(self.c_delta(M, z),
+                        self._const.r_s),
+                        300)
+        rho_dm = self.rho_dm_artsen(r)
+        int_rho2 = np.trapz(4 * np.pi * (r**2) * rho_dm**2,
+                            x=r, axis=0)
+        return int_rho2
+
+    def _G_artsen(self, z):
+        """The NFW profile without other approximations but r_delta
+        """
+        def integrand(M):
+            return (
+                    self._dln_sigma_1(M) *
+                    self._f_delta(M, z, Delta=self._const.Delta) *
+                    self.integral_rho_artsen(M, z) /
+                    M)
+        aa = (
+              (1 / (self._const.omega_DM * self._const.rho_c_mpc *
+                    (1+z)**3)
+               )
+              )
+        function_vals = np.array([
+            integrand(M)
+            for M in config["advanced"]["integration grid lopez"]
+        ])
+        bb = np.trapz(
+            function_vals,
+            x=config["advanced"]["integration grid lopez"],
+            axis=0
+        )
+        return aa * bb
+
+    def _dphide_artsen(self, E: np.array, m_x: float, snu: float):
+        """ returns fluxes wih artsen
+        dphi/dE_Lopez : numpy array
+        """
+        z = m_x / E - 1
+        z_tmp = z[z > 0]
+        a_G = (
+            (1 + self._G_artsen(z_tmp)) *
+            (1 + z_tmp)**3
+        )   
+        # multiplide the H_0 ------
+        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
+               self._const.H_0)
+        a_g = a_G / H_z
+        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        b = 8 * np.pi * m_x**2
+        res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
+        # the factor of 2 for
+        # annihiliation to 2 neutrino
+        # Padding with zeros
+        result = np.zeros_like(E)
+        result[0:len(res)] = res
+        return result 
+
+# Burkert -----------------------------------------------------------
 
     def rho_dm_burkert(self, r_0, rho_0, r):
         """Returns the rho_halo according to the Burkert profile
@@ -667,58 +717,6 @@ class DM2Nu(object):
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 8 * np.pi * m_x**2
         res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
-        # the factor of 2 for
-        # annihiliation to 2 neutrino
-
-        # Padding with zeros
-        result = np.zeros_like(E)
-        result[0:len(res)] = res
-        return result
-
-    def dphide_channel(self, E: np.array, m_x: float, snu: float, k=2):
-        """ returns
-        dphi/dE_Lopez * dN/dlog(E/m_x)
-        """
-        # What is the z for T = 1 MeV
-        ch = self.channel
-        z = m_x / E - 1
-        # z = np.linspace(0, self.z_T(), 121)
-        e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
-        dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
-        # phi_nue.append((
-        # self.extra_galactic_flux(e_grid, m, 1e-26))
-        dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
-        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
-        EW = []
-        for i, e in enumerate(E):
-            if i == 0:
-                EW.append(e)
-            else:
-                EW.append(e - E[i-1])
-        EW = np.array(EW)
-
-        def a_t(z_):
-            # multiplide the H_0 ------
-            b_t = (self._H(self._a_z(z_), self._const.H_0) *
-                   self._const.H_0)
-            return ((1 + self._G_lopez(z_)) *
-                    (1 + z_)**3 / b_t)
-        a_g = []
-        for i, Z in enumerate(z):
-            if Z <= 0:
-                for j in z[i:]:
-                    a_g.append(0)
-                break
-            else:
-                tmp_a_g = a_t(z[:i])
-            # a_g.append(np.trapz(tmp_a_g, z[:i]))
-                a_g.append(np.dot(tmp_a_g * dNdE(E[i]) / (1 + z[:i])**2,
-                           # redshift factor from DM for spectrum
-                                  m_x / EW[:i] - 1))
-        a_g = np.array(a_g)
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
-        b = 4 * k * np.pi * m_x**2
-        res = aaa * a_g / (b)
         # the factor of 2 for
         # annihiliation to 2 neutrino
 
@@ -823,6 +821,7 @@ class DM2Nu(object):
                         open(load_str, "wb"))
 
 # The approximations from Deimer et. al. ---------
+
     def _peak_height(self, M, z):
         sigma = (
             self._sigma_lopez(M) *
@@ -860,7 +859,7 @@ class DM2Nu(object):
         """
         sigma = np.array([
             self._sigma_lopez(M) *
-            self._d(z) for z in Z] 
+            self._d(z) for z in Z]
         )
         c = 0.522 * ((1 + 7.37 * (sigma / 0.95)**(3/4)) *
                      (1 + 0.14 * (sigma / 0.95)**(-2)))
@@ -874,8 +873,8 @@ class DM2Nu(object):
     def B_nfw(self, z):
         Mass = config["advanced"]["integration grid lopez"]
         A, B, C = (0.08, 3.0, 2.5)
-        c_p = self._c_nfw(Mass,np.array(z))
-        B_h = np.array([ m * A * (c_p + B)**C for m in Mass])
+        c_p = self._c_nfw(Mass, np.array(z))
+        B_h = np.array([m * A * (c_p + B)**C for m in Mass])
         B_h = np.sum(B_h,
                         axis=0)
         return B_h
@@ -884,21 +883,14 @@ class DM2Nu(object):
         """ returns
         dphi/dE_Lopez : numpy array
         """
-        z = m_x / E - 1  # To apply the delta function integral  
+        z = m_x / E - 1  # To apply the delta function integral
         z_tmp = z[z > 0]
-        a_G = (
-            (1 + self.B_nfw(z_tmp)) *
-            (1 + z_tmp)**3
-        )
 
-        # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
-               self._const.H_0)
-
-        a_g = np.sum(self.B_nfw(z)) * self._const.Delta * self._const.rho_c_mpc
+        a_g = np.sum(self.B_nfw(z_tmp)) * self._const.Delta * self._const.rho_c_mpc
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
         b = 8 * np.pi * m_x**2
         res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
+
         # the factor of 2 for
         # annihiliation to 2 neutrino
 

@@ -129,29 +129,29 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        /Knx0k1iUD/YTTHeUKBUP6M3eRuG91k/ebB4TF5YYD8YH2PCzpNkP7eQM+TG52k/iO5zzHROcD9X
-        kmo8VId0P8DcjTkR2Hk/sAI8T5FEgD97FK5H4XqEP06hvRVlyIk/xsIr0bM6kD+a3JbfdW6UP+Lm
-        +3LCuJk/cjqgTtwwoD8q6pD/EWKkP+02hUspqak/+qn4wwonsD9fAwujtVW0P5qZmZmZmbk/0YSW
-        LT8dwD94s3bFYEnEP8STfFcTisk/UHDdh3kT0D8PSUhiEz3UP7QkdX+Wetk/VEIzz7kJ4D971PZ0
-        zTDkPzrEzQsja+k/AAAAAAAA8D8FJvz4jiT0P1Vg1Pa4W/k/tbhbLZjs/z9kzNTpVxgEQFNb2jpY
-        TAlA4W1SHzzZD0DpEgBDKAwUQJqJNNIAPRlASDXBzuvFH0AAAAAAAAAkQI0vO7eyLSlAa3iJNKey
-        L0BrU1kc3/MzQHz/SeRtHjlAJ/KQSW6fP0CzhJOTxedDQKQXwFMyD0lACqzBBkGMT0BNwThhs9tT
-        QAAAAAAAAFlAcfsJZR95X0BD69WAqM9jQFWob+PW8GhAXH9cXQlmb0BZl/rtpMNzQN9lePi24XhA
-        jB2w6P5Sf0CGCzmkqLeDQKHxhjmg0ohAAAAAAABAj0AmPSafs6uTQBNmC6GSw5hAapJLnAwtn0CZ
-        z1naxZ+jQC89eSmOtKhAV3+WtiQar0B4Em5R35OzQGhOR82SpbhACa7oR0gHv0AAAAAAAIjDQHDM
-        74aglshAmD9OSXf0zkCCO6/hJ3zTQIBD8FC3h9hAeozXs7Hh3kCWDx7yVnDjQBaXySXXeOhAAiKZ
-        gPfO7kDFbPEsjWTzQAAAAAAAavhAer+rqEi8/kDK59CNylgDQWMKG9oxWwhBX1QsJaWpDkHMt2YQ
-        D00TQW6Tpa5sTBhB7fw77wyXHkFBtV+wWkEjQffHLXiwPShBAAAAAICELkGsV2tprTUzQb0hRTH9
-        LjhB+8yhUP5xPkG8tDs3BypDQcBlgNRSIEhBbfhO2odfTkEUfoUVaB5TQZGid1yxEVhB9Tk5lhxN
-        XkEAAAAA0BJjQbMtxsMYA2hBLGqWfbw6bkEdIGXyPgdzQeuhCgWJ9HdBL3+giWcofkFEW3HotPuC
-        QZnd5hoC5odBNouVsx0WjkE5xOPdMfCSQQAAAACE15dBILm39N4DnkFcAn7OteSiQSRo/q4OyadB
-        ZUpNRqvxrUF+TwS2QNmyQRWyjSKiurdB/5SgoYLfvUECdz2Q0s3CQUe1XFU+rMdBAAAAAGXNzUG0
-        0/JYa8LSQfKCHULjnddBLQK+WlK73UF/TvALC7fiQV1jheOQj+dBmh4xq0qp7UEgXQSlsavyQcLU
-        TDRHgfdBmeKz6k2X/UEAAAAgX6ACQqGILy8GcwdCr+OkElyFDUJcwbZ4E5USQh9i7M7NZBdCNLxm
-        HHVzHUIgs/6qzokiQmd0RQ6eVidC8glgAZlhLUKgbbCykH4yQgAAAOh2SDdCyWr7usdPPUJNDqeL
-        WXNCQrNx5FZYOkdCp3qnQgE+TUKhNcAxKWhSQuhfvlVCLFdCgdHWkUUsXUI4Btyg/1xiQgeJXN80
-        HmdCAAAAopQabUI=
-    scaling correction: 0.01
+        ldYm6AsuET5YBdKD/rYXPraMvQUnXiA+ModXPgWYJj7CfH69KzAvPtpTLaachjU+fRN0EMO2PT4z
+        I12UIIJEPij3hWwxT0w+PrhZpPSJUz65s+DvnvhaPkBGGdaDnWI+XyUW7T2yaT6TFKA0QLxxPgDM
+        oG9Ke3g+Ha3FgKLlgD4WcD3GCVOHPuZoAeApGZA+KnfUEso4lj5OMxset6yePhSbr9/hK6U+SL5l
+        MIU5rT6I5ru5ryu0PtTLHhrf17s+buGaz5k3wz6Uz1+H8IbKPra5SJUNT9I+HYWkLe9F2T4h9x9s
+        f3HhPsK/VlIaFOg+K+YFT2qe8D5q8hdXuvD2PlLLGgWfqv8+ZfWCSyDbBT9JScCRbCsOP4HaI4Sl
+        0hQ/IEKBMle+HD8qv2Y2q9YjP8/C8rWDYis/P4lBGZrmMj8U5B9HIRc6P3JQXwriAUI/bEgo8Gjb
+        SD8u7Ja3+SdRP23XyyKdrlc/grB4TF5YYD/O/ZtGCZBmP/G1g0cmJW8/XB2OTAF/dT8nCw35Qqx9
+        P4cUrkfheoQ/SGTKZTBFjD8N17IKDYOTP4U9MvgW75o/7wA6yu+Woj/8NoVLKampP9oXcsP7tbE/
+        Twt9sKNyuD+L1/3mqd/AP2LIz7fLSsc/UHDdh3kT0D8xv0DC7zDWP44PWhzgod4/p/j7lWYk5T9h
+        MhRbMS/tPxYm/PiOJPQ/VgvnPQjO+z86Dj5QzzADQGJx9LuQfQpAdFmHQ5VIEkCiiTTSAD0ZQNVc
+        iWVVayFAy4MsCpgLKEAhJCvgipgwQNsEYQaf6DZATPKQSW6fP0AL4z4UZ9NFQJUIbEDDIE5AJBc4
+        w0nLVEC207nkLrRcQE7r1YCoz2NAFteEUtZYa0D5aIQ57N9yQHFMpP7oDXpAGdvd/YT7gUCh8YY5
+        oNKIQEDwP6zpIZFA3/notz6ml0Dimnael1KgQAqFLSEQiKZAaX+WtiQar0CyYRejaHe1QF01kpfG
+        ob1A9hSgiqRzxECe+RPoMjvMQII7r+EnfNNA3ULBXpLl2kAAP3cRXpDiQPXFb98XoOlA1Cg/ibmv
+        8UAcAAAAAGr4QAcDZGmz2QBBpvMJk5BCB0EZvl4yyw0QQWmnFTgYKRZB7fw77wyXHkGFSRzx7Rwl
+        QZYACyzhJC1BbAgSvXAdNEFD3c3bNMQ7QdK0OzcHKkNBK0mUQDR0SkEvJBY7H0JSQaeQuZ4VNFlB
+        SQmYjC1lYUGzLcbDGANoQSOTmYStknBB9gkLk4bgdkEyRV+CQZR/QV4gsZewy4VBNouVsx0WjkG/
+        gPub8MOUQdjS2C0KqpxBt818RajIo0H2tY1aLE+rQX5PBLZA2bJBjns9+LMEukGbhAkxKvXBQW4k
+        jZ3aychBB81fxdsb0UEOgx1C453XQeBi/vrSTOBBV90MzRmA5kH0gVYJJw/vQQjy1ajSb/VBu+Kz
+        6k2X/UGSdEtcamwEQsflIvI4MQxCYSlyKEV1E0KBEF0iEdwaQiCz/qrOiSJCgoazpwmXKUI46z6F
+        eakxQjkXFV1fYThCCEw5B7/TQEKzceRWWDpHQlF0z94eCFBCBSRYc0MhVkKicWaVPYxeQtdfIfB3
+        FWVCAAAAopQabUI=
+    scaling correction: 0.02
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -193,14 +193,14 @@ dictitems:
   pone:
     aeff location: ../data/
     high E sigma:
-      nue: 0.12
+      nue: 0.07
       numu: 0.15
-      nutau: 0.12
+      nutau: 0.07
     low E sigma:
-      nue: 0.45
+      nue: 0.25
       numu: 0.25
-      nutau: 0.45
-    smearing: unsmeared
+      nutau: 0.25
+    smearing: smeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0
@@ -316,8 +316,8 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    high energy cutoff: 1000000.0
-    low energy cutoff: 500
+    high energy cutoff: 5000000.0
+    low energy cutoff: 1000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -328,12 +328,13 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 9
+        - 15
       - *id002
       - false
       - !!binary |
-        AAAAAAAAWUBZl/rtpMNzQAAAAAAAQI9ALz15KY60qEAAAAAAAIjDQHqM17Ox4d5AAAAAAABq+EDM
-        t2YQD00TQQAAAACAhC5B
+        AAAAAAAAWUAaMFqUOyJoQDWMSWMmTHdAl10gQnx9hkDpf+Bi+7WVQEJmRz9k9aRAJv6ThHk7tEAA
+        AAAAAIjDQJR15ou+2tJAiXWR/X0z4kAZSakTCZLxQOljP2Us9gBB6MdvUbZfEEEJPSff7ZwfQQAA
+        AACAhC5B
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -344,10 +345,11 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 9
+        - 15
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDpSYAA+DBqqOryUt5F9hMs6OTZrsJcC7To6qEWWa5UOO9waBocMHzA7CUFdv+f+UDuS
-        fiJi5+pxO0+bDgq045I7
-    uptime: 1576800000
+        FMuuxEDCiDo0RBmScSycOrHuDkWaB7A6VAr4aZU9wjrIgcFfoMHUOk3ijmB/nuc6ZBwmzHLg+jo6
+        qEWWa5UOO9EgHXijZiE70lCEFgnNMztrbVsBLIhGO4DTqTm8o1k7ksL5agYtbTsyyu9qlpmAO0+b
+        Dgq045I7
+    uptime: 315360000
