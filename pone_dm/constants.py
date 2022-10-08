@@ -13,6 +13,7 @@ class pdm_constants(object):
         # ----------------------------------------------------------------------
         # '# ##' == used in the simulation code----
         self.rho_c_mpc = 2.7754e11  # h^-2 M_0 Mpc^-3-------------> Mpc!!!!!
+        # self.rho_c_mpc=5.5e-6 # GeV cm^-3 ----------------------- !!!!!!!
         self.gamma = 1.3186  # NFW parameter --- slope parameter -----  # ##
         # ----------------------------------------------------------------------
         # P-ONE
@@ -43,10 +44,10 @@ class pdm_constants(object):
         self.omega_r = 4.75e-5  # ##
         self.omega_DM = 0.23   # ##
         # self.omega_c = 0.2589
-        # 
+
         # self.omega_B = 0.045
         # self.omega_k = -0.09
-        
+
         # ----------------------------------------------------------------------
         self.Delta = 200  # Lopez et al. ---------- M_min=10e-5------  # ##
         self.msq2cmsq = 1e4  # Converts m^2 to cm^2 # ##

@@ -31,11 +31,11 @@ _baseconfig = {
                     "\\[Nu]e"],
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 15),
-        "sv grid": np.logspace(-26, -21, 15),
+        "mass grid": np.logspace(2, 6, 9),
+        "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 1e3,  # GeV
-        "high energy cutoff": 5e6,  # GeV
+        "low energy cutoff": 1e2,  # GeV
+        "high energy cutoff": 1e6,  # GeV
         "DM type k": 2
     },
     ###########################################################################
@@ -97,11 +97,11 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez": np.logspace(-9, 12, 151),
+        "integration grid lopez": np.logspace(-9, 17, 151),
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 1e-2
+        "scaling correction": 1
     }
 }
 

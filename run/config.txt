@@ -129,29 +129,29 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        ldYm6AsuET5YBdKD/rYXPraMvQUnXiA+ModXPgWYJj7CfH69KzAvPtpTLaachjU+fRN0EMO2PT4z
-        I12UIIJEPij3hWwxT0w+PrhZpPSJUz65s+DvnvhaPkBGGdaDnWI+XyUW7T2yaT6TFKA0QLxxPgDM
-        oG9Ke3g+Ha3FgKLlgD4WcD3GCVOHPuZoAeApGZA+KnfUEso4lj5OMxset6yePhSbr9/hK6U+SL5l
-        MIU5rT6I5ru5ryu0PtTLHhrf17s+buGaz5k3wz6Uz1+H8IbKPra5SJUNT9I+HYWkLe9F2T4h9x9s
-        f3HhPsK/VlIaFOg+K+YFT2qe8D5q8hdXuvD2PlLLGgWfqv8+ZfWCSyDbBT9JScCRbCsOP4HaI4Sl
-        0hQ/IEKBMle+HD8qv2Y2q9YjP8/C8rWDYis/P4lBGZrmMj8U5B9HIRc6P3JQXwriAUI/bEgo8Gjb
-        SD8u7Ja3+SdRP23XyyKdrlc/grB4TF5YYD/O/ZtGCZBmP/G1g0cmJW8/XB2OTAF/dT8nCw35Qqx9
-        P4cUrkfheoQ/SGTKZTBFjD8N17IKDYOTP4U9MvgW75o/7wA6yu+Woj/8NoVLKampP9oXcsP7tbE/
-        Twt9sKNyuD+L1/3mqd/AP2LIz7fLSsc/UHDdh3kT0D8xv0DC7zDWP44PWhzgod4/p/j7lWYk5T9h
-        MhRbMS/tPxYm/PiOJPQ/VgvnPQjO+z86Dj5QzzADQGJx9LuQfQpAdFmHQ5VIEkCiiTTSAD0ZQNVc
-        iWVVayFAy4MsCpgLKEAhJCvgipgwQNsEYQaf6DZATPKQSW6fP0AL4z4UZ9NFQJUIbEDDIE5AJBc4
-        w0nLVEC207nkLrRcQE7r1YCoz2NAFteEUtZYa0D5aIQ57N9yQHFMpP7oDXpAGdvd/YT7gUCh8YY5
-        oNKIQEDwP6zpIZFA3/notz6ml0Dimnael1KgQAqFLSEQiKZAaX+WtiQar0CyYRejaHe1QF01kpfG
-        ob1A9hSgiqRzxECe+RPoMjvMQII7r+EnfNNA3ULBXpLl2kAAP3cRXpDiQPXFb98XoOlA1Cg/ibmv
-        8UAcAAAAAGr4QAcDZGmz2QBBpvMJk5BCB0EZvl4yyw0QQWmnFTgYKRZB7fw77wyXHkGFSRzx7Rwl
-        QZYACyzhJC1BbAgSvXAdNEFD3c3bNMQ7QdK0OzcHKkNBK0mUQDR0SkEvJBY7H0JSQaeQuZ4VNFlB
-        SQmYjC1lYUGzLcbDGANoQSOTmYStknBB9gkLk4bgdkEyRV+CQZR/QV4gsZewy4VBNouVsx0WjkG/
-        gPub8MOUQdjS2C0KqpxBt818RajIo0H2tY1aLE+rQX5PBLZA2bJBjns9+LMEukGbhAkxKvXBQW4k
-        jZ3aychBB81fxdsb0UEOgx1C453XQeBi/vrSTOBBV90MzRmA5kH0gVYJJw/vQQjy1ajSb/VBu+Kz
-        6k2X/UGSdEtcamwEQsflIvI4MQxCYSlyKEV1E0KBEF0iEdwaQiCz/qrOiSJCgoazpwmXKUI46z6F
-        eakxQjkXFV1fYThCCEw5B7/TQEKzceRWWDpHQlF0z94eCFBCBSRYc0MhVkKicWaVPYxeQtdfIfB3
-        FWVCAAAAopQabUI=
-    scaling correction: 0.02
+        /Knx0k1iUD8h9RtlK5lVP1L/fW7deFw/IEC9NEzEYj/R7vw7TL1oP4juc8x0TnA/Tx2OTAF/dT/m
+        8hyfX1Z8P6RdSjqQrYI/6d45AlSfiD/EwivRszqQPyuoJeb2ZJU/Of1CmAs0nD/qADrK75aiP79y
+        rhaAgag/+Kn4wwonsD8rBX0LDEu1P4M6UifhEbw/TUAvw2qAwj+7jF9N0GPIP0tw3Yd5E9A/bydd
+        lkAx1T9QGOoZ4O/bP7Cc9QMBauI/q1aHekRG6D8AAAAAAADwP2JNvWCUF/U/TgvnPQjO+z+f0IBr
+        slMCQDgBlXLcKAhA2G1SHzzZD0CfyMJEB/4UQDVFYmFZrBtAcp/s2H49IkCvgywKmAsoQGt4iTSn
+        si9AQMbAHJnkNEBCa7FS04o7QN+kfCtmJ0JADFwmFnfuR0D4q8EGQYxPQAwXOMNJy1RAJE1m4HVp
+        W0DLJJxCaBFiQGhPj2t50WdASn9cXQlmb0B8+NYSGbJ0QL6bTtlASHtABNvd/YT7gUCjKqjfnrSH
+        QAAAAAAAQI9Akt145gaZlEASoXMMNCebQLbL+zy85aFAKoPlR+eXp0BFf5a2JBqvQOw3JhkTgLRA
+        lfcZSU8Gu0C1E9ffDdDBQJl473lSe8dAhj9OSXf0zkCPQRSGPWfUQL5CwV6S5dpAArl3xnm64UDj
+        daFL4F7nQPAhmYD3zu5AgsakCIZO9EBG5yMd/cT6QO97DNH/pAFBi/MJk5BCB0FfVCwlpakOQaru
+        ZXzsNRRBJ8Q2VI+kGkHip+rfn48hQZY5aiZjJidBAAAAAICELkFVCBK9cB00QUzrKNRIhDpB8OSN
+        01l6QUEkIjbcVwpHQUr4TtqHX05BkFKPphIFVEHIW2NtKWRaQTUJmIwtZWFBxdsTi27uZkEJapZ9
+        vDpuQRHI7xTS7HNBLruI8DBEekGi6tDrGlCBQSCt2wmn0oZBE4uVsx0WjkHb6XDkrtSTQdoPdS5f
+        JJpBBzEm0iE7oUHWt5cvAbemQWVKTUar8a1BEot78ai8s0Fwez34swS6QfMnqyBCJsFBPbyD03yb
+        xkEAAAAAZc3NQSOcoxjApNNByPUvHy/l2UGSkZi4exHhQVfdDM0ZgOZBeB4xq0qp7UGh9qc29Izz
+        QaEH03TQxflB/nhMe878AEKfZNHz12QGQo3jpBJchQ1CYSlyKEV1E0LLhuXKl6YZQiIFSko66CBC
+        EYegH7dJJkLRCWABmWEtQmBEFsuyXTNCe1Fe84SHOULhSzkHv9NAQocpeii3LkZChXqnQgE+TULP
+        pdL7PEZTQosKbMCXaFlCAyXnk1y/YELTpY7m1xNmQgAAAKKUGm1CesYPmOMuc0IF1nQE0El5Qin+
+        RNISq4BCDpA+Mhn5hULB9y3rUveMQtkGYH2mF5NCcxUWki0rmUIormik4ZagQip8GuR63qVCOAY1
+        6jvUrEJpfH+JhQCzQoUlJDywDLlCA0mM7MiCwELnw+LU/MPFQrfJV2tPscxCsL5TmoDp0kKSG6rV
+        V+7YQhr0DY3IbuBCp0yH3Z6p5UKmjRc7jY7sQuy1642X0vJCaYLpMSTQ+EISum9o4FoAQ/BNJ9dg
+        jwVDAAA0JvVrDEM=
+    scaling correction: 1
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -171,7 +171,7 @@ dictitems:
     - 91
     - 1
   general:
-    channel: All
+    channel: \[Tau]
     config location: ../run/config.txt
     debug level: 40
     density: NFW
@@ -200,7 +200,7 @@ dictitems:
       nue: 0.25
       numu: 0.25
       nutau: 0.25
-    smearing: smeared
+    smearing: unsmeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0
@@ -316,8 +316,8 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    high energy cutoff: 5000000.0
-    low energy cutoff: 1000.0
+    high energy cutoff: 1000000.0
+    low energy cutoff: 100.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -328,13 +328,32 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 15
-      - *id002
+        - 62
+      - !!python/object/apply:numpy.dtype
+        args:
+        - i8
+        - false
+        - true
+        state: !!python/tuple
+        - 3
+        - <
+        - null
+        - null
+        - null
+        - -1
+        - -1
+        - 0
       - false
       - !!binary |
-        AAAAAAAAWUAaMFqUOyJoQDWMSWMmTHdAl10gQnx9hkDpf+Bi+7WVQEJmRz9k9aRAJv6ThHk7tEAA
-        AAAAAIjDQJR15ou+2tJAiXWR/X0z4kAZSakTCZLxQOljP2Us9gBB6MdvUbZfEEEJPSff7ZwfQQAA
-        AACAhC5B
+        BQAAAAAAAAAGAAAAAAAAAAgAAAAAAAAACgAAAAAAAAAPAAAAAAAAABQAAAAAAAAAGQAAAAAAAAAe
+        AAAAAAAAACgAAAAAAAAAMgAAAAAAAAA8AAAAAAAAAEYAAAAAAAAAUAAAAAAAAABaAAAAAAAAAGQA
+        AAAAAAAAbgAAAAAAAAB4AAAAAAAAAIIAAAAAAAAAjAAAAAAAAACWAAAAAAAAAKAAAAAAAAAAtAAA
+        AAAAAADIAAAAAAAAANwAAAAAAAAA8AAAAAAAAAAEAQAAAAAAABgBAAAAAAAALAEAAAAAAABKAQAA
+        AAAAAGgBAAAAAAAAkAEAAAAAAADCAQAAAAAAAPQBAAAAAAAAJgIAAAAAAABYAgAAAAAAAIoCAAAA
+        AAAAvAIAAAAAAADuAgAAAAAAACADAAAAAAAAhAMAAAAAAADoAwAAAAAAAEwEAAAAAAAAsAQAAAAA
+        AAAUBQAAAAAAANwFAAAAAAAApAYAAAAAAADQBwAAAAAAAMQJAAAAAAAAuAsAAAAAAACgDwAAAAAA
+        AIgTAAAAAAAAcBcAAAAAAABYGwAAAAAAAEAfAAAAAAAAKCMAAAAAAAAQJwAAAAAAAOAuAAAAAAAA
+        mDoAAAAAAAAgTgAAAAAAADB1AAAAAAAAUMMAAAAAAACghgEAAAAAAA==
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -345,11 +364,10 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 15
+        - 9
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDo0RBmScSycOrHuDkWaB7A6VAr4aZU9wjrIgcFfoMHUOk3ijmB/nuc6ZBwmzHLg+jo6
-        qEWWa5UOO9EgHXijZiE70lCEFgnNMztrbVsBLIhGO4DTqTm8o1k7ksL5agYtbTsyyu9qlpmAO0+b
-        Dgq045I7
+        FMuuxEDCiDpSYAA+DBqqOryUt5F9hMs6OTZrsJcC7To6qEWWa5UOO9waBocMHzA7CUFdv+f+UDuS
+        fiJi5+pxO0+bDgq045I7
     uptime: 315360000
