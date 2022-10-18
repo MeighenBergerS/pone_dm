@@ -97,7 +97,7 @@ class Limits(object):
             # for more generations adding the loop ----
             self._signal_grid = np.array([[
                      np.sum(self._signal(self._egrid, mass, sv),
-                            axis=0)
+                            axis=0) * config["advanced"]["scaling correction"]
                      for mass in mass_grid]
                      for sv in sv_grid]
                      )
@@ -112,12 +112,14 @@ class Limits(object):
             #     sv_grid, mass_grid,
             #     sample_count=10000)
             # With only data no projections for background -------
+            self._signal_grid = (self._signal_grid *
+                                 config["advanced"]["scaling correction"])
             y_p[i], prob_mat[i] = CL_scan(
                 self._signal_grid[:, :, self._t_d:self._t_u],
                 self._ice_data[self._t_d:self._t_u],
                 self._ice_data[self._t_d:self._t_u],
                 sv_grid, mass_grid,
-                sample_count=10000)
+                sample_count=100000)
             # Chi2 Method for Likelihood analysis
             # y[i] = np.array([[chi2.sf(np.sum(
             #     np.nan_to_num(x**2 /

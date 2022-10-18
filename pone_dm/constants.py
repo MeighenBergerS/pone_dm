@@ -12,9 +12,10 @@ class pdm_constants(object):
     def __init__(self):
         # ----------------------------------------------------------------------
         # '# ##' == used in the simulation code----
-        self.rho_c_mpc = 2.7754e11  # h^-2 M_0 Mpc^-3-------------> Mpc!!!!!
-        # self.rho_c_mpc=5.5e-6 # GeV cm^-3 ----------------------- !!!!!!!
+        # self.rho_c_mpc = 2.7754e11 * 0.7**2 # h^-2 M_0 Mpc^-3------> Mpc!!!!!
+        self.rho_c_mpc = 5.5e-6  # GeV cm^-3 ----------------------- !!!!!!!
         self.gamma = 1.3186  # NFW parameter --- slope parameter -----  # ##
+        self._kappa = 2
         # ----------------------------------------------------------------------
         # P-ONE
         # values of  J for P-ONE ------------
@@ -37,7 +38,7 @@ class pdm_constants(object):
         self.J_d = 3.6e11  # ##
         # ----------------------------------------------------------------------
         self.h = 0.71
-        self.H_0 = 100  # h km s^-1 Mpc^-1 hubble time --- # ##
+        self.H_0 = 100 * self.h  # h km s^-1 Mpc^-1 hubble time --- # ##
 
         self._omega_m = 0.27   # ##
         self._omega_L = 0.721  # ##

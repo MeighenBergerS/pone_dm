@@ -158,7 +158,6 @@ class Detector(object):
 
     def astro_flux(self):
         res = 1.66 * (self._egrid / 1e5)**(-2.6) * 1e-18  # Custom
-
         return res
 
     def ice_parser(self, filename):

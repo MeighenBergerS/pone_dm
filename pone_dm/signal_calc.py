@@ -98,7 +98,7 @@ class Signal(object):
         """
         return self._s_ice
 
-    def _signal_calc_ice(self, egrid: np.array, mass: float,
+    def _signal_calc_ice(self, egrid, mass: float,
                          sv: float):
         """ Calculates the expected signal given the mass, sigma*v and angle
 
@@ -153,7 +153,7 @@ class Signal(object):
 
         return total_new_counts
 
-    def _signal_calc_pone_christ(self, egrid: np.array, mass: float,
+    def _signal_calc_pone_christ(self, egrid, mass: float,
                                  sv: float):
         """Calculates the expected signal given the mass, sigma*v
         with christian's effective area file
@@ -186,7 +186,7 @@ class Signal(object):
         # the sim_to_dec omits the dict but we assume
         return tmp_y_counts
 
-    def _signal_calc_pone(self, egrid: np.array, mass: float,
+    def _signal_calc_pone(self, egrid, mass: float,
                           sv: float):
         """ Calculates the expected signal given the mass, sigma*v and angle
 
@@ -215,7 +215,7 @@ class Signal(object):
         _flux[120] = {}
         # Galactic
         for i in config['atmospheric showers']['particles of interest']:
-            _flux[15][i] = np.array(extra) + self._galac_dm(
+            _flux[15][i] = np.array(extra) +  self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d1 + self._const.J_p1 + self._const.J_s1
@@ -254,7 +254,7 @@ class Signal(object):
             signal_dic[i] = signal_ice + signal_pone[i]
         return signal_dic
 
-    def _find_nearest(self, array: np.array, value: float):
+    def _find_nearest(self, array, value: float):
 
         """ Returns: index of the nearest vlaue of an array to the given number
         --------------

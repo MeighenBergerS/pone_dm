@@ -46,16 +46,18 @@ class DM2Nu(object):
         if config['general']["channel"] != 'All':
             # self._channel = "\[Tau]"
             self.m_keys = Counter(self.nu_e['mDM'].values).keys()
-            config['simulation parameters']['mass grid'] = np.array([1000,
-                1200,   1300,   2000,   2500,   5000,
-                6000,   7000,   8000,   9000,   15000,
-                20000,  30000,  50000, 100000
-                #i for i in self.m_keys
-                ])
-                #[100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
-                # 5e4, 1e5])
+            config['simulation parameters']['mass grid'] = (np.array([800,
+                                                            900, 1000,
+                                                            1200, 1500,
+                                                            1700, 2000,
+                                                            5000, 10000,
+                                                            100000]))
+            #  1000, 1200,  1500, 1700, 2000, 5000,  10000, 100000
+            #  i for i in self.m_keys
+            #  [100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
+            #  5e4, 1e5])
 
-    def galactic_flux(self, E: np.array,
+    def galactic_flux(self, E,
                       m_x: float, sv: float,
                       k: float, J: float):
         """ Fetches the galactic flux
@@ -65,12 +67,12 @@ class DM2Nu(object):
         k : k factor (majorana: 2 otherwise 4)
         J : J-factor
         """
-        return self._dphi_dE_g(
-            sv, k, m_x, E, J
-        ) * self._dN_nu_E_nu(m_x, E)
+        return (self._dphi_dE_g(sv, k, m_x, J) *
+                self._dN_nu_E_nu(m_x, E) *
+                config["advanced"]["scaling correction"])
         # need to check which one
 
-    def galactic_flux_c(self, E: np.array,
+    def galactic_flux_c(self, E,
                         m_x: float, sv: float,
                         k: float, J: float):
         """ Fetches the galactic flux
@@ -87,14 +89,13 @@ class DM2Nu(object):
         # self.extra_galactic_flux(e_grid, m, 1e-26)) *
         # np.array(dNdlogE) / np.array(e_grid))
         dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
-        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
+        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)(E)
 
-        return self._dphi_dE_g(
-            sv, k, m_x, E, J
-        ) * dNdE(E)
+        return np.array(self._dphi_dE_g(sv, k, m_x, J)
+                        ) * dNdE * config["advanced"]["scaling correction"]
         # need to check which one
 
-    def extra_galactic_flux_nfw(self, E: np.array,
+    def extra_galactic_flux_nfw(self, E,
                                 m_x: float, sv: float):
         """ Fetches the extra-galactic flux
         E : Energy grid
@@ -108,7 +109,7 @@ class DM2Nu(object):
     # ---------------------------------------------------------------------------
     # Galactic
 
-    def extra_galactic_flux_burkert(self, E: np.array,
+    def extra_galactic_flux_burkert(self, E,
                                     m_x: float, sv: float):
         """ Fetches the extra-galactic flux with burkert profile
         E : Energy grid
@@ -119,7 +120,7 @@ class DM2Nu(object):
             E, m_x, sv
         ) * config["advanced"]["scaling correction"]
 
-    def extra_galactic_flux_c(self, E: np.array, m_x: float, snu: float, k=2):
+    def extra_galactic_flux_c(self, E, m_x: float, snu: float, k=2):
         """Fetches the extra-galactic flux with burkert profile for particluar
            annihilation channel
         E : Energy grid
@@ -130,7 +131,7 @@ class DM2Nu(object):
         return (self._dphi_de_c(E, m_x, snu, k) *
                 config["advanced"]["scaling correction"])  # / m_x**2
 
-    def _dN_nu_E_nu(self, m_x: float, E: np.array):
+    def _dN_nu_E_nu(self, m_x: float, E):
         """ implements a delta function for the decay
 
         Parameters
@@ -152,7 +153,7 @@ class DM2Nu(object):
         return tmp
 
     def _dphi_dE_g(self, sigma: float, k: float,
-                   m: float, E: np.array, J: float):
+                   m: float, J: float):
         """ The galactic contribution for the neutrino flux
 
         Parameters
@@ -166,11 +167,11 @@ class DM2Nu(object):
         return (
             (1 / (4 * np.pi)) *
             (sigma / (3 * k * m**2)) *
-            J * self._dN_nu_E_nu(m, E)
+            J
         )
 
     def _dphi_dE_g_ch(self, sigma: float, k: float,
-                      m: float, E: np.array, J: float):
+                      m: float, E, J: float):
         """ The galactic contribution for the neutrino flux
 
         Parameters
@@ -190,7 +191,7 @@ class DM2Nu(object):
     # ---------------------------------------------------------------------------
     # Extra-Galactic
 
-    def _dN_nu_E_nu_Extra(self, m_x: float, E: np.array):
+    def _dN_nu_E_nu_Extra(self, m_x: float, E):
         """ implements a kinematic cut-off for the decay
 
         Parameters
@@ -210,13 +211,13 @@ class DM2Nu(object):
             else 0
         ])
 
-    def _a_z(self, z: np.array):
+    def _a_z(self, z):
         """ Add description
         """
         return 1 / (1+z)
 
     # TODO: Why is there an H_0 here?
-    def _H(self, a: np.array, H_0: float):
+    def _H(self, a):
         """ time dependent Hubble parameter
 
         Parameters
@@ -228,33 +229,33 @@ class DM2Nu(object):
         H(a)/H_0 normalized
         """
         # The H0 was removed since it cancels later
-        return H_0*((self.omega_m / a**3) + self.omega_L + self.omega_r/a**4
-                    )**(1/2)
+        return ((self.omega_m / a**3) + self.omega_L + self.omega_r/a**4
+                )**(1/2)
 
-    def _D_to_inte(self, a: np.array, H_0: float,):
+    def _D_to_inte(self, a):
         """ Integrand for D(a)
         """
-        return 1 / ((a * self._H(a, H_0))**3)
+        return 1 / ((a * self._H(a))**3)
 
-    def _D(self, a: np.array, H_0: float):
+    def _D(self, a):
         """ returns:
         D(a(z))
         """
 
-        prefac = 5 * self.omega_m * self._H(a, H_0) / (2)
+        prefac = 5 * self.omega_m * self._H(a) / (2)
         integral = np.array([
-            quad(self._D_to_inte, 0, a_loc, args=(H_0))[0]
+            quad(self._D_to_inte, 0, a_loc)[0]
             for a_loc in a
         ])
         return prefac * integral
 
-    def _d_func(self, a: np.array, H_0: float):
+    def _d_func(self, a):
         """ Add description
         """
-        t = self._D(a, H_0)
-        return t / self._D(np.ones_like(a), H_0)
+        t = self._D(a)
+        return t / self._D(np.ones_like(a))
 
-    def _omega_mz(self, z: np.array):
+    def _omega_mz(self, z):
         """ I have neglected omega_re and omega_k couldn't find proper values
         Add description
         """
@@ -272,7 +273,7 @@ class DM2Nu(object):
         """
         return np.exp((2.6 * M**(0.001745)) - 0.2506 * M**0.07536)
 
-    def _f_178(self, M: float, z: np.array):
+    def _f_178(self, M: float, z):
         """ f_178 from lopez eq b19 : numpy array
         Add description
 
@@ -298,7 +299,7 @@ class DM2Nu(object):
             A * ((sigma / beta)**(-al) + 1) * np.exp(-gamma / sigma**2)
         )
 
-    def _f_delta(self, M: float, z: np.array, Delta):
+    def _f_delta(self, M: float, z, Delta):
         """ f_delta Watson et.al. : numpy array
         Add description
         """
@@ -314,7 +315,7 @@ class DM2Nu(object):
         )
         return self._f_178(M, z) * b_t
 
-    def _g_tild(self, M: float, z: np.array):
+    def _g_tild(self, M: float, z):
         """ For Delta = 200 so g^tilda_200
         returns
         g_tilda : numpy array
@@ -378,64 +379,15 @@ class DM2Nu(object):
         return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
                 (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
 
-    def c_delta(self, M, z):
-        # TODO: All of these constants need to be placed into the constants
-        # File
-        c_0 = 3.681
-        c_1 = 5.033
-        al = 6.948
-        x_0 = 0.424
-        s_0 = 1.047
-        s_1 = 1.646
-        b = 7.386
-        x_1 = 0.526
+    def _g_tild_ibarra(self, M_200, z):
+        a = 0.520 + ((0.905-0.520) * np.exp(-0.617 * z**1.21))
+        b = (0.026 * z) - 0.101
+        c_delta = np.exp(a + (b * np.log10(M_200)))
 
-        A = 2.881
-        b = 1.257
-        c = 1.022
-        d_2 = 0.060
+        g = ((c_delta**3 * (1 + c_delta)**(-3)) /
+             (np.log(1 + c_delta) - (c_delta/(1+c_delta)))**2)
 
-        sigma = (
-            self._sigma_lopez(M) *
-            self._d(z)
-        )
-
-        x = (1 / (1 + z)) * (self.omega_L / self.omega_m)**(1/3)
-        # TODO: All of these need descriptions
-
-        def c_min(x):
-            return (
-                c_0 + (c_1 - c_0) * ((np.arctan(al * (x - x_0)) / np.pi) +
-                                     (1/2))
-            )
-
-        def s_min(x):
-            return (
-                s_0 + (s_1 - s_0) * ((np.arctan(b * (x - x_1)) / np.pi) +
-                                     (1/2))
-            )
-        # TODO: This function doesn't seem to be needed
-
-        def B_0(x):
-            return c_min(x) / c_min(1.393)
-
-        def B_1(x):
-            return s_min(x) / s_min(1.393)
-
-        def s_in(x):
-            return B_1(x) * sigma
-
-        def C(x):
-            aa = (((s_in(x) / b)**c) + 1)
-            dd = np.exp(d_2 / s_in(x)**2)
-            return A * aa * dd
-
-        def c_200(x):
-            return B_0(x) * C(x)
-        c_arr = c_200(x)
-        # Removing too high values
-        c_arr[c_arr > 100] = 100
-        return c_arr
+        return g
 
     def _lnsigma_1(self, M: float):
         lnsigma_1 = (0.2506 * (M)**(0.07536)) - (2.6 * (M)**(0.001745))
@@ -458,70 +410,62 @@ class DM2Nu(object):
             return (
                     self._dln_sigma_1(M) *
                     self._f_delta(M, z, Delta=self._const.Delta) *
-                    self._g_tild(M, z)
+                    self._g_tild_ibarra(M, z)
                     )
+        prefac = (self._const.Delta *
+                  (self.omega_m*(1+z)**3 + self.omega_L) /
+                  (9 * self._const.omega_DM * (1+z)**3))
 
-        aa = (
-            ((self.omega_m*(1+z)**3 + self.omega_L + self.omega_r*(1+z)**4) *
-             self._const.Delta) /
-            (3 * self._const.omega_DM * (1+z)**3))
-        # ------ Here the dNdlogx should be included in the
-        # integrand for W, b chanels ----- 19.04.22
-        # Using splines to integrate
         function_vals = np.array([
             integrand(M)
             for M in config["advanced"]["integration grid lopez"]
         ])
+
         bb = np.trapz(
             function_vals,
             x=config["advanced"]["integration grid lopez"],
             axis=0
         )
-        # bb = (
-        #     quad(integrand, 1e-2, 1e1)[0] +
-        #     quad(integrand, 1e1, 1e10)[0] +
-        #     quad(integrand, 1e10, 1e17)[0]_dphi_de_c
-        # )
-        return aa * bb
 
-    def _dphide_lopez(self, E: np.array, m_x: float, snu: float):
+        return prefac * bb
+
+    def _dphide_lopez(self, E, m_x: float, snu: float):
         """ returns
         dphi/dE_Lopez : numpy array
         """
-        z = m_x / E - 1  # To apply the delta function integral
+        z = m_x / E - 1
         z_tmp = z[z > 0]
 
-        G = ((1 + self._G_lopez(z_tmp)) * self._const.rho_c_mpc**2)
-        # ( np.array(B) +
-        # G = (np.array([self.B_nfw(z_)[0] for z_ in z_tmp]) *
-        #    (self._const.rho_c_mpc)**2)
-        # print(z_tmp, np.array(B) / np.array([self.B_nfw(z_)
-        # for z_ in z_tmp]))
-        #      self._const.rho_c_mpc**2))
-        a_G = (
-            G *
-            (1 + z_tmp)**3
-        )
+        G = ((1 + self._G_lopez(z_tmp)) *  # self.B_nfw(z_tmp)) *
+             (1 + z_tmp)**3)
 
         # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
+        H_z = (self._H(self._a_z(z_tmp)) *
                self._const.H_0)
 
-        a_g = a_G / H_z
-        aaa = snu * self._const.omega_DM
-        b = 8 * np.pi * m_x**2
-        res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
+        a_g = ((self._const.rho_c_mpc**2) * (self._const.omega_DM**2) *
+               (1 + z_tmp)**3)
+
+        prefac = (a_g /
+                  (H_z * self._const._kappa * 4 * np.pi * 3 * m_x**2))
+
+        dN_dE = 2 / E[E <= m_x]  # (z_tmp + 1) / m_x
+        # the factor of 2 for
+        # annihiliation to 2 neutrino
+
+        res = prefac * G * dN_dE
         # the factor of 2 for
         # annihiliation to 2 neutrino
 
         # Padding with zeros
         result = np.zeros_like(E)
         result[0:len(res)] = res
+
         return result  # reason for factor unkown -------
 
 # Cook book -------------------------------------------------------------
 
-    def dphide_channel(self, E: np.array, m_x: float, snu: float, k=2):
+    def dphide_channel(self, E, m_x: float, snu: float, k=2):
         """ returns
         dphi/dE_Lopez * dN/dlog(E/m_x)
         """
@@ -545,7 +489,7 @@ class DM2Nu(object):
 
         def a_t(z_):
             # multiplide the H_0 ------
-            b_t = (self._H(self._a_z(z_), self._const.H_0) *
+            b_t = (self._H(self._a_z(z_)) *
                    self._const.H_0)
             return ((1 + self._G_lopez(z_)) *
                     (1 + z_)**3 / b_t)
@@ -646,11 +590,15 @@ class DM2Nu(object):
         Mass = config["advanced"]["integration grid lopez"]
         A, B, C = (0.08, 3.0, 2.5)
         # c_p = self._c_nfw(Mass, np.array(z))
+        prefac = (self._const.Delta *
+                  (self.omega_m*(1+z)**3 + self.omega_L) /
+                  (9 * self._const.omega_DM * (1+z)**3))
+
         B_h_array = np.array([A * (self._c_nfw_peak_height(m, z) + B)**C
                               for m in Mass])
         B_h = np.trapz(B_h_array,
                        x=Mass, axis=0)
-        return B_h
+        return B_h * prefac
 
 # Burkert -----------------------------------------------------------
     def r_delta(self, c_delta, r_0):
@@ -726,7 +674,7 @@ class DM2Nu(object):
         )
         return aa * bb
 
-    def _dphide_burkret(self, E: np.array, m_x: float, snu: float):
+    def _dphide_burkret(self, E, m_x: float, snu: float):
         """ returns
         dphi/dE_brukert : numpy array
         """
@@ -738,7 +686,7 @@ class DM2Nu(object):
         )
 
         # multiplide the H_0 ------
-        b_t = (self._H(self._a_z(z_tmp), self._const.H_0) *
+        b_t = (self._H(self._a_z(z_tmp)) *
                self._const.H_0)
 
         a_g = a_t / b_t
@@ -753,7 +701,7 @@ class DM2Nu(object):
         result[0:len(res)] = res
         return result
 
-    def _dphi_de_c_burkert(self, E: np.array, m_x: float, snu: float, k=2):
+    def _dphi_de_c_burkert(self, E, m_x: float, snu: float, k=2):
         """ returns Channel dependent
         dphi/dE_brukert : numpy array
         """
@@ -775,7 +723,7 @@ class DM2Nu(object):
 
         def a_t(z_):
             # multiplide the H_0 ------
-            b_t = (self._H(self._a_z(z_), self._const.H_0) *
+            b_t = (self._H(self._a_z(z_)) *
                    self._const.H_0)
             return ((1 + self._G_burkert(z_)) *
                     (1 + z_)**3 / b_t)
@@ -819,6 +767,12 @@ class DM2Nu(object):
                                 (r/r_s)**alpha)**((beta-gamma)/alpha))
         return rho_x
 
+    def c_delta(self, M_200, z):
+        a = 0.520 + ((0.905-0.520) * np.exp(-0.617 * z**1.21))
+        b = (0.026 * z) - 0.101
+        c_d = np.exp(a + (b * np.log10(M_200)))
+        return c_d
+
     def integral_rho_artsen(self, M, z):
         """Returns the integral over the rho_halo for the burkert
         DM density profile
@@ -856,7 +810,7 @@ class DM2Nu(object):
         )
         return aa * bb
 
-    def _dphide_artsen(self, E: np.array, m_x: float, snu: float):
+    def _dphide_artsen(self, E, m_x: float, snu: float):
         """ returns fluxes wih artsen
         dphi/dE_Lopez : numpy array
         """
@@ -867,7 +821,7 @@ class DM2Nu(object):
             (1 + z_tmp)**3
         )
         # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
+        H_z = (self._H(self._a_z(z_tmp)) *
                self._const.H_0)
         a_g = a_G / H_z
         aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
@@ -916,8 +870,7 @@ class DM2Nu(object):
             _log.debug("Constructing it, this may take a while")
             z_grid = config["advanced"]["construction grid _d"]
             a_grid = self._a_z(z_grid)
-            d_grid = self._d_func(a_grid,
-                                  self._const.H_0)
+            d_grid = self._d_func(a_grid)
             self._d = UnivariateSpline(z_grid,
                                        d_grid, k=1, s=0, ext=3)
             _log.debug("Finished construction")
@@ -957,7 +910,7 @@ class DM2Nu(object):
         G = A * (c_p + B)**C
         return G
 
-    def _dphide_okoli_nfw(self, E: np.array, m_x: float, snu: float):
+    def _dphide_okoli_nfw(self, E, m_x: float, snu: float):
         """ returns
         dphi/dE_Lopez : numpy array
         """
@@ -1012,7 +965,7 @@ class DM2Nu(object):
         # )
         return aa * bb
 
-    def _dphide_diemer(self, E: np.array, m_x: float, snu: float):
+    def _dphide_diemer(self, E, m_x: float, snu: float):
         """ returns
         dphi/dE_Lopez : numpy array
         """
@@ -1025,7 +978,7 @@ class DM2Nu(object):
         )
 
         # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
+        H_z = (self._H(self._a_z(z_tmp)) *
                self._const.H_0)
 
         a_g = a_G / H_z
