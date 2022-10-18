@@ -36,7 +36,7 @@ class DM2Nu(object):
         self.omega_L = self._const.omega_L
         self.omega_r = self._const.omega_r
         self._d_constructor()
-        self.nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
+        self.nu_e = pd.read_csv(open('../data/Li_project/nu_mu.dat', 'rb'),
                                 delim_whitespace=True)
         if config['general']['density'] == 'Burlket':
             self._dphi_de_c = self._dphi_de_c_burkert
@@ -46,7 +46,12 @@ class DM2Nu(object):
         if config['general']["channel"] != 'All':
             # self._channel = "\[Tau]"
             self.m_keys = Counter(self.nu_e['mDM'].values).keys()
-            config['simulation parameters']['mass grid'] = np.array([i for i in self.m_keys])
+            config['simulation parameters']['mass grid'] = np.array([1000,
+                1200,   1300,   2000,   2500,   5000,
+                6000,   7000,   8000,   9000,   15000,
+                20000,  30000,  50000, 100000
+                #i for i in self.m_keys
+                ])
                 #[100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
                 # 5e4, 1e5])
 

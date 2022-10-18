@@ -129,28 +129,28 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        /Knx0k1iUD8h9RtlK5lVP1L/fW7deFw/IEC9NEzEYj/R7vw7TL1oP4juc8x0TnA/Tx2OTAF/dT/m
-        8hyfX1Z8P6RdSjqQrYI/6d45AlSfiD/EwivRszqQPyuoJeb2ZJU/Of1CmAs0nD/qADrK75aiP79y
-        rhaAgag/+Kn4wwonsD8rBX0LDEu1P4M6UifhEbw/TUAvw2qAwj+7jF9N0GPIP0tw3Yd5E9A/bydd
-        lkAx1T9QGOoZ4O/bP7Cc9QMBauI/q1aHekRG6D8AAAAAAADwP2JNvWCUF/U/TgvnPQjO+z+f0IBr
-        slMCQDgBlXLcKAhA2G1SHzzZD0CfyMJEB/4UQDVFYmFZrBtAcp/s2H49IkCvgywKmAsoQGt4iTSn
-        si9AQMbAHJnkNEBCa7FS04o7QN+kfCtmJ0JADFwmFnfuR0D4q8EGQYxPQAwXOMNJy1RAJE1m4HVp
-        W0DLJJxCaBFiQGhPj2t50WdASn9cXQlmb0B8+NYSGbJ0QL6bTtlASHtABNvd/YT7gUCjKqjfnrSH
-        QAAAAAAAQI9Akt145gaZlEASoXMMNCebQLbL+zy85aFAKoPlR+eXp0BFf5a2JBqvQOw3JhkTgLRA
-        lfcZSU8Gu0C1E9ffDdDBQJl473lSe8dAhj9OSXf0zkCPQRSGPWfUQL5CwV6S5dpAArl3xnm64UDj
-        daFL4F7nQPAhmYD3zu5AgsakCIZO9EBG5yMd/cT6QO97DNH/pAFBi/MJk5BCB0FfVCwlpakOQaru
-        ZXzsNRRBJ8Q2VI+kGkHip+rfn48hQZY5aiZjJidBAAAAAICELkFVCBK9cB00QUzrKNRIhDpB8OSN
-        01l6QUEkIjbcVwpHQUr4TtqHX05BkFKPphIFVEHIW2NtKWRaQTUJmIwtZWFBxdsTi27uZkEJapZ9
-        vDpuQRHI7xTS7HNBLruI8DBEekGi6tDrGlCBQSCt2wmn0oZBE4uVsx0WjkHb6XDkrtSTQdoPdS5f
-        JJpBBzEm0iE7oUHWt5cvAbemQWVKTUar8a1BEot78ai8s0Fwez34swS6QfMnqyBCJsFBPbyD03yb
-        xkEAAAAAZc3NQSOcoxjApNNByPUvHy/l2UGSkZi4exHhQVfdDM0ZgOZBeB4xq0qp7UGh9qc29Izz
-        QaEH03TQxflB/nhMe878AEKfZNHz12QGQo3jpBJchQ1CYSlyKEV1E0LLhuXKl6YZQiIFSko66CBC
-        EYegH7dJJkLRCWABmWEtQmBEFsuyXTNCe1Fe84SHOULhSzkHv9NAQocpeii3LkZChXqnQgE+TULP
-        pdL7PEZTQosKbMCXaFlCAyXnk1y/YELTpY7m1xNmQgAAAKKUGm1CesYPmOMuc0IF1nQE0El5Qin+
-        RNISq4BCDpA+Mhn5hULB9y3rUveMQtkGYH2mF5NCcxUWki0rmUIormik4ZagQip8GuR63qVCOAY1
-        6jvUrEJpfH+JhQCzQoUlJDywDLlCA0mM7MiCwELnw+LU/MPFQrfJV2tPscxCsL5TmoDp0kKSG6rV
-        V+7YQhr0DY3IbuBCp0yH3Z6p5UKmjRc7jY7sQuy1642X0vJCaYLpMSTQ+EISum9o4FoAQ/BNJ9dg
-        jwVDAAA0JvVrDEM=
+        ldYm6AsuET424gQKT5sZPmbUiutbFSM+eJiAfqZxLD61+C22qjI1PsU8St14mD8+u0el3/OLRz5r
+        NF9/WIxRPuf7oLPcJ1o++Q1vVht+Yz4wqp7/xg1tPhhgElUFp3U+bbj8+vIigD4xX63pMg2IPg2q
+        uLCq7JE+/VM92m23mj5qoWe1GemjPpTQQHlAra0+F6nInN4dtj5gxrZ9hXvAPiWTT2A3kcg+trlI
+        lQ1P0j5WCoAIE0rbPqBVVlxjVuQ+bVtCSyVQ7j59N+A+RJf2PrQlWiv+1QA/f6CHeRAYCT8NbA+D
+        jLMSP/P02iPd3xs/tl/H4gTGJD9YxFk6iPYuP5Q5EjhEEzc/FrFxcGcyQT9NFs++zaFJP4itRQ4z
+        GlM/Uv99bt14XD+LzGQlCzhlP1hGQnJ8oG8/NDne0eyRdz/Ht7/yy5CBPyWd5w5/Loo/AteyCg2D
+        kz9ROVSJJRWdPzHhcUeDrKU/Aar4wwonsD8jhS+kTBO4P5kMeJI28cE/PhKvnzS+yj/siAmNJu7T
+        PwnQC3bHtN0/xJ1OtHoj5j/iFuy9s3/wP5GjC5dyl/g/mtCAa7JTAkDsq/3//lALQIgBTOyLWxRA
+        aCwpmdVXHkAWjwMh/5wmQEDtGF5D2jBAfP9J5G0eOUDFHrrWSrhCQFFejhnv5ktADBc4w0nLVEBD
+        diW8Yv5eQLwc1o0eGWdAHeOuE8Q2cUB0A1UZTqh5QNS9TGsLH4NAM7nxMhaAjEBq/7rxbD2VQPW3
+        mA+CqJ9AN4PlR+eXp0ALpiOHQJWxQEzV9BgjNbpAAAAAAACIw0BPd4vxhRzNQAURbZ4CstVAIfK3
+        liMr4EDwp9DqZxnoQDU6bZvD9fFAZecjHf3E+kCO9pasNPMDQfb7mltQvA1BT6cVOBgpFkGNf5cN
+        44MgQRX5ZGKvnShBOBZDb1hYMkELl+247Fc7QQ0iNcu1YERBbfhO2odfTkGKWTd3u6JWQY3VH6aJ
+        3mBBh4pW7MwkaUHjIWZeCr1yQdsMV9oC7ntBPsnK+Y/QhEFEd+Q7PwaPQWCvpF/6HpdBBzEm0iE7
+        oUEPogEa0K6pQVq97wLlI7NBaJhSzFCHvEEHH4kb0ELFQYyO0bWJsM9B14IdQuOd10GUTdQ8tpnh
+        QZjnNdLIO+pBofanNvSM80G/wr046CP9QfFiXlqDtwVCsPl9cz0vEELMQPW9hB8YQn4T48tR+iFC
+        im4LU8fLKkLnFmMURPgzQpdNairbwz1CoSl6KLcuRkL42v1sE4hQQqk0wsLto1hCOAbcoP9cYkI2
+        y8Ez3F5rQmesZvngZXRCp2AyDzxnfkIE9tlBeaiGQisztQPR4pBCcxUWki0rmUI0lWEay8GiQntx
+        qWYY9atCsz3WhtfVtEImIBi6HQ6/QnhW3q3XJMdCtXEfrIA/0UIOBUDBU7XZQmN4ftW/KONC6I0X
+        O42O7ELdziejNEj1Qj3ocGWTuP9Ckq7owOCjB0NFDxsULZ4RQzwzGDtwQhpDfT38rumRI0PtmGRf
+        TCstQ6phoHsFvTVDJjqOWlgzQEMt4gEeoyVIQ2+MJCTh/lFD+F7VQZPSWkMBLMHEVP1jQ6rc9eJn
+        y21DAKDYhVc0dkM=
     scaling correction: 1
   atmospheric showers:
     atmosphere: !!python/tuple
@@ -171,7 +171,7 @@ dictitems:
     - 91
     - 1
   general:
-    channel: \[Tau]
+    channel: W
     config location: ../run/config.txt
     debug level: 40
     density: NFW
