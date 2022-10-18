@@ -20,11 +20,9 @@ _log = logging.getLogger(__name__)
 class DM2Nu(object):
     """ Class containing all the necessary methods to convert DM to a surface
     flux at the earth
-
     Parameters
     ----------
     None
-
     Returns
     -------
     None
@@ -36,7 +34,7 @@ class DM2Nu(object):
         self.omega_L = self._const.omega_L
         self.omega_r = self._const.omega_r
         self._d_constructor()
-        self.nu_e = pd.read_csv(open('../data/Li_project/nu_mu.dat', 'rb'),
+        self.nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
                                 delim_whitespace=True)
         if config['general']['density'] == 'Burlket':
             self._dphi_de_c = self._dphi_de_c_burkert
@@ -46,16 +44,9 @@ class DM2Nu(object):
         if config['general']["channel"] != 'All':
             # self._channel = "\[Tau]"
             self.m_keys = Counter(self.nu_e['mDM'].values).keys()
-            config['simulation parameters']['mass grid'] = (np.array([800,
-                                                            900, 1000,
-                                                            1200, 1500,
-                                                            1700, 2000,
-                                                            5000, 10000,
-                                                            100000]))
-            #  1000, 1200,  1500, 1700, 2000, 5000,  10000, 100000
-            #  i for i in self.m_keys
-            #  [100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
-            #  5e4, 1e5])
+            config['simulation parameters']['mass grid'] = np.array([i for i in self.m_keys])
+                #[100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
+                # 5e4, 1e5])
 
     def galactic_flux(self, E,
                       m_x: float, sv: float,
@@ -67,9 +58,9 @@ class DM2Nu(object):
         k : k factor (majorana: 2 otherwise 4)
         J : J-factor
         """
-        return (self._dphi_dE_g(sv, k, m_x, J) *
-                self._dN_nu_E_nu(m_x, E) *
-                config["advanced"]["scaling correction"])
+        return self._dphi_dE_g(
+            sv, k, m_x, E, J
+        ) 
         # need to check which one
 
     def galactic_flux_c(self, E,
@@ -89,10 +80,11 @@ class DM2Nu(object):
         # self.extra_galactic_flux(e_grid, m, 1e-26)) *
         # np.array(dNdlogE) / np.array(e_grid))
         dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
-        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)(E)
+        dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
 
-        return np.array(self._dphi_dE_g(sv, k, m_x, J)
-                        ) * dNdE * config["advanced"]["scaling correction"]
+        return self._dphi_dE_g(
+            sv, k, m_x, E, J
+        ) * dNdE(E) / self._dN_nu_E_nu(m_x, E)
         # need to check which one
 
     def extra_galactic_flux_nfw(self, E,
@@ -133,14 +125,12 @@ class DM2Nu(object):
 
     def _dN_nu_E_nu(self, m_x: float, E):
         """ implements a delta function for the decay
-
         Parameters
         ----------
         m_x : float
             The DM mass
-        E : np.array
+        E 
             The energies of interest
-
         Returns
         -------
         np.array
@@ -153,13 +143,11 @@ class DM2Nu(object):
         return tmp
 
     def _dphi_dE_g(self, sigma: float, k: float,
-                   m: float, J: float):
+                   m: float, E, J: float):
         """ The galactic contribution for the neutrino flux
-
         Parameters
         ----------
         Add
-
         Returns
         -------
         np.array
@@ -167,17 +155,15 @@ class DM2Nu(object):
         return (
             (1 / (4 * np.pi)) *
             (sigma / (3 * k * m**2)) *
-            J
+            J * self._dN_nu_E_nu(m, E)
         )
 
     def _dphi_dE_g_ch(self, sigma: float, k: float,
                       m: float, E, J: float):
         """ The galactic contribution for the neutrino flux
-
         Parameters
         ----------
         Add
-
         Returns
         -------
         np.array
@@ -193,14 +179,12 @@ class DM2Nu(object):
 
     def _dN_nu_E_nu_Extra(self, m_x: float, E):
         """ implements a kinematic cut-off for the decay
-
         Parameters
         ----------
         m_x : float
             The DM mass
-        E : np.array
+        E 
             The energies of interest
-
         Returns
         -------
         np.array
@@ -217,13 +201,11 @@ class DM2Nu(object):
         return 1 / (1+z)
 
     # TODO: Why is there an H_0 here?
-    def _H(self, a):
+    def _H(self, a, H_0: float):
         """ time dependent Hubble parameter
-
         Parameters
         ----------
         a = 1/(1+z)
-
         Returns
         -------
         H(a)/H_0 normalized
@@ -232,28 +214,28 @@ class DM2Nu(object):
         return ((self.omega_m / a**3) + self.omega_L + self.omega_r/a**4
                 )**(1/2)
 
-    def _D_to_inte(self, a):
+    def _D_to_inte(self, a, H_0: float,):
         """ Integrand for D(a)
         """
-        return 1 / ((a * self._H(a))**3)
+        return 1 / ((a * self._H(a, H_0))**3)
 
-    def _D(self, a):
+    def _D(self, a, H_0: float):
         """ returns:
         D(a(z))
         """
 
-        prefac = 5 * self.omega_m * self._H(a) / (2)
+        prefac = 5 * self.omega_m * self._H(a, H_0) / (2)
         integral = np.array([
-            quad(self._D_to_inte, 0, a_loc)[0]
+            quad(self._D_to_inte, 0, a_loc, args=(H_0))[0]
             for a_loc in a
         ])
         return prefac * integral
 
-    def _d_func(self, a):
+    def _d_func(self, a, H_0: float):
         """ Add description
         """
-        t = self._D(a)
-        return t / self._D(np.ones_like(a))
+        t = self._D(a, H_0)
+        return t / self._D(np.ones_like(a), H_0)
 
     def _omega_mz(self, z):
         """ I have neglected omega_re and omega_k couldn't find proper values
@@ -276,7 +258,6 @@ class DM2Nu(object):
     def _f_178(self, M: float, z):
         """ f_178 from lopez eq b19 : numpy array
         Add description
-
         """
         A = (
             self._omega_mz(z) *
@@ -379,15 +360,64 @@ class DM2Nu(object):
         return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
                 (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
 
-    def _g_tild_ibarra(self, M_200, z):
-        a = 0.520 + ((0.905-0.520) * np.exp(-0.617 * z**1.21))
-        b = (0.026 * z) - 0.101
-        c_delta = np.exp(a + (b * np.log10(M_200)))
+    def c_delta(self, M, z):
+        # TODO: All of these constants need to be placed into the constants
+        # File
+        c_0 = 3.681
+        c_1 = 5.033
+        al = 6.948
+        x_0 = 0.424
+        s_0 = 1.047
+        s_1 = 1.646
+        b = 7.386
+        x_1 = 0.526
 
-        g = ((c_delta**3 * (1 + c_delta)**(-3)) /
-             (np.log(1 + c_delta) - (c_delta/(1+c_delta)))**2)
+        A = 2.881
+        b = 1.257
+        c = 1.022
+        d_2 = 0.060
 
-        return g
+        sigma = (
+            self._sigma_lopez(M) *
+            self._d(z)
+        )
+
+        x = (1 / (1 + z)) * (self.omega_L / self.omega_m)**(1/3)
+        # TODO: All of these need descriptions
+
+        def c_min(x):
+            return (
+                c_0 + (c_1 - c_0) * ((np.arctan(al * (x - x_0)) / np.pi) +
+                                     (1/2))
+            )
+
+        def s_min(x):
+            return (
+                s_0 + (s_1 - s_0) * ((np.arctan(b * (x - x_1)) / np.pi) +
+                                     (1/2))
+            )
+        # TODO: This function doesn't seem to be needed
+
+        def B_0(x):
+            return c_min(x) / c_min(1.393)
+
+        def B_1(x):
+            return s_min(x) / s_min(1.393)
+
+        def s_in(x):
+            return B_1(x) * sigma
+
+        def C(x):
+            aa = (((s_in(x) / b)**c) + 1)
+            dd = np.exp(d_2 / s_in(x)**2)
+            return A * aa * dd
+
+        def c_200(x):
+            return B_0(x) * C(x)
+        c_arr = c_200(x)
+        # Removing too high values
+        c_arr[c_arr > 100] = 100
+        return c_arr
 
     def _lnsigma_1(self, M: float):
         lnsigma_1 = (0.2506 * (M)**(0.07536)) - (2.6 * (M)**(0.001745))
@@ -410,57 +440,65 @@ class DM2Nu(object):
             return (
                     self._dln_sigma_1(M) *
                     self._f_delta(M, z, Delta=self._const.Delta) *
-                    self._g_tild_ibarra(M, z)
+                    self._g_tild(M, z)
                     )
-        prefac = (self._const.Delta *
-                  (self.omega_m*(1+z)**3 + self.omega_L) /
-                  (9 * self._const.omega_DM * (1+z)**3))
 
+        aa = (
+            ((self.omega_m*(1+z)**3 + self.omega_L + self.omega_r*(1+z)**4) *
+             self._const.Delta) /
+            (3 * self._const.omega_DM * (1+z)**3))
+        # ------ Here the dNdlogx should be included in the
+        # integrand for W, b chanels ----- 19.04.22
+        # Using splines to integrate
         function_vals = np.array([
             integrand(M)
             for M in config["advanced"]["integration grid lopez"]
         ])
-
         bb = np.trapz(
             function_vals,
             x=config["advanced"]["integration grid lopez"],
             axis=0
         )
-
-        return prefac * bb
+        # bb = (
+        #     quad(integrand, 1e-2, 1e1)[0] +
+        #     quad(integrand, 1e1, 1e10)[0] +
+        #     quad(integrand, 1e10, 1e17)[0]_dphi_de_c
+        # )
+        return aa * bb
 
     def _dphide_lopez(self, E, m_x: float, snu: float):
         """ returns
         dphi/dE_Lopez : numpy array
         """
-        z = m_x / E - 1
+        z = m_x / E - 1  # To apply the delta function integral
         z_tmp = z[z > 0]
 
-        G = ((1 + self._G_lopez(z_tmp)) *  # self.B_nfw(z_tmp)) *
-             (1 + z_tmp)**3)
+        G = ((1 + self._G_lopez(z_tmp)) * self._const.rho_c**2)
+        # ( np.array(B) +
+        # G = (np.array([self.B_nfw(z_)[0] for z_ in z_tmp]) *
+        #    (self._const.rho_c)**2)
+        # print(z_tmp, np.array(B) / np.array([self.B_nfw(z_)
+        # for z_ in z_tmp]))
+        #      self._const.rho_c**2))
+        a_G = (
+            G *
+            (1 + z_tmp)**3
+        )
 
         # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp)) *
+        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
                self._const.H_0)
 
-        a_g = ((self._const.rho_c_mpc**2) * (self._const.omega_DM**2) *
-               (1 + z_tmp)**3)
-
-        prefac = (a_g /
-                  (H_z * self._const._kappa * 4 * np.pi * 3 * m_x**2))
-
-        dN_dE = 2 / E[E <= m_x]  # (z_tmp + 1) / m_x
-        # the factor of 2 for
-        # annihiliation to 2 neutrino
-
-        res = prefac * G * dN_dE
+        a_g = a_G / H_z
+        aaa = snu * self._const.omega_DM
+        b = 8 * np.pi * m_x**2
+        res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
         # the factor of 2 for
         # annihiliation to 2 neutrino
 
         # Padding with zeros
         result = np.zeros_like(E)
         result[0:len(res)] = res
-
         return result  # reason for factor unkown -------
 
 # Cook book -------------------------------------------------------------
@@ -489,7 +527,7 @@ class DM2Nu(object):
 
         def a_t(z_):
             # multiplide the H_0 ------
-            b_t = (self._H(self._a_z(z_)) *
+            b_t = (self._H(self._a_z(z_), self._const.H_0) *
                    self._const.H_0)
             return ((1 + self._G_lopez(z_)) *
                     (1 + z_)**3 / b_t)
@@ -506,7 +544,7 @@ class DM2Nu(object):
                            # redshift factor from DM for spectrum
                                   (m_x / EW[:i] - 1)))
         a_g = np.array(a_g)
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        aaa = snu * (self._const.omega_DM * self._const.rho_c)**2
         b = 4 * k * np.pi * m_x**2
         res = aaa * a_g / (b)
         # the factor of 2 for
@@ -590,15 +628,11 @@ class DM2Nu(object):
         Mass = config["advanced"]["integration grid lopez"]
         A, B, C = (0.08, 3.0, 2.5)
         # c_p = self._c_nfw(Mass, np.array(z))
-        prefac = (self._const.Delta *
-                  (self.omega_m*(1+z)**3 + self.omega_L) /
-                  (9 * self._const.omega_DM * (1+z)**3))
-
         B_h_array = np.array([A * (self._c_nfw_peak_height(m, z) + B)**C
                               for m in Mass])
         B_h = np.trapz(B_h_array,
                        x=Mass, axis=0)
-        return B_h * prefac
+        return B_h
 
 # Burkert -----------------------------------------------------------
     def r_delta(self, c_delta, r_0):
@@ -656,7 +690,7 @@ class DM2Nu(object):
               ((self.omega_m / self._const.omega_DM)**2) *
               self._const.Delta / (3 * self._omega_mz(z))
               )
-        # aa = (1 / (self._const.omega_DM**2 * self._const.rho_c_mpc *
+        # aa = (1 / (self._const.omega_DM**2 * self._const.rho_c *
         #           (1+z)**3))
 
         # ------ Here the dNdlogx should be included in the
@@ -686,11 +720,11 @@ class DM2Nu(object):
         )
 
         # multiplide the H_0 ------
-        b_t = (self._H(self._a_z(z_tmp)) *
+        b_t = (self._H(self._a_z(z_tmp), self._const.H_0) *
                self._const.H_0)
 
         a_g = a_t / b_t
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        aaa = snu * (self._const.omega_DM * self._const.rho_c)**2
         b = 8 * np.pi * m_x**2
         res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
         # the factor of 2 for
@@ -723,7 +757,7 @@ class DM2Nu(object):
 
         def a_t(z_):
             # multiplide the H_0 ------
-            b_t = (self._H(self._a_z(z_)) *
+            b_t = (self._H(self._a_z(z_), self._const.H_0) *
                    self._const.H_0)
             return ((1 + self._G_burkert(z_)) *
                     (1 + z_)**3 / b_t)
@@ -740,7 +774,7 @@ class DM2Nu(object):
                            # as Li Suggested for redshift factor
                                   m_x / EW[:i] - 1))
         a_g = np.array(a_g)
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        aaa = snu * (self._const.omega_DM * self._const.rho_c)**2
         b = 4 * k * np.pi * m_x**2
         res = aaa * a_g / b
         # the factor of 2 for
@@ -767,12 +801,6 @@ class DM2Nu(object):
                                 (r/r_s)**alpha)**((beta-gamma)/alpha))
         return rho_x
 
-    def c_delta(self, M_200, z):
-        a = 0.520 + ((0.905-0.520) * np.exp(-0.617 * z**1.21))
-        b = (0.026 * z) - 0.101
-        c_d = np.exp(a + (b * np.log10(M_200)))
-        return c_d
-
     def integral_rho_artsen(self, M, z):
         """Returns the integral over the rho_halo for the burkert
         DM density profile
@@ -795,7 +823,7 @@ class DM2Nu(object):
                     self.integral_rho_artsen(M, z) /
                     M)
         aa = (
-              (1 / (self._const.omega_DM * self._const.rho_c_mpc *
+              (1 / (self._const.omega_DM * self._const.rho_c *
                     (1+z)**3)
                )
               )
@@ -821,10 +849,10 @@ class DM2Nu(object):
             (1 + z_tmp)**3
         )
         # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp)) *
+        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
                self._const.H_0)
         a_g = a_G / H_z
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        aaa = snu * (self._const.omega_DM * self._const.rho_c)**2
         b = 8 * np.pi * m_x**2
         res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
         # the factor of 2 for
@@ -850,11 +878,9 @@ class DM2Nu(object):
 
     def _d_constructor(self):
         """ Constructs tables for _d to avoid costly intgeration
-
         Parameters
         ----------
         None
-
         Returns
         -------
         None
@@ -870,7 +896,8 @@ class DM2Nu(object):
             _log.debug("Constructing it, this may take a while")
             z_grid = config["advanced"]["construction grid _d"]
             a_grid = self._a_z(z_grid)
-            d_grid = self._d_func(a_grid)
+            d_grid = self._d_func(a_grid,
+                                  self._const.H_0)
             self._d = UnivariateSpline(z_grid,
                                        d_grid, k=1, s=0, ext=3)
             _log.debug("Finished construction")
@@ -918,8 +945,8 @@ class DM2Nu(object):
         z_tmp = z[z > 0]
 
         a_g = np.sum(self.B_nfw(z_tmp)) * (self._const.Delta *
-                                           self._const.rho_c_mpc)
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+                                           self._const.rho_c)
+        aaa = snu * (self._const.omega_DM * self._const.rho_c)**2
         b = 8 * np.pi * m_x**2
         res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
 
@@ -978,11 +1005,11 @@ class DM2Nu(object):
         )
 
         # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp)) *
+        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
                self._const.H_0)
 
         a_g = a_G / H_z
-        aaa = snu * (self._const.omega_DM * self._const.rho_c_mpc)**2
+        aaa = snu * (self._const.omega_DM * self._const.rho_c)**2
         b = 8 * np.pi * m_x**2
         res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
         # the factor of 2 for

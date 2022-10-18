@@ -25,7 +25,7 @@ _baseconfig = {
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
         "pone type": ["new", "old"],
-        "year": range(0,10),
+        "year": range(0, 10),
         'density': ['NFW', 'Burkert'],
         "channel": ["W", "\[Tau]", "b", "All", "\\[Nu]\\[Mu]", "\\[Nu]\\[Tau]",
                     "\\[Nu]e"],
@@ -97,7 +97,7 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez": np.logspace(-3, 17, 151),
+        "integration grid lopez": np.logspace(-9, 17, 151),
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
