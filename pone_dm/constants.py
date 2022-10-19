@@ -14,10 +14,12 @@ class pdm_constants(object):
     def __init__(self):
         # ----------------------------------------------------------------------
         # '# ##' == used in the simulation code----
-
-        #self.rho_c = 2.7754e11  # h^-2 M_0 Mpc^-3------> Mpc!!!!!
-        #self.rho_c = self.rho_c * (1.9e30 * 1.78e-27**(-1)) * (3.086e24)**(-3)
-        self.rho_c = 5.5e-6  # GeV cm^-3 ----------------------- !!!!!!!
+        self.h = 0.71
+        self.H_0 = 100 * self.h  # h km s^-1 Mpc^-1 hubble time --- # ##
+        self.H_0 = self.H_0 * 1e5 / 3.086e24  # h s^-1 ## Mpc->cm km-»cm
+        # self.rho_c = 2.7754e11 * self.h**2  # M_0 Mpc^-3------> Mpc!!!!!
+        # self.rho_c = self.rho_c * (1.9e30 * 1.78e-27**(-1)) * (3.086e24)**(-3)
+        self.rho_c = 1.053e-5 * self.h**2  # GeV cm^-3 ----------------------- !!!!!!!
         self.gamma = 1.3186  # NFW parameter --- slope parameter -----  # ##
         self._kappa = 2
         # ----------------------------------------------------------------------
@@ -41,12 +43,10 @@ class pdm_constants(object):
         self.J_p = 2.2e17  # ##
         self.J_d = 3.6e11  # ##
         # ----------------------------------------------------------------------
-        self.h = 0.71
-        self.H_0 = 100 * self.h  # h km s^-1 Mpc^-1 hubble time --- # ##
-        self.H_0 = self.H_0 * 1e5 * 1e-24 / 3.086  # h s^-1 ## Mpc->cm km-»cm
+          
 
-        self.G_N = 6.67e-11  # m^3 kg^-1 s^-1
-        self.G_N = self.G_N * 1e6 * 1e-22 / 1.78  # cm^3 (GeV/c^2)^-1 s^-1 ## m->cm kg->GeV/c^2
+        #self.G_N = 6.67e-11  # m^3 kg^-1 s^-1
+        #self.G_N = self.G_N * 1e6 * 1e-22 / 1.78  # cm^3 (GeV/c^2)^-1 s^-1 ## m->cm kg->GeV/c^2
         #self.rho_c = (3 * self.H_0**2) / (8 * np.pi * self.G_N)
 
         self._omega_m = 0.27   # ##

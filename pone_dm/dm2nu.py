@@ -34,6 +34,8 @@ class DM2Nu(object):
         self.omega_L = self._const.omega_L
         self.omega_r = self._const.omega_r
         self._d_constructor()
+        self._sigma = self._sigma_lopez_ # self._sigma_lopez_
+        self._dln_sigma_1 = self._dln_sigma_1_ibarra
         self.nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
                                 delim_whitespace=True)
         if config['general']['density'] == 'Burlket':
@@ -44,9 +46,10 @@ class DM2Nu(object):
         if config['general']["channel"] != 'All':
             # self._channel = "\[Tau]"
             self.m_keys = Counter(self.nu_e['mDM'].values).keys()
-            config['simulation parameters']['mass grid'] = np.array([i for i in self.m_keys])
-                #[100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
-                # 5e4, 1e5])
+            config['simulation parameters']['mass grid'] = np.array([
+                i for i in self.m_keys])
+            # [100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
+            # 5e4, 1e5])
 
     def galactic_flux(self, E,
                       m_x: float, sv: float,
@@ -60,7 +63,7 @@ class DM2Nu(object):
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        ) 
+        )
         # need to check which one
 
     def galactic_flux_c(self, E,
@@ -129,7 +132,7 @@ class DM2Nu(object):
         ----------
         m_x : float
             The DM mass
-        E 
+        E
             The energies of interest
         Returns
         -------
@@ -183,7 +186,7 @@ class DM2Nu(object):
         ----------
         m_x : float
             The DM mass
-        E 
+        E
             The energies of interest
         Returns
         -------
@@ -249,7 +252,7 @@ class DM2Nu(object):
 
 # Lpoez ------------------------------------------------------------------
 
-    def _sigma_lopez(self, M: float):
+    def _sigma_lopez_(self, M: float):
         """ returns
         sigma_lopez : float
         """
@@ -273,7 +276,7 @@ class DM2Nu(object):
         )
         gamma = self._const.gamma
         sigma = (
-            self._sigma_lopez(M) *
+            self._sigma(M) *
             self._d(z)
         )
         return (
@@ -285,7 +288,7 @@ class DM2Nu(object):
         Add description
         """
         sigma = (
-            self._sigma_lopez(M) *
+            self._sigma(M) *
             self._d(z)
         )
         # TODO: Add this to constants
@@ -318,7 +321,7 @@ class DM2Nu(object):
         d_2 = 0.060
 
         sigma = (
-            self._sigma_lopez(M) *
+            self._sigma(M) *
             self._d(z)
         )
 
@@ -378,7 +381,7 @@ class DM2Nu(object):
         d_2 = 0.060
 
         sigma = (
-            self._sigma_lopez(M) *
+            self._sigma(M) *
             self._d(z)
         )
 
@@ -419,11 +422,28 @@ class DM2Nu(object):
         c_arr[c_arr > 100] = 100
         return c_arr
 
-    def _lnsigma_1(self, M: float):
+    def sigma_prada(self, M):
+        y = 1e12 / M  # prada et.al. definition
+        sigma = ((16.9 * y**(0.41)) /
+                 (1 + (1.102*y**(0.2))) + (6.22*y**(0.333)))
+        return sigma
+
+    def _dln_sigma_1_ibarra(self, M):
+        y = M / 1e12
+        # sigma = self.sigma_prada(M, z)
+        # lnsigm_inv = np.log(sigma**(-1))
+        dlnsigma_dm_1e12 = (((-6.929 * y**0.2 - 3.911) /
+                            (((y**0.2 + 1.102)**2) * y**1.21)) -
+                            (2.07126 / y**1.333))
+
+        dlnsigma_inv_dm = -dlnsigma_dm_1e12 / 1e12
+        return dlnsigma_inv_dm
+
+    def _lnsigma_1_lopez(self, M: float):
         lnsigma_1 = (0.2506 * (M)**(0.07536)) - (2.6 * (M)**(0.001745))
         return lnsigma_1
 
-    def _dln_sigma_1(self, M: float):
+    def _dln_sigma_1_lopez(self, M: float):
         """returns:
         dln(sigma)/dM : Float
         """
@@ -431,6 +451,51 @@ class DM2Nu(object):
             0.2506 * 0.07536 * M**(0.07536 - 1) -
             2.6 * 0.001745 * M**(0.001745 - 1)
         )
+
+    def _g_tild_ibarra(self, M, z):
+        a = 0.520 + ((0.905-0.520) * np.exp(-0.617 * z**1.21))
+        b = (0.026 * z) - 0.101
+        c_arr = np.exp(a + (b * np.log10(M)))
+
+        return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
+                (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
+
+    def G_ibarra(self, z):
+        """returns
+        G_lopez : numpy array
+        """
+        def integrand(M):
+            return (
+                    self._dln_sigma_1(M) *
+                    self._f_delta(M, z, Delta=self._const.Delta) *
+                    self._g_tild_ibarra(M, z)
+                    )
+
+        aa = (
+            ((self.omega_m*(1+z)**3 + self.omega_L + self.omega_r*(1+z)**4) *
+             self._const.Delta) /
+            (3 * self._const.omega_DM * (1+z)**3))
+        # ------ Here the dNdlogx should be included in the
+        # integrand for W, b chanels ----- 19.04.22
+        # Using splines to integrate
+        M_host = np.array(config["advanced"]["integration grid lopez"])
+        b_quad = quad(integrand, M_host[0], M_host[-1])[0]
+        
+        function_vals = np.array([
+            integrand(M)
+            for M in config["advanced"]["integration grid lopez"]
+        ])
+        bb = np.trapz(
+            function_vals,
+            x=config["advanced"]["integration grid lopez"],
+            axis=0
+        )
+        # bb = (
+        #     quad(integrand, 1e-2, 1e1)[0] +
+        #     quad(integrand, 1e1, 1e10)[0] +
+        #     quad(integrand, 1e10, 1e17)[0]_dphi_de_c
+        # )
+        return aa * b_quad, function_vals
 
     def _G_lopez(self, z: float):
         """returns
@@ -464,7 +529,7 @@ class DM2Nu(object):
         #     quad(integrand, 1e1, 1e10)[0] +
         #     quad(integrand, 1e10, 1e17)[0]_dphi_de_c
         # )
-        return aa * bb
+        return aa * bb, function_vals
 
     def _dphide_lopez(self, E, m_x: float, snu: float):
         """ returns
@@ -473,26 +538,21 @@ class DM2Nu(object):
         z = m_x / E - 1  # To apply the delta function integral
         z_tmp = z[z > 0]
 
-        G = ((1 + self._G_lopez(z_tmp)) * self._const.rho_c**2)
-        # ( np.array(B) +
-        # G = (np.array([self.B_nfw(z_)[0] for z_ in z_tmp]) *
-        #    (self._const.rho_c)**2)
-        # print(z_tmp, np.array(B) / np.array([self.B_nfw(z_)
-        # for z_ in z_tmp]))
-        #      self._const.rho_c**2))
-        a_G = (
-            G *
-            (1 + z_tmp)**3
-        )
+        G = ((1 + self._G_lopez(z_tmp)[0]) *
+             (1 + z_tmp)**3)
 
         # multiplide the H_0 ------
         H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
                self._const.H_0)
 
-        a_g = a_G / H_z
-        aaa = snu * self._const.omega_DM
+        a_g = G / H_z
+
+        aaa = snu * self._const.omega_DM * self._const.rho_c**2
+
         b = 8 * np.pi * m_x**2
-        res = 2 * aaa * a_g / (3 * E[E < m_x] * b)
+
+        res = 2 * aaa * a_g * (z_tmp + 1) / (3 * m_x * b)
+
         # the factor of 2 for
         # annihiliation to 2 neutrino
 
@@ -612,7 +672,7 @@ class DM2Nu(object):
         1-axis= Z
         """
         sigma = (
-            self._sigma_lopez(M) *
+            self._sigma(M) *
             self._d(Z)
         )
         c = 0.522 * ((1 + 7.37 * (sigma / 0.95)**(3/4)) *
@@ -909,7 +969,7 @@ class DM2Nu(object):
 
     def _peak_height(self, M, z):
         sigma = (
-            self._sigma_lopez(M) *
+            self._sigma(M) *
             self._d(z)
         )
         delta_c = self._const.delta_c
