@@ -309,8 +309,8 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    high energy cutoff: 1000000.0
-    low energy cutoff: 1000.0
+    high energy cutoff: 5000000.0
+    low energy cutoff: 500.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -343,4 +343,4 @@ dictitems:
       - !!binary |
         FMuuxEDCiDpSYAA+DBqqOryUt5F9hMs6OTZrsJcC7To6qEWWa5UOO9waBocMHzA7CUFdv+f+UDuS
         fiJi5+pxO0+bDgq045I7
-    uptime: 157680000
+    uptime: 315360000

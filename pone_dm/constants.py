@@ -19,7 +19,7 @@ class pdm_constants(object):
         self.H_0 = self.H_0 * 1e5 / 3.086e24  # h s^-1 ## Mpc->cm km-»cm
         # self.rho_c = 2.7754e11 * self.h**2  # M_0 Mpc^-3------> Mpc!!!!!
         # self.rho_c = self.rho_c * (1.9e30 * 1.78e-27**(-1)) * (3.086e24)**(-3)
-        self.rho_c = 1.053e-5 * self.h**2  # GeV cm^-3 ----------------------- !!!!!!!
+        self.rho_c = 1.053e-5 * self.h**2  # GeV cm^-3 -----------------------!!!!
         self.gamma = 1.3186  # NFW parameter --- slope parameter -----  # ##
         self._kappa = 2
         # ----------------------------------------------------------------------
