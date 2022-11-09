@@ -129,28 +129,28 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        ldYm6AsuET424gQKT5sZPmbUiutbFSM+eJiAfqZxLD61+C22qjI1PsU8St14mD8+u0el3/OLRz5r
-        NF9/WIxRPuf7oLPcJ1o++Q1vVht+Yz4wqp7/xg1tPhhgElUFp3U+bbj8+vIigD4xX63pMg2IPg2q
-        uLCq7JE+/VM92m23mj5qoWe1GemjPpTQQHlAra0+F6nInN4dtj5gxrZ9hXvAPiWTT2A3kcg+trlI
-        lQ1P0j5WCoAIE0rbPqBVVlxjVuQ+bVtCSyVQ7j59N+A+RJf2PrQlWiv+1QA/f6CHeRAYCT8NbA+D
-        jLMSP/P02iPd3xs/tl/H4gTGJD9YxFk6iPYuP5Q5EjhEEzc/FrFxcGcyQT9NFs++zaFJP4itRQ4z
-        GlM/Uv99bt14XD+LzGQlCzhlP1hGQnJ8oG8/NDne0eyRdz/Ht7/yy5CBPyWd5w5/Loo/AteyCg2D
-        kz9ROVSJJRWdPzHhcUeDrKU/Aar4wwonsD8jhS+kTBO4P5kMeJI28cE/PhKvnzS+yj/siAmNJu7T
-        PwnQC3bHtN0/xJ1OtHoj5j/iFuy9s3/wP5GjC5dyl/g/mtCAa7JTAkDsq/3//lALQIgBTOyLWxRA
-        aCwpmdVXHkAWjwMh/5wmQEDtGF5D2jBAfP9J5G0eOUDFHrrWSrhCQFFejhnv5ktADBc4w0nLVEBD
-        diW8Yv5eQLwc1o0eGWdAHeOuE8Q2cUB0A1UZTqh5QNS9TGsLH4NAM7nxMhaAjEBq/7rxbD2VQPW3
-        mA+CqJ9AN4PlR+eXp0ALpiOHQJWxQEzV9BgjNbpAAAAAAACIw0BPd4vxhRzNQAURbZ4CstVAIfK3
-        liMr4EDwp9DqZxnoQDU6bZvD9fFAZecjHf3E+kCO9pasNPMDQfb7mltQvA1BT6cVOBgpFkGNf5cN
-        44MgQRX5ZGKvnShBOBZDb1hYMkELl+247Fc7QQ0iNcu1YERBbfhO2odfTkGKWTd3u6JWQY3VH6aJ
-        3mBBh4pW7MwkaUHjIWZeCr1yQdsMV9oC7ntBPsnK+Y/QhEFEd+Q7PwaPQWCvpF/6HpdBBzEm0iE7
-        oUEPogEa0K6pQVq97wLlI7NBaJhSzFCHvEEHH4kb0ELFQYyO0bWJsM9B14IdQuOd10GUTdQ8tpnh
-        QZjnNdLIO+pBofanNvSM80G/wr046CP9QfFiXlqDtwVCsPl9cz0vEELMQPW9hB8YQn4T48tR+iFC
-        im4LU8fLKkLnFmMURPgzQpdNairbwz1CoSl6KLcuRkL42v1sE4hQQqk0wsLto1hCOAbcoP9cYkI2
-        y8Ez3F5rQmesZvngZXRCp2AyDzxnfkIE9tlBeaiGQisztQPR4pBCcxUWki0rmUI0lWEay8GiQntx
-        qWYY9atCsz3WhtfVtEImIBi6HQ6/QnhW3q3XJMdCtXEfrIA/0UIOBUDBU7XZQmN4ftW/KONC6I0X
-        O42O7ELdziejNEj1Qj3ocGWTuP9Ckq7owOCjB0NFDxsULZ4RQzwzGDtwQhpDfT38rumRI0PtmGRf
-        TCstQ6phoHsFvTVDJjqOWlgzQEMt4gEeoyVIQ2+MJCTh/lFD+F7VQZPSWkMBLMHEVP1jQ6rc9eJn
-        y21DAKDYhVc0dkM=
+        je21oPfGsD70miLQi+G3PvVd2BoT/8A+L3IWFmkxyD6auCU46jfRPn4LTXJRgtg+IfcfbH9x4T5R
+        i/thSNToPlafezLVq/E+2jMCblEn+T5ALTsP7uYBP7xqEytwewk/5djKjswiEj9EQds5qNAZP++4
+        HEZzXyI/wYAnR/0mKj9nQ8XS5JwyP+E8EAxzfjo/wy0Y2yPbQj+s7SBODddKP4itRQ4zGlM//hKC
+        388wWz+3GngkFVpjPzljI5++i2s/Y/Xx3syacz8Rh+Z43ed7P55PLAhd3IM/OGTKZTBFjD8pnfVz
+        yB6UP9r4Fmy7o5w/JOqQ/xFipD++yYmfggOtPyx61ZE8prQ/A+WCIYpkvT8w0U4bS+vEP157MiHW
+        xs0/aSddlkAx1T/ZEcfbaireP+BJVgcgeOU/EU6cnEyP7j/g6KZ87L/1P/Near1/9f4/zlX0DqkI
+        BkD/A3amCF0PQNuxPuFYUhZANjXBzuvFH0D8jgMh/5wmQNw2Ht4WGDBAwQRhBp/oNkCbTfyB6U1A
+        QG06OdQ7NUdAOdosJXCEUED2Z1bY2IJXQGL8pCGtu2BAaE+Pa3nRZ0DQ7TbZovNwQD0w7PEgIXhA
+        AU6stVMsgUBSNsza0nGIQHvH4CjCZZFABWYLoZLDmED8C92s8J+hQCYHKctjFqlAWy3yw+HasUBl
+        kG7rSWq5QFdP1fiXFsJA5xQXoEi/yUCSuLveFVPSQLU1d5NjFdpA1T53EV6Q4kDDmCV8nmzqQP8U
+        kzVzzvJARucjHf3E+kCe9nD4Vw0DQSdVCEaDHgtBzLdmEA9NE0FRsyfTNHkbQSk13DybjSNBuw7A
+        rRXVK0G6qmlG/84zQfPdI8wpMjxBcW32/j0RREETv+UxdZBMQU0O2EFaVFRB/McE8PvvXEG24vHz
+        VphkQclqGSXCUG1BQfnUAzfddEFg8IL9y7J9QVN24Gn9IoVBE4uVsx0WjkEFYGIorWmVQWcDyY+7
+        ep5BqtS4S0mxpUHiAOjoqeCuQXqzc+rU+bVBAvE/JO1Hv0GwsnYlU0PGQWiO0bWJsM9B0eobKMeN
+        1kElBUEQQg3gQUbSVig02eZBJm0me/BC8EEpsddmnSX3QXgWO2xSeQBCa4gvLwZzB0JKA987arAQ
+        Qkt09NdxwRdCIgVKSjroIEIqhebC4xAoQtf2pf/EIDFCABcVXV9hOEJATynMDFpBQjmiBB/oskhC
+        xAwyKBSUUUKLDtWMgQVZQj76YJTdzmFCb4JoNi9ZaUIgT7WZawpyQvi3irf0rXlCk6yoycBGgkKO
+        0Ri41QOKQjV4S77fg5JCkbcp7NVamkIJlWEay8GiQjv5NhT5sqpCaXx/iYUAs0IEOkb9Qgy7Qvi4
+        J8ARQMNCuCUTgbdmy0IwxOh7coDTQrz0OYZawttCHUd7g6rB40KXemIAMB/sQkHA4Ka8A/RCd8hr
+        8Dt9/EKskIK/q0YEQ5NdmGSC3AxD8XBRsHqKFENv77p4Bz0dQ5NO5WUszyRDw8NjVs+eLUMBlJ3W
+        wxQ1QzamDjXeAT5DQd3BAkRbRUOVc1FaOGZOQwIao/SvolVD+kQLGuLLXkO7Hb3ACutlQ1k0lNbf
+        Mm9DAKDYhVc0dkM=
     scaling correction: 1
   atmospheric showers:
     atmosphere: !!python/tuple
@@ -310,7 +310,7 @@ dictitems:
   simulation parameters:
     DM type k: 2
     high energy cutoff: 5000000.0
-    low energy cutoff: 500.0
+    low energy cutoff: 1000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
