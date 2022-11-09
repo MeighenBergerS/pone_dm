@@ -34,7 +34,7 @@ class DM2Nu(object):
         self.omega_L = self._const.omega_L
         self.omega_r = self._const.omega_r
         self._d_constructor()
-        self._sigma = self._sigma_lopez_ # self._sigma_lopez_
+        self._sigma = self._sigma_lopez_# self._sigma_lopez_
         self._dln_sigma_1 = self._dln_sigma_1_lopez
         self.nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
                                 delim_whitespace=True)
@@ -1095,7 +1095,7 @@ class DM2Nu(object):
         z_tmp = z[z > 0]
 
         a_G = (
-            (1 + self._G(z_tmp)[0]) *
+            (1 + self._G(z_tmp)) *
             (1 + z_tmp)**3
         )
 

@@ -164,7 +164,7 @@ dictitems:
     - numu
     - nue
     - nutau
-    path to mceq: /home/kruteesh/miniconda3/envs/pdm/lib/python3.9/site-packages/MCEq/
+    path to mceq: /home/kruteesh/miniconda3/envs/pdm/python3.10/site-packages/site-packages/MCEq/
     primary model: H4a
     theta angles: !!python/object/apply:builtins.range
     - 0
@@ -321,12 +321,32 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 9
-      - *id002
+        - 62
+      - !!python/object/apply:numpy.dtype
+        args:
+        - i8
+        - false
+        - true
+        state: !!python/tuple
+        - 3
+        - <
+        - null
+        - null
+        - null
+        - -1
+        - -1
+        - 0
       - false
       - !!binary |
-        AAAAAAAAWUBZl/rtpMNzQAAAAAAAQI9ALz15KY60qEAAAAAAAIjDQHqM17Ox4d5AAAAAAABq+EDM
-        t2YQD00TQQAAAACAhC5B
+        BQAAAAAAAAAGAAAAAAAAAAgAAAAAAAAACgAAAAAAAAAPAAAAAAAAABQAAAAAAAAAGQAAAAAAAAAe
+        AAAAAAAAACgAAAAAAAAAMgAAAAAAAAA8AAAAAAAAAEYAAAAAAAAAUAAAAAAAAABaAAAAAAAAAGQA
+        AAAAAAAAbgAAAAAAAAB4AAAAAAAAAIIAAAAAAAAAjAAAAAAAAACWAAAAAAAAAKAAAAAAAAAAtAAA
+        AAAAAADIAAAAAAAAANwAAAAAAAAA8AAAAAAAAAAEAQAAAAAAABgBAAAAAAAALAEAAAAAAABKAQAA
+        AAAAAGgBAAAAAAAAkAEAAAAAAADCAQAAAAAAAPQBAAAAAAAAJgIAAAAAAABYAgAAAAAAAIoCAAAA
+        AAAAvAIAAAAAAADuAgAAAAAAACADAAAAAAAAhAMAAAAAAADoAwAAAAAAAEwEAAAAAAAAsAQAAAAA
+        AAAUBQAAAAAAANwFAAAAAAAApAYAAAAAAADQBwAAAAAAAMQJAAAAAAAAuAsAAAAAAACgDwAAAAAA
+        AIgTAAAAAAAAcBcAAAAAAABYGwAAAAAAAEAfAAAAAAAAKCMAAAAAAAAQJwAAAAAAAOAuAAAAAAAA
+        mDoAAAAAAAAgTgAAAAAAADB1AAAAAAAAUMMAAAAAAACghgEAAAAAAA==
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001

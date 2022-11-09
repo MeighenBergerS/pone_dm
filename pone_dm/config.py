@@ -45,7 +45,7 @@ _baseconfig = {
         # native mceq or built one
         'native mceq': True,
         # Path to the built version
-        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/lib/python3.9' +
+        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/python3.10/site-packages' +
         '/site-packages/MCEq/',
         # The atmosphere
         'atmosphere': ('CORSIKA', ("Karlsruhe", None)),
