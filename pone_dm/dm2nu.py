@@ -297,6 +297,7 @@ class DM2Nu(object):
             (Delta / 178)**((-0.456 * self._omega_mz(z)) -
                             0.139)
         )
+
         return self._f_178(M, z) * b_t
 
     def _g_tild(self, M: float, z):
@@ -422,13 +423,13 @@ class DM2Nu(object):
         # c_arr[c_arr > 100] = 100
         return c_arr
 
-    def _sigma_prada(self, M):
+    def _sigma_prada_(self, M):
         y = (M * 0.67 / (1e12))**(-1) # prada et.al. definition
         sigma = ((16.9 * y**(0.41)) /
                  (1 + (1.102*y**(0.2))) + (6.22*y**(0.333)))
         return sigma
 
-    def _dln_sigma_1_ibarra(self, M): # change the results --- 
+    def _dln_sigma_1_prada(self, M): # change the results --- 
         y = (M * 0.67 / (1e12 ))**(-1)
         dlnsigma_dy = -(((0.372051/y) + (0.21/(y**0.8)) + (0.43461/(y**0.667))) /
                        (0.907441 + (y**0.2) + (5.64428*(y**0.333))))
@@ -623,7 +624,7 @@ class DM2Nu(object):
             # multiplide the H_0 ------
             b_t = (self._H(self._a_z(z_), self._const.H_0) *
                    self._const.H_0)
-            return ((1 + self._G(z_)[0]) *
+            return ((1 + self._G(z_)) *
                     (1 + z_)**3 / b_t)
         a_g = []
         for i, Z in enumerate(z):

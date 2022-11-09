@@ -215,19 +215,19 @@ class Signal(object):
         _flux[120] = {}
         # Galactic
         for i in config['atmospheric showers']['particles of interest']:
-            _flux[15][i] = np.array(extra) + 0 * self._galac_dm(
+            _flux[15][i] = np.array(extra) + 0*self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d1 + self._const.J_p1 + self._const.J_s1
             )
 
-            _flux[85][i] = np.array(extra) + 0 * self._galac_dm(
+            _flux[85][i] = np.array(extra) + 0*self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d2 + self._const.J_p2 + self._const.J_s2
             )
 
-            _flux[120][i] = np.array(extra) + 0 * self._galac_dm(
+            _flux[120][i] = np.array(extra) + 0*self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d3 + self._const.J_p3 + self._const.J_s3
