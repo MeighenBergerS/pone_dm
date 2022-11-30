@@ -96,8 +96,8 @@ class Limits(object):
             _log.info('Calculating the signal grid for IceCube')
             # for more generations adding the loop ----
             self._signal_grid = np.array([[
-                     np.sum(self._signal(self._egrid, mass, sv),
-                            axis=0) * config["advanced"]["scaling correction"]
+                     np.sum(self._signal(self._egrid, mass, sv),  # type: ignore
+                            axis=0)
                      for mass in mass_grid]
                      for sv in sv_grid]
                      )
@@ -112,8 +112,7 @@ class Limits(object):
             #     sv_grid, mass_grid,
             #     sample_count=10000)
             # With only data no projections for background -------
-            self._signal_grid = (self._signal_grid *
-                                 config["advanced"]["scaling correction"])
+            self._signal_grid = (self._signal_grid)
             y_p[i], prob_mat[i] = CL_scan(
                 self._signal_grid[:, :, self._t_d:self._t_u],
                 self._ice_data[self._t_d:self._t_u],

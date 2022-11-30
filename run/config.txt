@@ -129,28 +129,28 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        je21oPfGsD70miLQi+G3PvVd2BoT/8A+L3IWFmkxyD6auCU46jfRPn4LTXJRgtg+IfcfbH9x4T5R
-        i/thSNToPlafezLVq/E+2jMCblEn+T5ALTsP7uYBP7xqEytwewk/5djKjswiEj9EQds5qNAZP++4
-        HEZzXyI/wYAnR/0mKj9nQ8XS5JwyP+E8EAxzfjo/wy0Y2yPbQj+s7SBODddKP4itRQ4zGlM//hKC
-        388wWz+3GngkFVpjPzljI5++i2s/Y/Xx3syacz8Rh+Z43ed7P55PLAhd3IM/OGTKZTBFjD8pnfVz
-        yB6UP9r4Fmy7o5w/JOqQ/xFipD++yYmfggOtPyx61ZE8prQ/A+WCIYpkvT8w0U4bS+vEP157MiHW
-        xs0/aSddlkAx1T/ZEcfbaireP+BJVgcgeOU/EU6cnEyP7j/g6KZ87L/1P/Near1/9f4/zlX0DqkI
-        BkD/A3amCF0PQNuxPuFYUhZANjXBzuvFH0D8jgMh/5wmQNw2Ht4WGDBAwQRhBp/oNkCbTfyB6U1A
-        QG06OdQ7NUdAOdosJXCEUED2Z1bY2IJXQGL8pCGtu2BAaE+Pa3nRZ0DQ7TbZovNwQD0w7PEgIXhA
-        AU6stVMsgUBSNsza0nGIQHvH4CjCZZFABWYLoZLDmED8C92s8J+hQCYHKctjFqlAWy3yw+HasUBl
-        kG7rSWq5QFdP1fiXFsJA5xQXoEi/yUCSuLveFVPSQLU1d5NjFdpA1T53EV6Q4kDDmCV8nmzqQP8U
-        kzVzzvJARucjHf3E+kCe9nD4Vw0DQSdVCEaDHgtBzLdmEA9NE0FRsyfTNHkbQSk13DybjSNBuw7A
-        rRXVK0G6qmlG/84zQfPdI8wpMjxBcW32/j0RREETv+UxdZBMQU0O2EFaVFRB/McE8PvvXEG24vHz
-        VphkQclqGSXCUG1BQfnUAzfddEFg8IL9y7J9QVN24Gn9IoVBE4uVsx0WjkEFYGIorWmVQWcDyY+7
-        ep5BqtS4S0mxpUHiAOjoqeCuQXqzc+rU+bVBAvE/JO1Hv0GwsnYlU0PGQWiO0bWJsM9B0eobKMeN
-        1kElBUEQQg3gQUbSVig02eZBJm0me/BC8EEpsddmnSX3QXgWO2xSeQBCa4gvLwZzB0JKA987arAQ
-        Qkt09NdxwRdCIgVKSjroIEIqhebC4xAoQtf2pf/EIDFCABcVXV9hOEJATynMDFpBQjmiBB/oskhC
-        xAwyKBSUUUKLDtWMgQVZQj76YJTdzmFCb4JoNi9ZaUIgT7WZawpyQvi3irf0rXlCk6yoycBGgkKO
-        0Ri41QOKQjV4S77fg5JCkbcp7NVamkIJlWEay8GiQjv5NhT5sqpCaXx/iYUAs0IEOkb9Qgy7Qvi4
-        J8ARQMNCuCUTgbdmy0IwxOh7coDTQrz0OYZawttCHUd7g6rB40KXemIAMB/sQkHA4Ka8A/RCd8hr
-        8Dt9/EKskIK/q0YEQ5NdmGSC3AxD8XBRsHqKFENv77p4Bz0dQ5NO5WUszyRDw8NjVs+eLUMBlJ3W
-        wxQ1QzamDjXeAT5DQd3BAkRbRUOVc1FaOGZOQwIao/SvolVD+kQLGuLLXkO7Hb3ACutlQ1k0lNbf
-        Mm9DAKDYhVc0dkM=
+        /Knx0k1iUD/rAITPjUVWP7OOqZxxRl4/GB9jws6TZD+0dsz30/hrP4+Z3gMPA3M/wNyNORHYeT/H
+        t7/yy5CBP+0Y19G/4Ic/xMIr0bM6kD8m9maluA+WPxojERlE/Z0/KuqQ/xFipD+GLJ+bN7WrPzQs
+        cuYa1bI/mpmZmZmZuT+4IB/KVmbBP3x3ZMIIp8c/S3Ddh3kT0D+8vJeZZdrVP/DPC3bHtN0/dtT2
+        dM0w5D8fj0urPnLrP3YL8NuVp/I/VWDU9rhb+T9QcDhBSDwBQHBjlTPdbQdA4W1SHzzZD0DJWpRx
+        k6UVQBFlEgj6bB1AAAAAAAAAJEAYo9Cb5y8rQFl93td+ejJAfP9J5G0eOUBzi/5fnxJBQHo6OdQ7
+        NUdA+KvBBkGMT0DXB9P1QHFVQOkRpyfaJV1AQ+vVgKjPY0B2L+jlMO5qQK+1TNDUTXJA0WV4+Lbh
+        eEDt5rswW+mAQO9eTlYj/YZAAAAAAABAj0Bq/7rxbD2VQNujSzFm35xAmc9Z2sWfo0Dkuf0FGa2q
+        QK+1zL2WIbJAWk5HzZKluEAg3gzAesDAQP6F+m6SxcZAmD9OSXf0zkAUZZ0zFgrVQOLbd4WcmdxA
+        iw8e8lZw40DSmCV8nmzqQCs6bZvD9fFAAAAAAABq+ECLF9oc/ZcAQfYXg9aHjgZBX1QsJaWpDkE6
+        Oa6MO9cUQdHbj4h7VBxBQbVfsFpBI0ERGxTMvywqQa64s2ZayjFBoSFFMf0uOEEB91JY4W9AQcij
+        RUgCWEZBSvhO2odfTkFYX/3Q26RUQfOq2qIBEFxBAAAAANASY0HJxBR9e+1pQbhqlh9an3FB66EK
+        BYn0d0G1HOiFJkiAQbxjsIIAIoZBNouVsx0WjkEmtW/X9XKUQZDQeEAtzJtBRgJ+zrXkokHyoQEa
+        0K6pQfVndsjBdLFB+bGNIqK6t0F98kW7yyDAQY7VOkeB7MVBAAAAAGXNzUG9Obh5iEHUQcAGW9H8
+        iNtBf07wCwu34kHbrDoxvHDpQevNGWaQSvFBwtRMNEeB90ELi54goPP/QfFiXlqDtwVCjeOkElyF
+        DUKFRlGUkhAUQm4COcluRhtCC7P+qs6JIkLjSp1UPjMpQtf2pf/EIDFCAAAA6HZIN0I42i8+ZaY/
+        QkYdj4MFg0VCp3qnQgE+TUIL13UGE+BTQr9RiJ+BBFtCIgbcoP9cYkKg3HsZVfZoQky9mZ5e93BC
+        xtGQ7i8Qd0Iw/r4H5Vl/QuaJNI0GT4VCwfct61L3jEKB4hqyCLCTQq9Rc88zw5pCAABA5ZwwokJ8
+        YpUY/7moQt7Ox05czrBCuNcS/HDYtkLeHxi6HQ6/QvV/okSFG8VCt8lXa0+xzEJdxOh7coDTQsc3
+        0NeDgtpC4yNhcqUE4kJ5Ng3uOn7oQqkLUR69pfBCqem7xzih9kIOAkqWDcP+QtEXEnqA6ARDAAA0
+        JvVrDEPxtDRLT1ETQzwzGDtwQhpDiLjuRBjZIUPm2GI5B0MoQ/jznh2AfTBDl5XcC4ZqNkPSspvh
+        sng+Q5SrmgD3tURDEsi3gkInTEOPUvoJniJTQzeiXn/3AlpDjM4KXPStYUOb0WmdYghoQ5siXl+k
+        VXBDAKDYhVc0dkM=
     scaling correction: 1
   atmospheric showers:
     atmosphere: !!python/tuple
@@ -171,7 +171,7 @@ dictitems:
     - 91
     - 1
   general:
-    channel: All
+    channel: \[Tau]
     config location: ../run/config.txt
     debug level: 40
     density: NFW
@@ -179,6 +179,7 @@ dictitems:
     log file handler: ../run/pdm.log
     pone type: old
     random state seed: 1337
+    sigma_model: prada
     year: !!python/object/apply:builtins.range
     - 0
     - 10
@@ -310,7 +311,7 @@ dictitems:
   simulation parameters:
     DM type k: 2
     high energy cutoff: 5000000.0
-    low energy cutoff: 1000.0
+    low energy cutoff: 500.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -321,7 +322,7 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 62
+        - 10
       - !!python/object/apply:numpy.dtype
         args:
         - i8
@@ -338,15 +339,8 @@ dictitems:
         - 0
       - false
       - !!binary |
-        BQAAAAAAAAAGAAAAAAAAAAgAAAAAAAAACgAAAAAAAAAPAAAAAAAAABQAAAAAAAAAGQAAAAAAAAAe
-        AAAAAAAAACgAAAAAAAAAMgAAAAAAAAA8AAAAAAAAAEYAAAAAAAAAUAAAAAAAAABaAAAAAAAAAGQA
-        AAAAAAAAbgAAAAAAAAB4AAAAAAAAAIIAAAAAAAAAjAAAAAAAAACWAAAAAAAAAKAAAAAAAAAAtAAA
-        AAAAAADIAAAAAAAAANwAAAAAAAAA8AAAAAAAAAAEAQAAAAAAABgBAAAAAAAALAEAAAAAAABKAQAA
-        AAAAAGgBAAAAAAAAkAEAAAAAAADCAQAAAAAAAPQBAAAAAAAAJgIAAAAAAABYAgAAAAAAAIoCAAAA
-        AAAAvAIAAAAAAADuAgAAAAAAACADAAAAAAAAhAMAAAAAAADoAwAAAAAAAEwEAAAAAAAAsAQAAAAA
-        AAAUBQAAAAAAANwFAAAAAAAApAYAAAAAAADQBwAAAAAAAMQJAAAAAAAAuAsAAAAAAACgDwAAAAAA
-        AIgTAAAAAAAAcBcAAAAAAABYGwAAAAAAAEAfAAAAAAAAKCMAAAAAAAAQJwAAAAAAAOAuAAAAAAAA
-        mDoAAAAAAAAgTgAAAAAAADB1AAAAAAAAUMMAAAAAAACghgEAAAAAAA==
+        IAMAAAAAAACEAwAAAAAAAOgDAAAAAAAAsAQAAAAAAADcBQAAAAAAAKQGAAAAAAAA0AcAAAAAAACI
+        EwAAAAAAABAnAAAAAAAAoIYBAAAAAAA=
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -361,6 +355,6 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        FMuuxEDCiDpSYAA+DBqqOryUt5F9hMs6OTZrsJcC7To6qEWWa5UOO9waBocMHzA7CUFdv+f+UDuS
-        fiJi5+pxO0+bDgq045I7
+        GWBQvvawHzoWewq3grRAOhLaBFN5nGE6TbzJ6wSRgjoQ0jY31JKjOseIJmWfosQ6pbkGoyjB5TqH
+        jZKmPO8GO1GyEkCzLSg7
     uptime: 315360000

@@ -413,7 +413,7 @@ class Detector(object):
             # Upgoing we assume the same flux for all
             self._count[i] += (
                 (np.pi / 2 - np.pi / 3) *
-                (flux[thetas[2]][i] +
+                (flux[85][i] + #thetas[2] 
                  Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )

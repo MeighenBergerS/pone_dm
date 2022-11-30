@@ -8,6 +8,9 @@ import logging
 import sys
 import pickle
 from config import config
+import pandas as pd
+from collections import Counter
+import numpy as np
 # import numpy as np
 _log = logging.getLogger("pone_dm")
 
@@ -35,7 +38,7 @@ class Atm_Shower(object):
         self._load_str = (
              config["advanced"]["atmospheric storage"] + "shower.p")
         self.particle_name = ["numu", "nue", "nutau"]
-
+        self._particle = config['atmospheric showers']['particles of interest']
         if config['general']['detector'] == 'POne':
             if config['general']['pone type'] == 'old':
                 self._load_str = (
@@ -90,7 +93,6 @@ class Atm_Shower(object):
                     self._mceq_instance.set_density_model(self._atmosphere)
                     # Running simulations
                     self._run_mceq()
-
         elif config['general']['detector'] == 'IceCube':
             _log.info('Trying to load Effective areas for IceCube....')
             print('ICeCube... Effective Areas')
