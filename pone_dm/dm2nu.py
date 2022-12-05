@@ -6,11 +6,13 @@
 # Imports
 import logging
 import numpy as np
+import pandas as pd
 import pickle
 from scipy.integrate import quad
 from scipy.interpolate import UnivariateSpline
 from config import config
 from constants import pdm_constants
+from collections import Counter
 
 _log = logging.getLogger(__name__)
 
@@ -33,14 +35,15 @@ class DM2Nu(object):
         self.omega_m = self._const.omega_m
         self.omega_L = self._const.omega_L
         self._d_constructor()
-        self.nu_e = pd.read_csv(open('../data/nu_e.dat', 'rb'),
+        self.nu_e = pd.read_csv(open('../data/nu_mu.dat', 'rb'),
                                 delim_whitespace=True)
         self._dphi_de_c = self.dphide_channel
         self.channel = config['general']["channel"]
         if config['general']["channel"] != 'All':
             self.m_keys = Counter(self.nu_e['mDM'].values).keys()
-            config['simulation parameters']['mass grid'] = (
-                [i for i in self.m_keys])
+            config['simulation parameters']['mass grid'] = np.array(
+                [800, 900, 1000, 1200, 1500, 1700, 2000, 5000, 10000, 100000])
+#i for i in self.m_keys])
 
     def galactic_flux(self, E: np.array,
                       m_x: float, sv: float,
@@ -54,7 +57,7 @@ class DM2Nu(object):
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        ) * config["advanced"]["scaling correction"]  # TODO: Unit correction need to check which one
+        ) * (self._dN_nu_E_nu(m_x, E))
 
     def galactic_flux_c(self, E: np.array,
                         m_x: float, sv: float,
@@ -88,7 +91,7 @@ class DM2Nu(object):
         """
         return self._dphide_lopez(
             E, m_x, sv
-        ) * config["advanced"]["scaling correction"]  # Some error in unit conversion 29.11.21
+        )
     # ---------------------------------------------------------------------------
     # Galactic
 
@@ -100,9 +103,7 @@ class DM2Nu(object):
         sv : sigma_nu
         """
         # the mass factor unaccounted for as of now
-        return (self._dphi_de_c(E, m_x, snu, k) *
-                config["advanced"]["scaling correction"])  # / m_x**2
-
+        return (self._dphi_de_c(E, m_x, snu, k))
 
     def _dN_nu_E_nu(self, m_x: float, E: np.array):
         """ implements a delta function for the decay
@@ -139,8 +140,7 @@ class DM2Nu(object):
         """
         return (
             (1 / (4 * np.pi)) *
-            (sigma / (3 * k * m**2)) *
-            (self._dN_nu_E_nu(m, E)) * J
+            (sigma / (3 * k * m**2)) * J
         )
     # ---------------------------------------------------------------------------
     # Extra-Galactic
@@ -338,6 +338,17 @@ class DM2Nu(object):
             0.2506 * 0.07536 * M**(0.07536 - 1) -
             2.6 * 0.001745 * M**(0.001745 - 1)
         )
+
+    def _dln_sigma_1_prada(self, M):
+        y = M / 1e12
+        # sigma = self.sigma_prada(M, z)
+        # lnsigm_inv = np.log(sigma**(-1))
+        dlnsigma_dm_1e12 = (((-6.929 * y**0.2 - 3.911) /
+                            (((y**0.2 + 1.102)**2) * y**1.21)) -
+                            (2.07126 / y**1.333))
+
+        dlnsigma_inv_dm = -dlnsigma_dm_1e12 / 1e12
+        return dlnsigma_inv_dm
 
     def _G_lopez(self, z: float):
         """returns

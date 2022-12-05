@@ -81,50 +81,34 @@ class Limits(object):
     def limit_calc_ice(self, mass_grid,
                        sv_grid):
 
-        # y = {}
         y_p = {}
         prob_mat = {}
         try:
             _log.info('Fetching precalculated signal grid for IceCube')
             self._signal_grid = pickle.load(open(
-                            '../data/limits_signal_IceCube.pkl', 'rb'))
+                            '../data/limits_signal_grid.pkl', 'rb'))
         except FileNotFoundError:
             _log.info('No precalculated signal grid found')
             _log.info('Calculating the signal grid for IceCube')
             # for more generations adding the loop ----
             self._signal_grid = np.array([[
                      np.sum(self._signal(self._egrid, mass, sv),
-                            axis=0)
+                            axis=0)  # * config["advanced"]["scaling correction"]
                      for mass in mass_grid]
                      for sv in sv_grid]
                      )
 
         for i in (self.particles):
-
-            # Poissonian Method for Likelihood analysis
-            # y_p[i], prob_mat[i] = CL_scan(
-            #     self._signal_grid[:, :, self._t_d:self._t_u],
-            #     self._bkgrd[self._t_d:self._t_u],
-            #     self._ice_data[self._t_d:self._t_u],
-            #     sv_grid, mass_grid,
-            #     sample_count=10000)
             # With only data no projections for background -------
+            self._signal_grid_re = self._signal_grid * config['advanced']['scaling correction']
             y_p[i], prob_mat[i] = CL_scan(
-                self._signal_grid[:, :, self._t_d:self._t_u],
+                self._signal_grid_re[:, :, self._t_d:self._t_u],
                 self._ice_data[self._t_d:self._t_u],
                 self._ice_data[self._t_d:self._t_u],
                 sv_grid, mass_grid,
-                sample_count=1000000)
+                sample_count=100000)
 
-
-            # Chi2 Method for Likelihood analysis
-            # y[i] = np.array([[chi2.sf(np.sum(
-            #     np.nan_to_num(x**2 /
-            #                   self._bkgrd[self._t_d:])), 2)
-            #                 for x in k]
-            #                  for k in self._signal_grid])
-
-        return y_p, self._signal_grid, prob_mat
+        return y_p, self._signal_grid_re, prob_mat
 
     # P-ONE Limit calculation
 

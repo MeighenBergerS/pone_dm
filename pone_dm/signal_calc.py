@@ -69,6 +69,9 @@ class Signal(object):
         if self._channel != "All":
             self._extra_dm = self._dmnu.extra_galactic_flux_c
             self._galac_dm = self._dmnu.galactic_flux_c
+        else:
+            self._extra_dm = self._dmnu.extra_galactic_flux
+            self._galac_dm = self._dmnu.galactic_flux
 
     @property
     def signal_calc(self):
@@ -112,34 +115,35 @@ class Signal(object):
             The total new counts
         """
         # Extra galactic
-        _extra = self._dmnu.extra_galactic_flux(egrid, mass, sv)
-
+        _extra = 0 # * self._dmnu.extra_galactic_flux(egrid, mass, sv)
+        _ours = {}
         # Galactic
+        thetas = config['simulation parameters']['theta']
+        J_ice = self._const.J_ice_spline
         total_new_counts = []
         # TODO: Need to configure for IceCube ------
+        for i,angle in enumerate(thetas):
 
-        _ours = self._dmnu.galactic_flux(
-            egrid, mass, sv,
-            config['simulation parameters']["DM type k"],
-            self._const.J_d + self._const.J_p + self._const.J_s
-        )
+            _ours[angle] = self._galac_dm(
+                          egrid, mass, sv,
+                          config['simulation parameters']["DM type k"], J_ice[i])
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
-        total_flux = _ours+_extra
+        total_flux = _ours
         if self.name == 'combined':
             for y in self._year:
                 _log.info("combined signal ice year =" +
                           "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
                 total_new_counts.append(
                     np.array(self._detector.sim2dec_ice(total_flux,
-                                                        y)['numu']))
+                                                        y, True)['numu']))
         elif self.name == 'IceCube':
             for y in self._year:
                 _log.info(" signal ice year =" +
                           "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
                 total_new_counts.append(
                     np.array(self._detector.sim2dec(total_flux,
-                                                    y)['numu']))
+                                                    y, True)['numu']))
 
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours

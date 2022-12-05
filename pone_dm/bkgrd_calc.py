@@ -65,7 +65,7 @@ class Background(object):
                             open("../data/background_ice.pkl", "wb"))
             try:
                 self._bkgrd_ice_total = pickle.load(open(
-                    '../data/tmp_files/background_ice_data_total.pkl',
+                    '../data/background_ice_data_total.pkl',
                     'rb'
                     ))
             except FileNotFoundError:
@@ -104,7 +104,7 @@ class Background(object):
                     self._bkgrd_ice_data.append(tmp_hist_data)
                 self._bkgrd_ice_total = np.sum(self._bkgrd_ice_data, axis=0)
                 pickle.dump(self._bkgrd_ice_total, open(
-                    '../data/tmp_files/background_ice_data_total.pkl',
+                    '../data/background_ice_data_total.pkl',
                     'wb'
                 ))
 
