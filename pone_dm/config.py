@@ -25,7 +25,7 @@ _baseconfig = {
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
         "pone type": ["new", "old"],
-        "year": range(0, 10),
+        "year": [0, 1], # 2, 3, 4, 5, 6, 7, 8, 9],#range(0, 10),
         'density': ['NFW', 'Burkert'],
         "channel": ["W", "\[Tau]", "b", "All", "\\[Nu]\\[Mu]", "\\[Nu]\\[Tau]",
                     "\\[Nu]e"],
@@ -33,7 +33,8 @@ _baseconfig = {
     },
     "simulation parameters": {
         "mass grid": np.logspace(2, 6, 9),
-        "sv grid": np.logspace(-28, -23, 9),
+        "sv grid": np.logspace(-26, -21, 9),
+        'theta': range(0,91,1),
         "uptime": 10 * 365 * 24 * 60 * 60,
         "low energy cutoff": 5e2,  # GeV
         "high energy cutoff": 5e6,  # GeV

@@ -124,29 +124,29 @@ class Signal(object):
         # Galactic
         total_new_counts = []
         # TODO: Need to configure for IceCube ------
+        _ours = {}
+        thetas = config['simulation parameters']['theta']
+        J_ice = self._const.J_ice_spline(thetas) * 3.086e21  # type: ignore
+        for i,angle in enumerate(thetas):
 
-        _ours = self._galac_dm(
+            _ours[angle] = self._galac_dm(
             egrid, mass, sv,
-            config['simulation parameters']["DM type k"],
-            self._const.J_d + self._const.J_p + self._const.J_s
+            config['simulation parameters']["DM type k"], J_ice[i]
         )
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
-        total_flux = _ours+_extra
-        if self.name == 'combined':
-            for y in self._year:
-                _log.info("combined signal ice year =" +
-                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
-                total_new_counts.append(
-                    np.array(self._detector.sim2dec_ice(total_flux,
-                                                        y)['numu']))
-        elif self.name == 'IceCube':
-            for y in self._year:
-                _log.info(" signal ice year =" +
-                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
-                total_new_counts.append(
-                    np.array(self._detector.sim2dec(total_flux,
-                                                    y)['numu']))
+        total_flux = _ours #+_extra
+        
+        _year = config['general']['year']
+        print(_year)
+        for y in _year:
+            _log.info(" signal ice year =" +
+                      "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
+            a = np.array(self._detector.sim2dec(total_flux,
+                                                y, True)['numu'])
+            print(a)
+            total_new_counts.append(a
+                )
 
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours

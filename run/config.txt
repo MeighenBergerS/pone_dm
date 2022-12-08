@@ -180,9 +180,8 @@ dictitems:
     pone type: old
     random state seed: 1337
     sigma_model: prada
-    year: !!python/object/apply:builtins.range
+    year:
     - 0
-    - 10
     - 1
   pone:
     aeff location: ../data/
@@ -194,7 +193,7 @@ dictitems:
       nue: 0.25
       numu: 0.25
       nutau: 0.25
-    smearing: unsmeared
+    smearing: smeared
     specific particle scaling:
       nue: 1.0
       numu: 1.0
@@ -355,6 +354,10 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        GWBQvvawHzoWewq3grRAOhLaBFN5nGE6TbzJ6wSRgjoQ0jY31JKjOseIJmWfosQ6pbkGoyjB5TqH
-        jZKmPO8GO1GyEkCzLSg7
+        FMuuxEDCiDpSYAA+DBqqOryUt5F9hMs6OTZrsJcC7To6qEWWa5UOO9waBocMHzA7CUFdv+f+UDuS
+        fiJi5+pxO0+bDgq045I7
+    theta: !!python/object/apply:builtins.range
+    - 0
+    - 91
+    - 1
     uptime: 315360000

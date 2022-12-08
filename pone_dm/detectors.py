@@ -217,7 +217,7 @@ class Detector(object):
 
         return smearing_e_grid, smearing_fraction
 
-    def sim_to_dec(self, flux: dict, year: float):
+    def sim_to_dec(self, flux: dict, year: float, boolean_sig=False):
         """
         Returns Counts for atmospheric and astro fluxes for IceCube --> dict
         parameters
@@ -233,12 +233,10 @@ class Detector(object):
         # Converts simulation data to detector data
         if type(flux) != dict:
             _flux = {}
-            boolean_sig = True
             for theta in config["atmospheric showers"]["theta angles"]:
                 _flux[theta] = flux
         else:
             _flux = flux
-            boolean_sig = False
 
         at_counts_unsm, as_counts_unsm, eff_area = (
             self._aeff.effective_area_func(_flux,
@@ -413,7 +411,7 @@ class Detector(object):
             # Upgoing we assume the same flux for all
             self._count[i] += (
                 (np.pi / 2 - np.pi / 3) *
-                (flux[85][i] + #thetas[2] 
+                (flux[thetas[2]][i] + 
                  Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
