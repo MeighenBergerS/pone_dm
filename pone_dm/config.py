@@ -25,18 +25,18 @@ _baseconfig = {
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
         "pone type": ["new", "old"],
-        "year": range(0,10),
+        "year": [0, 1],  #range(0,10),
         'density': ['NFW', 'Burkert'],
         "channel": ["W", "\[Tau]", "b", "All", "\\[Nu]\\[Mu]", "\\[Nu]\\[Tau]",
                     "\\[Nu]e"],
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 9),
-        "sv grid": np.logspace(-26, -21, 9),
+        "mass grid": np.logspace(2, 6, 2),
+        "sv grid": np.logspace(-26, -21, 1),
         "uptime": 10 * 365 * 24 * 60 * 60,
         "theta": range(0, 91, 1),
         "low energy cutoff": 1e3,  # GeV
-        "high energy cutoff": 1e6,  # GeV
+        "high energy cutoff": 5e6,  # GeV
         "DM type k": 2
     },
     ###########################################################################
@@ -98,7 +98,7 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez": np.logspace(-6, 17, 151),
+        "integration grid lopez": np.logspace(-3, 17, 151),
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",

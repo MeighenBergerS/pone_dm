@@ -169,21 +169,18 @@ dictitems:
     - 91
     - 1
   general:
-    channel: \[Tau]
+    channel: All
     config location: ../run/config.txt
     debug level: 40
-    density:
-    - NFW
-    - Burkert
+    density: NFW
     detector: IceCube
     log file handler: ../run/pdm.log
     pone type:
     - new
     - old
     random state seed: 1337
-    year: !!python/object/apply:builtins.range
+    year:
     - 0
-    - 10
     - 1
   pone:
     aeff location: ../data/
@@ -337,7 +334,7 @@ dictitems:
           pos: 624
   simulation parameters:
     DM type k: 2
-    high energy cutoff: 1000000.0
+    high energy cutoff: 5000000.0
     low energy cutoff: 1000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
@@ -349,25 +346,11 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 10
-      - !!python/object/apply:numpy.dtype
-        args:
-        - i8
-        - false
-        - true
-        state: !!python/tuple
-        - 3
-        - <
-        - null
-        - null
-        - null
-        - -1
-        - -1
-        - 0
+        - 2
+      - *id002
       - false
       - !!binary |
-        IAMAAAAAAACEAwAAAAAAAOgDAAAAAAAAsAQAAAAAAADcBQAAAAAAAKQGAAAAAAAA0AcAAAAAAACI
-        EwAAAAAAABAnAAAAAAAAoIYBAAAAAAA=
+        AAAAAAAAWUAAAAAAgIQuQQ==
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -378,12 +361,11 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 9
+        - 1
       - *id002
       - false
       - !!binary |
-        GWBQvvawHzoWewq3grRAOhLaBFN5nGE6TbzJ6wSRgjoQ0jY31JKjOseIJmWfosQ6pbkGoyjB5TqH
-        jZKmPO8GO1GyEkCzLSg7
+        FMuuxEDCiDo=
     theta: !!python/object/apply:builtins.range
     - 0
     - 91

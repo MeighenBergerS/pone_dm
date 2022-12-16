@@ -13,7 +13,9 @@ import pickle
 import time
 
 config["general"]["detector"] = "IceCube"
+
 config['general']["channel"] = "All"
+config['general']['density'] = 'NFW'
 ch_name='All'
 start = time.time()
 pdm = PDM()
@@ -23,6 +25,7 @@ end = time.time()
 print("Time taken %.1f" % (start-end))
 pickle.dump(limits_results, open("../data/limits_results_gal_%s.pkl" % (ch_name), "wb"))
 pickle.dump(limits_signal_data, open("../data/limits_signal_grid_re_gal_%s.pkl"%(ch_name), "wb"))
+
 
 mass_grid = config['simulation parameters']['mass grid']
 sv_grid = config['simulation parameters']['sv grid']
