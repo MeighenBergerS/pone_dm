@@ -14,7 +14,7 @@ from tqdm import tqdm
 import csv
 import pickle
 from scipy.interpolate import UnivariateSpline
-from scipy.odr import ODR, Model, Data, RealData
+# from scipy.odr import ODR, Model, Data, RealData
 _log = logging.getLogger("pone_dm")
 
 
@@ -38,7 +38,9 @@ class Detector(object):
         self._uptime = config['simulation parameters']['uptime']
         self.days = 60. * 24
         self.name = config["general"]["detector"]
-
+        self._t_d = self._find_nearest(self._egrid,
+                                       config['simulation paramet' +
+                                              'ers']['low energy cutoff'])
         if self.name == "IceCube":
             self.smearing_sets = [
                 '../data/icecube_10year_ps/irfs/IC40_smearing.csv',
@@ -105,18 +107,31 @@ class Detector(object):
             self._sim2dec = self.sim_to_dec
 
         elif self.name == "POne":
-            if config["pone"]['smearing'] == 'smearing':
-                self._low_sigma = config['pone']['low E sigma']
-                self._high_sigma = config['pone']['high E sigma']
-                self.spl_mid_mean = {}
-                self.spl_mid_sigma = {}
-                for p in config['atmospheric showers'][
-                                'particles of interest']:
-                    self.spl_mid_mean[p] = UnivariateSpline([1e3, 1e4],
-                                                            [700., 1e4],
-                                                            k=1)
-                    self.spl_mid_sigma[p] = UnivariateSpline([1e3, 1e4], [
-                        self._low_sigma[p], self._high_sigma[p]], k=1)
+            if config["pone"]['smearing'] == 'smeared':
+                if config['general']['pone type'] == 'old':
+                    self._low_sigma = config['pone']['low E sigma']
+                    self._high_sigma = config['pone']['high E sigma']
+                    self.spl_mid_mean = {}
+                    self.spl_mid_sigma = {}
+                    for p in config['atmospheric showers'][
+                                    'particles of interest']:
+                        self.spl_mid_mean[p] = UnivariateSpline([1e3, 1e4],
+                                                                [700., 1e4],
+                                                                k=1)
+                        self.spl_mid_sigma[p] = UnivariateSpline([1e3, 1e4], [
+                            self._low_sigma[p], self._high_sigma[p]], k=1)
+                elif config['general']['pone type'] == 'new':
+                    smearing_file = pickle.load(open(
+                           "../data/fisher_casc.pkl", 'rb'))
+                    self._energies = smearing_file.loc[
+                        ("Full pessimistic cluster",
+                         50, slice(None), 16),
+                        "logE"].index.get_level_values(2)
+                    self._log10Esigmas = smearing_file.loc[
+                        ("Full pessimistic cluster",
+                         50, slice(None), 16),
+                        "logE"].values
+
             if config['general']['pone type'] == 'old':
                 self._sim2dec = self.simdec_Pone
             elif config['general']['pone type'] == 'new':
@@ -142,7 +157,6 @@ class Detector(object):
 
     def astro_flux(self):
         res = 1.66 * (self._egrid / 1e5)**(-2.6) * 1e-18  # Custom
-
         return res
 
     def ice_parser(self, filename):
@@ -164,12 +178,12 @@ class Detector(object):
     def smearing_function(self, true_e, true_dec, year):
         """"
         parameters:
-        tru_e : log_10( E )
+        tru_e : log( E )
         true_dec : Declanation
         year : year in interset
 
         return:
-        smearing_e : log_10(E)
+        smearing_e : log(E)
         smearing_fraction : smearing distribution for true over log_10( E )
         grid
         """
@@ -295,15 +309,35 @@ class Detector(object):
                 sigma[p] = self._high_sigma[p]
         return mu, sigma
 
+    def _norm(self, E, mu, sigma):
+        """"
+        sigma = log10 E
+        """
+        x = np.log10(E)
+        pdf = (np.exp(-(((x - mu) / sigma)**2) / 2) /
+               (sigma * np.sqrt(2 * np.pi)))
+        return pdf
+
+    def _log_norm_chris(self, E, mu, sigma):
+        """Distribution function
+        x = E_grid
+        mu = log(E)
+        ( standard deviation as per definition )
+        """
+        pdf = (np.exp(- (np.log10(E) - mu)**2 / (2 * sigma**2)) /
+               (sigma * np.sqrt(2 * np.pi)))
+
+        return pdf
+
     def _log_norm(self, E, mu, sigma):
         """Distribution function
         x = E_grid
         mu = log(E)
-        sigma = fraction of E * E ( so no fraction or percentage )
+        sigma = fraction of E
         ( standard deviation as per definition )
         """
         pdf = (np.exp(- (np.log(E) - mu)**2 / (2 * sigma**2)) /
-               (E * sigma * np.sqrt(2 * np.pi)))
+               (E * sigma * np.sqrt(2 * np.pi)))  # E
 
         return pdf
 
@@ -338,7 +372,7 @@ class Detector(object):
             self.count_horizon[i] = []
             horizon_angles = []
             # Astrophysical is the same everywhere
-            for angle in flux.keys():
+            for angle in thetas:
                 rad = np.deg2rad(np.abs(angle - 90.))
                 # Downgoing
                 if np.pi / 3 <= rad <= np.pi / 2:
@@ -376,32 +410,24 @@ class Detector(object):
             # Upgoing we assume the same flux for all
             self._count[i] += (
                 (np.pi / 2 - np.pi / 3) *
-                (flux[thetas[2]][i] +
+                (flux[85][i] + #thetas[2] 
                  Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
-            self._count[i] = self._count[i]
+            # if boolean_sig:
+            #     print(self._count[i].shape)
 
             if boolean_smeared:
                 tmp_count_mat = []
-                ratio = []
                 for k, e in enumerate(self._egrid):
                     mu, sigma = self._distro_parms(e)
                     local_log_norm = (self._log_norm(self._egrid,
                                                      mu[i], sigma[i]))
-                    tmp_count_mat.append(self._count[i][k] * local_log_norm)
-                ratio = (np.sum(self._count[i]) /
-                         np.sum(np.array(np.sum(tmp_count_mat, axis=0))))
-                tmp_count_mat_r = []
-                for k, e in enumerate(self._egrid):
-                    mu, sigma = self._distro_parms(e)
+                    tmp_norm = np.sum(local_log_norm)
+                    tmp_count_mat.append(self._count[i][k] * local_log_norm
+                                         / tmp_norm)
 
-                    local_log_norm = self._log_norm(self._egrid, mu[i],
-                                                    sigma[i])
-                    tmp_count_mat_r.append(self._count[i][k] *
-                                           local_log_norm * ratio)
-
-                self._count[i] = np.array(np.sum(tmp_count_mat_r, axis=0))
+                self._count[i] = np.array(np.sum(tmp_count_mat, axis=0))
 
         return self._count
 
@@ -422,7 +448,7 @@ class Detector(object):
         return:
         ----------------------
         counts: Dictionary, label:[ Neutrino Flavour] ---> each  flavours has
-                dimension [e_grid]
+                dimension [e_grid][low E bound:]
         counts_ang: dictionray, label:[Neutrino flavour] ---> each flavours
                     has dimensions [ angle_grid x e_grid ]
 
@@ -431,7 +457,7 @@ class Detector(object):
         self._module = config['pone_christian']['module']
         self._spacing = config['pone_christian']['spacing']
         self._pos_res = config['pone_christian']['pos res']
-        if type(self._spacing) is not list:
+        if self._spacing is not list:
             zen_thetas = self._aeff._aeff_cos_grid
             aeff_log10e = self._aeff._aeff_e_grid
             zen_grid = self.width2grid(zen_thetas)
@@ -442,21 +468,48 @@ class Detector(object):
                                       self._spacing]["aeff_hist"]
             )
 
-            if boolean_sig:
-                Astro = np.zeros_like(self.astro_flux())
-            else:
-                Astro = np.array(self.astro_flux())
-            counts = {}
-            counts_ang = {}
-            rad = np.arccos(zen_grid)
+        if boolean_sig:
+            Astro = np.zeros_like(self.astro_flux())
+        else:
+            Astro = np.array(self.astro_flux())
+            print(flux[0].keys())
+        counts = {}
+        counts_ang = {}
+        rad = np.arccos(zen_grid)
+        if boolean_sig:
             for p in self._particles:
                 tmp_counts = []
-                angles = flux.keys()
-                for i_t, theta in tqdm(enumerate(angles)):
+                angles = config['pone_christian']['angles']
+                for i_t, theta in (enumerate(angles)):
                     spl_aeff = UnivariateSpline(aeff_log_e_grid,
                                                 (self._const.msq2cmsq *
                                                  aeff_mat[i_t]),
-                                                s=0, k=1)
+                                                s=0, k=1, ext=1)
+                    aeff_eval = spl_aeff(np.log10(self._egrid))
+                    aeff_eval[self._egrid < 10**min(aeff_log_e_grid)] = 0
+                    aeff_eval[self._egrid > 10**max(aeff_log_e_grid)] = 0
+                    tmp_counts.append(aeff_eval *
+                                      (flux[p] + Astro) *
+                                      self._uptime *
+                                      rad[i_t] *
+                                      self._ewidth *
+                                      2  # Since the theta angles are not
+                                         # allowed all the way through but
+                                         #  we have symmetry
+                                      )
+                counts_ang[p] = tmp_counts
+                counts[p] = np.trapz(counts_ang[p],
+                                     x=np.array([i for i in angles]),
+                                     axis=0)
+        else:
+            for p in self._particles:
+                tmp_counts = []
+                angles = flux.keys()
+                for i_t, theta in (enumerate(angles)):
+                    spl_aeff = UnivariateSpline(aeff_log_e_grid,
+                                                (self._const.msq2cmsq *
+                                                 aeff_mat[i_t]),
+                                                s=0, k=1, ext=1)
                     aeff_eval = spl_aeff(np.log10(self._egrid))
                     aeff_eval[self._egrid < 10**min(aeff_log_e_grid)] = 0
                     aeff_eval[self._egrid > 10**max(aeff_log_e_grid)] = 0
@@ -474,31 +527,39 @@ class Detector(object):
                                      x=np.array([i for i in flux.keys()]),
                                      axis=0)
         if boolean_smeared:
-                smearing_file = pickle.load(open("../data/fisher_casc.pkl",'rb'))
-                energies = smearing_file.loc[("Full pessimistic cluster", 50, slice(None), 16), "logE"].index.get_level_values(2)
-                log10Esigmas = smearing_file.loc[("Full pessimistic cluster", 50, slice(None), 16), "logE"].values
-
+            for p in self._particles:
+                spl_log10Esigmas = (UnivariateSpline(self._energies,
+                                                     self._log10Esigmas, k=1,
+                                                     s=0, ext=1)(self._egrid))
+                for i, s in enumerate(spl_log10Esigmas):
+                    if s < 0.5:
+                        spl_log10Esigmas[i] = 0.5
+                # local_log = []
                 tmp_count_mat = []
-                ratio = []
+                # Norm = []
                 for k, e in enumerate(self._egrid):
-                    mu, sigma = self._distro_parms(e)
-                    local_log_norm = (self._log_norm(self._egrid,
-                                                     mu[p], sigma[p]))
-                    tmp_count_mat.append(self._count[p][k] * local_log_norm)
-                ratio = (np.sum(self._count[p]) /
-                         np.sum(np.array(np.sum(tmp_count_mat, axis=0))))
-                tmp_count_mat_r = []
-                for k, e in enumerate(self._egrid):
-                    mu, sigma = self._distro_parms(e)
+                    local_log_norm = (self._norm(self._egrid,
+                                                 np.log10(e),
+                                                 spl_log10Esigmas[k])
+                                      )
+                    tmp_norm = np.sum(local_log_norm)
+                    # print(tmp_norm)
+                    # tmp_norm = 1
+                    tmp_count_mat.append(counts[p][k] * local_log_norm
+                                         / tmp_norm)
 
-                    local_log_norm = self._log_norm(self._egrid, mu[p],
-                                                    sigma[p])
-                    tmp_count_mat_r.append(self._count[p][k] *
-                                           local_log_norm * ratio)
+                counts[p] = np.array(np.sum(tmp_count_mat, axis=0))
+   
+                #
+                #    Norm.append(np.sum(local_log_norm))
+#
+                #    local_log.append(local_log_norm)
+#
+                # tmp_count_mat.append(np.dot(counts[p], local_log) / Norm)
+#
+                # counts[p] = np.sum(tmp_count_mat, axis=0)
 
-                self._count[i] = np.array(np.sum(tmp_count_mat_r, axis=0))
-
-        return counts, counts_ang
+        return counts
 
     def width2grid(self, a: np.array):
         m_a = []
@@ -511,5 +572,13 @@ class Detector(object):
                 m_a.append((a[i] + a[i+1]) / 2)
         return m_a
 
+    def _find_nearest(self, array: np.array, value: float):
 
+        """ Returns: index of the nearest vlaue of an array to the given number
+        --------------
+        idx :  float
+        """
+        array = np.array(array)
+        idx = (np.abs(array - value)).argmin()
+        return idx
 

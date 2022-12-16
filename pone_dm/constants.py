@@ -4,9 +4,9 @@
 # Contains all required constants
 
 # Imports
+import numpy as np
 from config import config
 from scipy.interpolate import UnivariateSpline
-import numpy as np
 
 class pdm_constants(object):
     """ stores all relevant constants for the package
@@ -15,9 +15,14 @@ class pdm_constants(object):
     def __init__(self):
         # ----------------------------------------------------------------------
         # '# ##' == used in the simulation code----
-        #self.rho_c_mpc = 2.7754e11  # h^-2 M_0 Mpc^-3-------------> Mpc!!!!!  # ##
-        self.rho_c_mpc = 5.5e-6  # GeV cm^-3
+        self.h = 0.71
+        self.H_0 = 100 * self.h  # h km s^-1 Mpc^-1 hubble time --- # ##
+        self.H_0 = self.H_0 * 1e5 / 3.086e24  # h s^-1 ## Mpc->cm km-»cm
+        # self.rho_c = 2.7754e11 * self.h**2  # M_0 Mpc^-3------> Mpc!!!!!
+        # self.rho_c = self.rho_c * (1.9e30 * 1.78e-27**(-1)) * (3.086e24)**(-3)
+        self.rho_c = 1.053e-5 * self.h**2  # GeV cm^-3 -----------------------!!!!
         self.gamma = 1.3186  # NFW parameter --- slope parameter -----  # ##
+        self._kappa = 2
         # ----------------------------------------------------------------------
         # P-ONE
         # values of  J for P-ONE ------------
@@ -38,28 +43,49 @@ class pdm_constants(object):
         self.J_s = 2.3e23  # ##
         self.J_p = 2.2e17  # ##
         self.J_d = 3.6e11  # ##
+
         self.J_ice = np.loadtxt(open('../data/J_ice.csv'), delimiter = ",")
         self.J_ice[self.J_ice[:, 0].sort()]
         self.angle= config['simulation parameters']['theta']
         self.J_ice_spline = UnivariateSpline(self.J_ice[:,0], self.J_ice[:,1], k=1, s=0, ext=1)(self.angle) * 3.086e21
         # ----------------------------------------------------------------------
-        self.H_0 = 71  # km/(Mpc*s) hubble time --- # ##
-        self.H_0 = self.H_0 * 1e5 / 3.086e24  # cm / (cm * s)
-        self.omega_k = -0.09
+          
+
+        #self.G_N = 6.67e-11  # m^3 kg^-1 s^-1
+        #self.G_N = self.G_N * 1e6 * 1e-22 / 1.78  # cm^3 (GeV/c^2)^-1 s^-1 ## m->cm kg->GeV/c^2
+        #self.rho_c = (3 * self.H_0**2) / (8 * np.pi * self.G_N)
+
         self._omega_m = 0.27   # ##
-        self.omega_c = 0.2589
+        self._omega_L = 0.721  # ##
+        self.omega_r = 4.75e-5  # ##
         self.omega_DM = 0.23   # ##
-        self._omega_L = 0.721  # dark energy density # ##
-        self.omega_B = 0.046
-        self.omega_re = 9.8e-5
+        # self.omega_c = 0.2589
+
+        # self.omega_B = 0.045
+        # self.omega_k = -0.09
+
         # ----------------------------------------------------------------------
         self.Delta = 200  # Lopez et al. ---------- M_min=10e-5------  # ##
         self.msq2cmsq = 1e4  # Converts m^2 to cm^2 # ##
 
+        # for particular profiles I used these which are in kpc and
+        # their units cancels out so not much of difference but still should
+        # be checked again
+
+        self.r_s = 20  # kpc,
+
+        self.rho_0 = 0.4  # GeV/cm**3
+
+        self.R_0 = 0.8134  # kpc
+
+        # The concentation parameters for DM halos
+        self.c_200 = 100  # Parada et. al
+        self.delta_c = 1.686  # Diemer et. al 2015
+
     @property
     def omega_m(self):
         return self._omega_m
+
     @property
     def omega_L(self):
         return self._omega_L
-
