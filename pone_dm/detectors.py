@@ -289,7 +289,7 @@ class Detector(object):
         return self._count
 
 # ------------------------------------------------
-# POne funcions -------- ------ -----
+# POne funcions --------
     def _distro_parms(self, Etrue):
         """ Parameter estimation function depending  on the E_true
         return:

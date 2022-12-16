@@ -143,7 +143,7 @@ class DM2Nu(object):
             (sigma / (3 * k * m**2)) * J
         )
     # ---------------------------------------------------------------------------
-    # Extra-Galactic
+    # Extra-Galactic fluxes
 
     def _dN_nu_E_nu_Extra(self, m_x: float, E: np.array):
         """ implements a kinematic cut-off for the decay

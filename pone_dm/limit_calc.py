@@ -73,7 +73,7 @@ class Limits(object):
 
     @property
     def limits(self):
-        """Returns Calculated Limits for mass grid and SV grd"""
+        """Returns Calculated Limits for mass grid and SV grid"""
         return self.limit
 
 # Limit calculation ------------------

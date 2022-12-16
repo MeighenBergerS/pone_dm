@@ -51,7 +51,7 @@ class pdm_constants(object):
         # ----------------------------------------------------------------------
           
 
-        #self.G_N = 6.67e-11  # m^3 kg^-1 s^-1
+        #self.G_N = 6.67e-11  # m^3 kg^-1
         #self.G_N = self.G_N * 1e6 * 1e-22 / 1.78  # cm^3 (GeV/c^2)^-1 s^-1 ## m->cm kg->GeV/c^2
         #self.rho_c = (3 * self.H_0**2) / (8 * np.pi * self.G_N)
 

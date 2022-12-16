@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Name: pone_aeff.py
-# Authors: Kruteesh Desai, Stephan Meighen-Berger
+# Authors: Kruteesh Desai, 
 # Loads and processes the effective area data for P-ONE
 
 # Imports

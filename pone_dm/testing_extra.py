@@ -5,7 +5,7 @@ from config import config
 # from detectors import Detector
 import numpy as np
 import matplotlib.pyplot as plt
-# from limit_calc import Limits
+# from limit_calc import 
 # from bkgrd_calc import Background
 # from signal_calc import Signal
 from pdm import PDM
