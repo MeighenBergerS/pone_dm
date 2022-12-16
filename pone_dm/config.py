@@ -35,8 +35,8 @@ _baseconfig = {
         "sv grid": np.logspace(-26, -21, 9),
         "uptime": 10 * 365 * 24 * 60 * 60,
         "theta": range(0, 91, 1),
-        "low energy cutoff": 1e3,  # GeV
-        "high energy cutoff": 1e6,  # GeV
+        "low energy cutoff": 5e3,  # GeV
+        "high energy cutoff": 5e6,  # GeV
         "DM type k": 2
     },
     ###########################################################################

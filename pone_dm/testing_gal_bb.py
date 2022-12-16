@@ -15,6 +15,7 @@ config['general']["channel"] = "b"
 config["simulation parameters"]["low energy cutoff"] = 5e2
 ch_name='b'
 start = time.time()
+#print(config['general']['channel'])
 pdm = PDM()
 limits_results = pdm.results
 limits_signal_data = pdm.signal
@@ -32,4 +33,4 @@ plt.imshow(limits_results["nue"],
                                    min(np.log10(sv_grid)),
                                    max(np.log10(sv_grid))))  # origin!!!!!!!!!
 plt.colorbar()
-
+plt.savefig('../data/Limits_resut_bb.png')

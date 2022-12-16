@@ -33,4 +33,4 @@ plt.imshow(limits_results["numu"],
                                    min(np.log10(sv_grid)),
                                    max(np.log10(sv_grid))))  # origin!!!!!!!!!
 plt.colorbar()
-plt.savefig("Limits_result.png")
+plt.savefig("../data/Limits_result.png")
