@@ -8,5 +8,7 @@ pdm.log
 .ipynb_checkpoints
 
 venv3
+pics/*
+data/*
 
 *.json
