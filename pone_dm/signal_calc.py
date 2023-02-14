@@ -124,29 +124,29 @@ class Signal(object):
         # Galactic
         total_new_counts = []
         # TODO: Need to configure for IceCube ------
+        _ours = {}
+        thetas = config['simulation parameters']['theta']
+        J_ice = self._const.J_ice_spline(thetas) * 3.086e21  # type: ignore
+        for i,angle in enumerate(thetas):
 
-        _ours = self._galac_dm(
+            _ours[angle] = self._galac_dm(
             egrid, mass, sv,
-            config['simulation parameters']["DM type k"],
-            self._const.J_d + self._const.J_p + self._const.J_s
+            config['simulation parameters']["DM type k"], J_ice[i]
         )
         # Converting fluxes into counts with effective area of IceCube !!!!
         #  These steps take a lot of time !!!!
-        total_flux = _ours+_extra
-        if self.name == 'combined':
-            for y in self._year:
-                _log.info("combined signal ice year =" +
-                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
-                total_new_counts.append(
-                    np.array(self._detector.sim2dec_ice(total_flux,
-                                                        y)['numu']))
-        elif self.name == 'IceCube':
-            for y in self._year:
-                _log.info(" signal ice year =" +
-                          "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
-                total_new_counts.append(
-                    np.array(self._detector.sim2dec(total_flux,
-                                                    y)['numu']))
+        total_flux = _ours #+_extra
+        
+        _year = config['general']['year']
+        print(_year)
+        for y in _year:
+            _log.info(" signal ice year =" +
+                      "%e, mass = %.1e, sv = %.1e" % (y, mass, sv))
+            a = np.array(self._detector.sim2dec(total_flux,
+                                                y, True)['numu'])
+            print(a)
+            total_new_counts.append(a
+                )
 
         # the sim_to_dec omits the dict but we assume
         # same for all neutrino flavours
@@ -160,6 +160,7 @@ class Signal(object):
         total_new_counts : np.array (len(year),len(E_grid))
             The total new counts
         """
+
         _extra = self._extra_dm(egrid, mass, sv)
 
         # Galactic
@@ -179,8 +180,8 @@ class Signal(object):
             total_flux_dict[i] = total_flux
         tmp_y_counts = (
                 self._detector.sim2dec(total_flux_dict,
-                                       boolean_sig=True,
-                                       boolean_smeared=self._bool_smea))
+                                       boolean_sig=True,  # type: ignore
+                                       boolean_smeared=self._bool_smea))  # type: ignore
         # total_new_counts = (tmp_y_counts['numu'])
         # print(np.array(total_new_counts).shape)
         # the sim_to_dec omits the dict but we assume
@@ -208,30 +209,30 @@ class Signal(object):
 
         # Extra galactic
 
-        extra = self._extra_dm(egrid, mass, sv)
+        extra = 0  # self._extra_dm(egrid, mass, sv)
         _flux = {}
         _flux[15] = {}
         _flux[85] = {}
         _flux[120] = {}
         # Galactic
         for i in config['atmospheric showers']['particles of interest']:
-            _flux[15][i] = np.array(extra) + 0*self._galac_dm(
+            _flux[15][i] = (self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d1 + self._const.J_p1 + self._const.J_s1
-            )
+            ))
 
-            _flux[85][i] = np.array(extra) + 0*self._galac_dm(
+            _flux[85][i] = (self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d2 + self._const.J_p2 + self._const.J_s2
-            )
+            ))
 
-            _flux[120][i] = np.array(extra) + 0*self._galac_dm(
+            _flux[120][i] = (self._galac_dm(
                 egrid, mass, sv,
                 config['simulation parameters']["DM type k"],
                 self._const.J_d3 + self._const.J_p3 + self._const.J_s3
-            )
+            ))
 
         if self.name == 'combined':
             total_counts = (
@@ -240,8 +241,8 @@ class Signal(object):
                                             boolean_smeared=self._bool_smea))
         else:
             total_counts = (
-                self._detector.sim2dec(_flux, boolean_sig=True,
-                                       boolean_smeared=self._bool_smea))
+                self._detector.sim2dec(_flux, boolean_sig=True,  # type: ignore
+                                       boolean_smeared=self._bool_smea))  # type: ignore
             # smearing for PONE if needed
 
         return total_counts

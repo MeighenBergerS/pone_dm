@@ -33,10 +33,27 @@ class DM2Nu(object):
         self.omega_m = self._const.omega_m
         self.omega_L = self._const.omega_L
         self.omega_r = self._const.omega_r
+        self.omega_dm = self._const.omega_DM
         self._d_constructor()
-        self._sigma = self._sigma_lopez_ # self._sigma_lopez_
-        self._dln_sigma_1 = self._dln_sigma_1_lopez
-        self.nu_e = pd.read_csv(open('../data/Li_project/nu_e.dat', 'rb'),
+        self._M_grid = config["advanced"]["integration grid lopez"]
+        self.sigma_model = config['general']['sigma_model']
+        if self.sigma_model == 'lopez':
+            self._sigma = self._sigma_lopez_# self._sigma_lopez_
+            self._dln_sigma_1 = self._dln_sigma_1_lopez
+            self._c = self.c_delta
+            self._G = self._G_lopez
+        
+        elif self.sigma_model == 'prada':
+            self._sigma = self._sigma_prada_# self._sigma_lopez_
+            self._dln_sigma_1 = self._dln_sigma_1_prada
+            self._c = self._c_ibarra
+            self._G = self._G_ibarra
+        
+        elif self.sigma_model == 'mixed':
+            self._sigma = self._sigma_lopez_# self._sigma_lopez_
+            self._dln_sigma_1 = self._dln_sigma_1_prada
+
+        self.nu_e = pd.read_csv(open('../data/Li_project/nu_mu.dat', 'rb'),
                                 delim_whitespace=True)
         if config['general']['density'] == 'Burlket':
             self._dphi_de_c = self._dphi_de_c_burkert
@@ -46,8 +63,9 @@ class DM2Nu(object):
         if config['general']["channel"] != 'All':
             # self._channel = "\[Tau]"
             self.m_keys = Counter(self.nu_e['mDM'].values).keys()
-            config['simulation parameters']['mass grid'] = np.array([
-                i for i in self.m_keys])
+            config['simulation parameters']['mass grid'] = np.array(
+                [800, 900, 1000, 1200, 1500, 1700, 2000, 5000, 10000, 100000])
+                #i for i in self.m_keys])
             # [100, 240, 500, 700, 900, 1e3, 2.5e3, 5e3, 7e3, 1e4, 2e4, 3e4,
             # 5e4, 1e5])
 
@@ -63,7 +81,7 @@ class DM2Nu(object):
         """
         return self._dphi_dE_g(
             sv, k, m_x, E, J
-        )
+        ) * self._dN_nu_E_nu(m_x, E)
         # need to check which one
 
     def galactic_flux_c(self, E,
@@ -85,9 +103,7 @@ class DM2Nu(object):
         dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
         dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
 
-        return self._dphi_dE_g(
-            sv, k, m_x, E, J
-        ) * dNdE(E) / self._dN_nu_E_nu(m_x, E)
+        return self._dphi_dE_g(sv, k, m_x, E, J) * dNdE(E)  # type: ignore
         # need to check which one
 
     def extra_galactic_flux_nfw(self, E,
@@ -123,7 +139,7 @@ class DM2Nu(object):
         sv : sigma_nu
         """
         # the mass factor unaccounted for as of now
-        return (self._dphi_de_c(E, m_x, snu, k) *
+        return np.nan_to_num(self._dphi_de_c(E, m_x, snu, k) *
                 config["advanced"]["scaling correction"])  # / m_x**2
 
     def _dN_nu_E_nu(self, m_x: float, E):
@@ -158,7 +174,7 @@ class DM2Nu(object):
         return (
             (1 / (4 * np.pi)) *
             (sigma / (3 * k * m**2)) *
-            J * self._dN_nu_E_nu(m, E)
+            J 
         )
 
     def _dphi_dE_g_ch(self, sigma: float, k: float,
@@ -305,62 +321,9 @@ class DM2Nu(object):
         returns
         g_tilda : numpy array
         """
-        # TODO: All of these constants need to be placed into the constants
-        # File
-        c_0 = 3.681
-        c_1 = 5.033
-        al = 6.948
-        x_0 = 0.424
-        s_0 = 1.047
-        s_1 = 1.646
-        b = 7.386
-        x_1 = 0.526
-
-        A = 2.881
-        b = 1.257
-        c = 1.022
-        d_2 = 0.060
-
-        sigma = (
-            self._sigma(M) *
-            self._d(z)
-        )
-
-        x = (1 / (1 + z)) * (self.omega_L / self.omega_m)**(1/3)
-        # TODO: All of these need descriptions
-
-        def c_min(x):
-            return (
-                c_0 + (c_1 - c_0) * ((np.arctan(al * (x - x_0)) / np.pi) +
-                                     (1/2))
-            )
-
-        def s_min(x):
-            return (
-                s_0 + (s_1 - s_0) * ((np.arctan(b * (x - x_1)) / np.pi) +
-                                     (1/2))
-            )
-        # TODO: This function doesn't seem to be needed
-
-        def B_0(x):
-            return c_min(x) / c_min(1.393)
-
-        def B_1(x):
-            return s_min(x) / s_min(1.393)
-
-        def s_in(x):
-            return B_1(x) * sigma
-
-        def C(x):
-            aa = (((s_in(x) / b)**c) + 1)
-            dd = np.exp(d_2 / s_in(x)**2)
-            return A * aa * dd
-
-        def c_200(x):
-            return B_0(x) * C(x)
-        c_arr = c_200(x)
+        c_arr = self._c(M, z)
         # Removing too high values
-        c_arr[c_arr > 100] = 100
+        c_arr[c_arr > 500] = 500
         return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
                 (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
 
@@ -433,7 +396,7 @@ class DM2Nu(object):
         y = (M * 0.67 / (1e12 ))**(-1)
         dlnsigma_dy = -(((0.372051/y) + (0.21/(y**0.8)) + (0.43461/(y**0.667))) /
                        (0.907441 + (y**0.2) + (5.64428*(y**0.333))))
-        dy_dm = -(y**2)
+        dy_dm = -(y/M)
         dlnsigma_inv_dm = dlnsigma_dy * dy_dm
         return dlnsigma_inv_dm
 
@@ -460,81 +423,38 @@ class DM2Nu(object):
         return ((c_arr**3) * (1 - (1 + c_arr)**(-3)) /
                 (3 * (np.log(1 + c_arr) - c_arr * (1 + c_arr)**(-1)))**2)
 
-    def G_ibarra(self, z):
-        """returns
-        G_lopez : numpy array
-        """
-        def integrand(M):
-            return (
-                    self._dln_sigma_1(M) *
-                    self._f_delta(M, z, Delta=self._const.Delta) *
-                    self._g_tild_ibarra(M, z)
-                    )
-        aa = (
-            ((self.omega_m*(1+z)**3 + self.omega_L + self.omega_r*(1+z)**4) *
-             self._const.Delta) /
-            (3 * self._const.omega_DM * (1+z)**3))
-        # ------ Here the dNdlogx should be included in the
-        # integrand for W, b chanels ----- 19.04.22
-        # Using splines to integrate
-        M_host = np.array(config['advanced']['integration grid lopez'])
+    def _c_ibarra(self, M_vir, z):
+        M_to_Mvir = 1.2
+        w = 0.029
+        m = 0.097
+        a = (w * z) - m
+        alpha = -110.001
+        beta = 2469.720
+        gamma = 16.885
+        b = (alpha / (z + gamma)) + (beta / (z + gamma)**2)
+        M_200_grid = M_vir * M_to_Mvir
+        return 10**(a * np.log10(M_200_grid * self._const.h) + b)
 
-        b_quad = quad(integrand, M_host[0], M_host[-1])[0]
-        function_vals = np.array([
-            integrand(M)
-            for M in config['advanced']['integration grid lopez']
-        ])
-        bb = np.trapz(
-            function_vals,
-            x=config['advanced']['integration grid lopez'],
-            axis=0
-        )
-        # bb = (
-        #     quad(integrand, 1e-2, 1e1)[0] +
-        #     quad(integrand, 1e1, 1e10)[0] +
-        #     quad(integrand, 1e10, 1e17)[0]_dphi_de_c
-        # )
-        return aa * b_quad
+    def _G_ibarra(self, z):
+        delta=200
+
+        def integrand(M):
+            return (self._dln_sigma_1(M) *
+                    self._f_delta(M, z, delta) *
+                    self._g_tild(M, z))
+        
+        prefactor = (((self.omega_m / self.omega_dm)**2) *
+                     (delta / (3 * self.omega_m / self._a_z(z)**3)))
+        
+        to_int_values=np.array([integrand(M) for M in self._M_grid])
+        
+        int_values = np.trapz(to_int_values, x=self._M_grid, axis=0)
+
+        return prefactor * int_values
 
     def _G_lopez(self, z: float):
         """returns
-        G_lopez : numpy array
-        """
-        def integrand(M):
-            return (
-                    self._dln_sigma_1(M) *
-                    self._f_delta(M, z, Delta=self._const.Delta) *
-                    self._g_tild(M, z)
-                    )
-
-        aa = (
-            ((self.omega_m*(1+z)**3 + self.omega_L + self.omega_r*(1+z)**4) *
-             self._const.Delta) /
-            (3 * self._const.omega_DM * (1+z)**3))
-        # ------ Here the dNdlogx should be included in the
-        # integrand for W, b chanels ----- 19.04.22
-        # Using splines to integrate
-        function_vals = np.array([
-            integrand(M)
-            for M in config["advanced"]["integration grid lopez"]
-        ])
-        bb = np.trapz(
-            function_vals,
-            x=config["advanced"]["integration grid lopez"],
-            axis=0
-        )
-        # bb = (
-        #     quad(integrand, 1e-2, 1e1)[0] +
-        #     quad(integrand, 1e1, 1e10)[0] +
-        #     quad(integrand, 1e10, 1e17)[0]_dphi_de_c
-        # )
-        return aa * bb, function_vals
-
-
-
-    def _G(self, z: float):
-        """returns
-        G_lopez : numpy array
+        G_lopez : numpy array 
         """
         def integrand(M):
             return (
@@ -570,23 +490,25 @@ class DM2Nu(object):
         """ returns
         dphi/dE_Lopez : numpy array
         """
-        z = m_x / E - 1  # To apply the delta function integral
+        z = (m_x / E) - 1  # To apply the delta function integral
         z_tmp = z[z > 0]
+
+        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
+               self._const.H_0)
 
         G = ((1 + self._G(z_tmp)) *
              (1 + z_tmp)**3)
 
         # multiplide the H_0 ------
-        H_z = (self._H(self._a_z(z_tmp), self._const.H_0) *
-               self._const.H_0)
+       
 
         a_g = G / H_z
 
-        aaa = snu * self._const.omega_DM * self._const.rho_c**2
+        aaa = snu * (self._const.omega_m * self._const.rho_c)**2
 
-        b = 8 * np.pi * m_x**2
+        b = 2 * m_x**2
 
-        res = 2 * aaa * a_g / (3 * E[E<m_x] * b)
+        res = 2 * 4 * np.pi * aaa * a_g * (1 + z_tmp) / (3 * m_x * b)
 
         # the factor of 2 for
         # annihiliation to 2 neutrino
@@ -604,50 +526,49 @@ class DM2Nu(object):
         """
         # What is the z for T = 1 MeV
         ch = self.channel
-        z = m_x / E - 1
-        # z = np.linspace(0, self.z_T(), 121)
+        #z = (m_x / E) - 1
+        
         e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
+        z_grid = np.linspace(0, 5e7, 1000)
         dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
         # phi_nue.append((
         # self.extra_galactic_flux(e_grid, m, 1e-26))
         dNdE = np.array(dNdlogE) / np.array(e_grid * np.log(10))
         dNdE = UnivariateSpline(e_grid, dNdE, k=1, s=0, ext=1)
-        EW = []
-        for i, e in enumerate(E):
-            if i == 0:
-                EW.append(e)
-            else:
-                EW.append(e - E[i-1])
-        EW = np.array(EW)
+        #E_z = E / (1 + z_grid)
 
         def a_t(z_):
             # multiplide the H_0 ------
             b_t = (self._H(self._a_z(z_), self._const.H_0) *
                    self._const.H_0)
-            return ((1 + self._G(z_)) *
-                    (1 + z_)**3 / b_t)
+            return ((1 + np.nan_to_num(self._G(z_))) * (1+z_)**2 / b_t)
         a_g = []
-        for i, Z in enumerate(z):
-            if Z <= 0:
-                for j in z[i:]:
-                    a_g.append(0)
-                break
-            else:
-                tmp_a_g = a_t(z[:i])
-            # a_g.append(np.trapz(tmp_a_g, z[:i]))
-                a_g.append(np.dot(tmp_a_g * dNdE(E[i]) / (1 + z[:i])**2,
-                           # redshift factor from DM for spectrum
-                                  (m_x / EW[:i] - 1)))
-        a_g = np.array(a_g)
-        aaa = snu * (self._const.omega_DM * self._const.rho_c)**2
-        b = 4 * k * np.pi * m_x**2
+        for e in E:
+
+            tmp_a_t = a_t(z_grid) * dNdE(e)
+
+            a_g.append(np.trapz(tmp_a_t, x=z_grid))
+
+        a_g = (np.array(a_g))
+        #for i, Z in enumerate(z):
+        #    if Z <= 0:
+        #        for j in z[i:]:
+        #            a_g.append(0)
+        #        break
+        #    else:
+        #        tmp_a_g = a_t(z[:i])
+        #    # a_g.append(np.trapz(tmp_a_g, z[:i]))
+        #        a_g.append((tmp_a_g * dNdE(E[i]) / (1 + z[:i])))
+        aaa = snu * (self._const.omega_m * self._const.rho_c)**2
+        b = k * m_x**2
         res = aaa * a_g / (b)
+
         # the factor of 2 for
         # annihiliation to 2 neutrino
 
         # Padding with zeros
         result = np.zeros_like(E)
-        result[0:len(res)] = res
+        result[0:len(res)] = np.array(res)
         return result
 
 # Halo substructure ---------------------------------------------------------
@@ -1095,7 +1016,7 @@ class DM2Nu(object):
         z_tmp = z[z > 0]
 
         a_G = (
-            (1 + self._G(z_tmp)[0]) *
+            (1 + self._G(z_tmp)) *
             (1 + z_tmp)**3
         )
 

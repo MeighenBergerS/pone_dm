@@ -136,6 +136,8 @@ class PDM(object):
         # Limit Calculation
         self.mass_grid = config["simulation parameters"]["mass grid"]
         self.sv_grid = config["simulation parameters"]["sv grid"]
+        self.ch = config['general']['channel']
+
         if self._detector_name == "IceCube":
             self._results, self._signal_data, self.prob_mat = self._limit_calc.limits(
                 self.mass_grid, self.sv_grid)
@@ -159,16 +161,16 @@ class PDM(object):
             # --------------------------------------------------------------
             # Dumping the config settings for later debugging
             pickle.dump(self._results, open(
-                '../data/tmp_files/%s/limits_results_%s_%s_%s.pkl' % (
+                '../data/tmp_files/%s/limits_results_%s_%s_%s_%s.pkl' % (
                     self._smea_folder,
                     self._detector_name,
                     self._smea,
-                    self._profile), 'wb'))
+                    self._profile, self.ch), 'wb'))
             _log.info('Dumping the signal grid and limits result')
             pickle.dump(self._signal_data, open(
-                '../data/tmp_files/%s/signal_grid_%s_%s_%s.pkl' %
+                '../data/tmp_files/%s/signal_grid_%s_%s_%s_%s.pkl' %
                 (self._smea_folder, self._detector_name, self._smea,
-                 self._profile), 'wb'))
+                 self._profile, self.ch), 'wb'))
         _log.debug(
             "Dumping run settings into %s",
             config["general"]["config location"],

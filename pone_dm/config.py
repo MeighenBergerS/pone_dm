@@ -25,16 +25,18 @@ _baseconfig = {
         "config location": "../run/config.txt",
         "detector": ["IceCube",   "POne", 'combined'],
         "pone type": ["new", "old"],
-        "year": range(0, 10),
+        "year": [0, 1], # 2, 3, 4, 5, 6, 7, 8, 9],#range(0, 10),
         'density': ['NFW', 'Burkert'],
         "channel": ["W", "\[Tau]", "b", "All", "\\[Nu]\\[Mu]", "\\[Nu]\\[Tau]",
                     "\\[Nu]e"],
+        'sigma_model': ['lopez', 'prada', 'mixed']
     },
     "simulation parameters": {
         "mass grid": np.logspace(2, 6, 9),
         "sv grid": np.logspace(-26, -21, 9),
+        'theta': range(0,91,1),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 1e3,  # GeV
+        "low energy cutoff": 5e2,  # GeV
         "high energy cutoff": 5e6,  # GeV
         "DM type k": 2
     },
@@ -45,7 +47,7 @@ _baseconfig = {
         # native mceq or built one
         'native mceq': True,
         # Path to the built version
-        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/lib/python3.9' +
+        'path to mceq': '/home/kruteesh/miniconda3/envs/pdm/python3.10/site-packages' +
         '/site-packages/MCEq/',
         # The atmosphere
         'atmosphere': ('CORSIKA', ("Karlsruhe", None)),
@@ -97,7 +99,7 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez": np.logspace(-6, 17, 151),
+        "integration grid lopez": np.logspace(-3, 17, 151),
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",

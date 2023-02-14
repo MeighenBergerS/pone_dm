@@ -5,7 +5,8 @@
 
 # Imports
 import numpy as np
-
+from config import config
+from scipy.interpolate import UnivariateSpline
 
 class pdm_constants(object):
     """ stores all relevant constants for the package
@@ -42,6 +43,11 @@ class pdm_constants(object):
         self.J_s = 2.3e23  # ##
         self.J_p = 2.2e17  # ##
         self.J_d = 3.6e11  # ##
+
+        self.J_ice = np.loadtxt(open('../data/J_ice.csv'), delimiter = ",")
+        self.J_ice[self.J_ice[:, 0].sort()]
+        self.angle= config['simulation parameters']['theta']
+        self.J_ice_spline = UnivariateSpline(self.J_ice[:,0], self.J_ice[:,1], k=1, s=0, ext=1)
         # ----------------------------------------------------------------------
           
 
