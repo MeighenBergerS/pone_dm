@@ -100,7 +100,7 @@ class Limits(object):
                             axis=0)
                      for mass in mass_grid]
                      for sv in sv_grid]
-                     )
+                     ) 
 
         for i in (self.particles):
 
@@ -184,7 +184,7 @@ class Limits(object):
         for _, sv in enumerate(sv_grid):
             for _, mass in enumerate(mass_grid):
                 tmp_sig_dic[sv, mass] = (self._signal(self._egrid,
-                                         mass, sv))
+                                         mass, sv))# * config['advanced']['scaling correction']
         for i in config['atmospheric showers']['particles' +
                                                ' of interest']:
             for j, sv in enumerate(sv_grid):
@@ -192,8 +192,17 @@ class Limits(object):
                 for mass in mass_grid:
                     tmp_dic[i].append(tmp_sig_dic[sv, mass][i])
                 self._signal_grid[i][j] = (tmp_dic[i])
-
+    
+        prob_mat={}
         for i in tqdm(self.particles):
+            #self._signal_grid_ = (self._signal_grid[i])
+            #self._bkgrd_ = self._bkgrd[i]
+            #y[i], prob_mat[i] = CL_scan(
+            #    self._signal_grid_[:, :, self._t_d:self._t_u],
+            #    self._bkgrd_[self._t_d:self._t_u],
+            #    self._bkgrd_[self._t_d:self._t_u],
+            #    sv_grid, mass_grid,
+            #    sample_count=10000)
             y[i] = np.array([[chi2.sf(np.sum(
                 np.nan_to_num(x[self._t_d:]**2 /
                               self._bkgrd[i][self._t_d:])), 2)

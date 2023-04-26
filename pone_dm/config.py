@@ -32,11 +32,11 @@ _baseconfig = {
         'sigma_model': ['lopez', 'prada', 'mixed']
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 9),
-        "sv grid": np.logspace(-26, -21, 9),
+        "mass grid": np.logspace(2, 6, 20),
+        "sv grid": np.logspace(-26, -21, 20),
         'theta': range(0,91,1),
         "uptime": 10 * 365 * 24 * 60 * 60,
-        "low energy cutoff": 5e2,  # GeV
+        "low energy cutoff": 1e3,  # GeV
         "high energy cutoff": 5e6,  # GeV
         "DM type k": 2
     },
@@ -99,11 +99,11 @@ _baseconfig = {
     # Advanced
     ###########################################################################
     "advanced": {
-        "integration grid lopez": np.logspace(-3, 17, 151),
+        "integration grid lopez": np.logspace(-9, 19, 151),
         "construction grid _d": np.logspace(-13, 16, 600),
         "_d storage": "../data/",
         "atmospheric storage": "../data/",
-        "scaling correction": 1
+        "scaling correction": 2*np.pi
     }
 }
 
