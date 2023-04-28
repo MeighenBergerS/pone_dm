@@ -4,6 +4,7 @@ Authors:
 
 1. Kruteesh Desai, lead developer
 2. Stephan Meighen-Berger, supervisor
+3. Ruohan, Li supervisor
 
 ## Table of contents
 
