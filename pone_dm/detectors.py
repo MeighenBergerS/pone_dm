@@ -411,7 +411,7 @@ class Detector(object):
             # Upgoing we assume the same flux for all
             self._count[i] += (
                 (np.pi / 2 - np.pi / 3) *
-                (flux[thetas[2]][i] + 
+                (flux[85][i] + #thetas[2] 
                  Astro) * self._uptime *
                 self._ewidth * self._aeff.spl_A51(self._egrid)
             )
@@ -431,7 +431,6 @@ class Detector(object):
                 self._count[i] = np.array(np.sum(tmp_count_mat, axis=0))
 
         return self._count
-
 # ------------------------------------------------------
 # P-ONE new effective areas
 # add smearing function for new P-ONE !!!!!
