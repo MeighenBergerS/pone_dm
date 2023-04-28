@@ -32,8 +32,8 @@ _baseconfig = {
         'sigma_model': ['lopez', 'prada', 'mixed']
     },
     "simulation parameters": {
-        "mass grid": np.logspace(2, 6, 20),
-        "sv grid": np.logspace(-26, -21, 20),
+        "mass grid": np.logspace(2, 6, 22),
+        "sv grid": np.logspace(-26, -21, 22),
         'theta': range(0,91,1),
         "uptime": 10 * 365 * 24 * 60 * 60,
         "low energy cutoff": 1e3,  # GeV
