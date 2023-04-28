@@ -39,7 +39,7 @@ class DM2Nu(object):
         self.sigma_model = config['general']['sigma_model']
         if self.sigma_model == 'lopez':
             self._sigma = self._sigma_lopez_# self._sigma_lopez_
-            self._dln_sigma_1 = self._dln_sigma_1_lopez
+            self._dln_sigma_1 = self._dln_sigma_1_prada
             self._c = self.c_delta
             self._G = self._G_lopez
         
@@ -47,7 +47,7 @@ class DM2Nu(object):
             self._sigma = self._sigma_prada_# self._sigma_lopez_
             self._dln_sigma_1 = self._dln_sigma_1_prada
             self._c = self._c_ibarra
-            self._G = self._G_ibarra
+            self._G = self._G_lopez
         
         elif self.sigma_model == 'mixed':
             self._sigma = self._sigma_lopez_# self._sigma_lopez_
@@ -118,19 +118,6 @@ class DM2Nu(object):
         ) * config["advanced"]["scaling correction"]  # Some error in unit
         # conversion 29.11.21
     # ---------------------------------------------------------------------------
-    # Galactic
-
-    def extra_galactic_flux_burkert(self, E,
-                                    m_x: float, sv: float):
-        """ Fetches the extra-galactic flux with burkert profile
-        E : Energy grid
-        m_x : mass of Dark Matter
-        sv : sigma_nu
-        """
-        return self._dphide_burkret(
-            E, m_x, sv
-        ) * config["advanced"]["scaling correction"]
-
     def extra_galactic_flux_c(self, E, m_x: float, snu: float, k=2):
         """Fetches the extra-galactic flux with burkert profile for particluar
            annihilation channel
@@ -396,7 +383,7 @@ class DM2Nu(object):
         y = (M * 0.67 / (1e12 ))**(-1)
         dlnsigma_dy = -(((0.372051/y) + (0.21/(y**0.8)) + (0.43461/(y**0.667))) /
                        (0.907441 + (y**0.2) + (5.64428*(y**0.333))))
-        dy_dm = -(y/M)
+        dy_dm = -(y**2 * 1e-12)#/M)
         dlnsigma_inv_dm = dlnsigma_dy * dy_dm
         return dlnsigma_inv_dm
 
@@ -526,10 +513,17 @@ class DM2Nu(object):
         """
         # What is the z for T = 1 MeV
         ch = self.channel
-        #z = (m_x / E) - 1
-        
+        z = (m_x / E) - 1
+        EW = []
+        for i, e in enumerate(E):
+            if i == 0:
+                EW.append(e)
+            else:
+                EW.append(e - E[i-1])
+        EW = np.array(EW)
+
         e_grid = m_x * 10**self.nu_e[self.nu_e['mDM'] == m_x]['Log[10,x]']
-        z_grid = np.linspace(0, 5e7, 1000)
+        z_grid = np.linspace(0, 49, 1000)
         dNdlogE = self.nu_e[self.nu_e['mDM'] == m_x][ch]
         # phi_nue.append((
         # self.extra_galactic_flux(e_grid, m, 1e-26))
@@ -543,13 +537,25 @@ class DM2Nu(object):
                    self._const.H_0)
             return ((1 + np.nan_to_num(self._G(z_))) * (1+z_)**2 / b_t)
         a_g = []
-        for e in E:
-
-            tmp_a_t = a_t(z_grid) * dNdE(e)
-
-            a_g.append(np.trapz(tmp_a_t, x=z_grid))
-
-        a_g = (np.array(a_g))
+        #for e in E:
+#
+        #    tmp_a_t = a_t(z_grid) * dNdE(e)
+#
+        #    a_g.append(np.trapz(tmp_a_t, x=z_grid))
+#
+        #a_g = (np.array(a_g))
+        for i, Z in enumerate(z):
+            if Z <= 0:
+                for j in z[i:]:
+                    a_g.append(0)
+                break
+            else:
+                tmp_a_g = a_t(z[:i])
+            # a_g.append(np.trapz(tmp_a_g, z[:i]))
+                a_g.append(np.dot(tmp_a_g * dNdE(E[i]) / (1 + z[:i])**0,
+                        # redshift factor from DM for spectrum
+                                (m_x / EW[:i] - 1)))
+        a_g = np.array(a_g)
         #for i, Z in enumerate(z):
         #    if Z <= 0:
         #        for j in z[i:]:
@@ -1035,3 +1041,7 @@ class DM2Nu(object):
         result = np.zeros_like(E)
         result[0:len(res)] = res
         return result  # reason for factor unkown -------
+
+    def M_dndM(self, M,z):
+        dn = self._dln_sigma_1(M) * self._f_delta(M,z, Delta=200)
+        return dn

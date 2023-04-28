@@ -129,29 +129,29 @@ dictitems:
       - *id002
       - false
       - !!binary |
-        /Knx0k1iUD/rAITPjUVWP7OOqZxxRl4/GB9jws6TZD+0dsz30/hrP4+Z3gMPA3M/wNyNORHYeT/H
-        t7/yy5CBP+0Y19G/4Ic/xMIr0bM6kD8m9maluA+WPxojERlE/Z0/KuqQ/xFipD+GLJ+bN7WrPzQs
-        cuYa1bI/mpmZmZmZuT+4IB/KVmbBP3x3ZMIIp8c/S3Ddh3kT0D+8vJeZZdrVP/DPC3bHtN0/dtT2
-        dM0w5D8fj0urPnLrP3YL8NuVp/I/VWDU9rhb+T9QcDhBSDwBQHBjlTPdbQdA4W1SHzzZD0DJWpRx
-        k6UVQBFlEgj6bB1AAAAAAAAAJEAYo9Cb5y8rQFl93td+ejJAfP9J5G0eOUBzi/5fnxJBQHo6OdQ7
-        NUdA+KvBBkGMT0DXB9P1QHFVQOkRpyfaJV1AQ+vVgKjPY0B2L+jlMO5qQK+1TNDUTXJA0WV4+Lbh
-        eEDt5rswW+mAQO9eTlYj/YZAAAAAAABAj0Bq/7rxbD2VQNujSzFm35xAmc9Z2sWfo0Dkuf0FGa2q
-        QK+1zL2WIbJAWk5HzZKluEAg3gzAesDAQP6F+m6SxcZAmD9OSXf0zkAUZZ0zFgrVQOLbd4WcmdxA
-        iw8e8lZw40DSmCV8nmzqQCs6bZvD9fFAAAAAAABq+ECLF9oc/ZcAQfYXg9aHjgZBX1QsJaWpDkE6
-        Oa6MO9cUQdHbj4h7VBxBQbVfsFpBI0ERGxTMvywqQa64s2ZayjFBoSFFMf0uOEEB91JY4W9AQcij
-        RUgCWEZBSvhO2odfTkFYX/3Q26RUQfOq2qIBEFxBAAAAANASY0HJxBR9e+1pQbhqlh9an3FB66EK
-        BYn0d0G1HOiFJkiAQbxjsIIAIoZBNouVsx0WjkEmtW/X9XKUQZDQeEAtzJtBRgJ+zrXkokHyoQEa
-        0K6pQfVndsjBdLFB+bGNIqK6t0F98kW7yyDAQY7VOkeB7MVBAAAAAGXNzUG9Obh5iEHUQcAGW9H8
-        iNtBf07wCwu34kHbrDoxvHDpQevNGWaQSvFBwtRMNEeB90ELi54goPP/QfFiXlqDtwVCjeOkElyF
-        DUKFRlGUkhAUQm4COcluRhtCC7P+qs6JIkLjSp1UPjMpQtf2pf/EIDFCAAAA6HZIN0I42i8+ZaY/
-        QkYdj4MFg0VCp3qnQgE+TUIL13UGE+BTQr9RiJ+BBFtCIgbcoP9cYkKg3HsZVfZoQky9mZ5e93BC
-        xtGQ7i8Qd0Iw/r4H5Vl/QuaJNI0GT4VCwfct61L3jEKB4hqyCLCTQq9Rc88zw5pCAABA5ZwwokJ8
-        YpUY/7moQt7Ox05czrBCuNcS/HDYtkLeHxi6HQ6/QvV/okSFG8VCt8lXa0+xzEJdxOh7coDTQsc3
-        0NeDgtpC4yNhcqUE4kJ5Ng3uOn7oQqkLUR69pfBCqem7xzih9kIOAkqWDcP+QtEXEnqA6ARDAAA0
-        JvVrDEPxtDRLT1ETQzwzGDtwQhpDiLjuRBjZIUPm2GI5B0MoQ/jznh2AfTBDl5XcC4ZqNkPSspvh
-        sng+Q5SrmgD3tURDEsi3gkInTEOPUvoJniJTQzeiXn/3AlpDjM4KXPStYUOb0WmdYghoQ5siXl+k
-        VXBDAKDYhVc0dkM=
-    scaling correction: 1
+        ldYm6AsuET5rpdOAHNUYPrYc2Chp8iE+CW4qrvHwKT4dkU7Wir8yPhCJ1glzGTs+2DwaJtWVQz4o
+        94VsMU9MPu/vLMewdVQ+Klx7JsSSXT7K3P0Ui19lPvgfeUnJ5G4+NLf1TNZTdj5tuPz68iKAPhZw
+        PcYJU4c+VHDsVWPbkD530Qosol2YPiOCTc8PnKE+HHWHuiF0qT4KILmGVmWyPqvWb34Ql7o+Y+Ga
+        z5k3wz7llImX/MbLPjJNOWFAE9Q+CFsRfnoE3T7xaOOItfjkPm1bQkslUO4+DM9bXmno9T5SyxoF
+        n6r/PhfomvrQ4gY/HjHBdkiKED84BwOxZugXPxrEfOpVRyE/41oiS6r5KD8Ly3w41AwyPxTkH0ch
+        Fzo/wy0Y2yPbQj8j8vEYV0FLPyB/YZupslM/Uv99bt14XD8eH2PCzpNkP7I0w3ZMvm0/Tx2OTAF/
+        dT91WjIsQxJ/P5z7dB+0dIY/xsIr0bM6kD8vkOxBX3WXPyu5fasz9KA/vHKuFoCBqD/QF3LD+7Wx
+        P5qZmZmZmbk/TUAvw2qAwj8+Eq+fNL7KP5ma3Y7jU9M/YBjqGeDv2z+B1PZ0zTDkP2EyFFsxL+0/
+        bk29YJQX9T/hb7dgxHz+P85V9A6pCAZA2G1SHzzZD0DdA/NEgQQXQAqs+WihoiBAr4MsCpgLKEAW
+        Z7AmxWAxQHz/SeRtHjlA6qR8K2YnQkDWevMViT1KQMG7uX/l9lJANE1m4HVpW0BO69WAqM9jQPFF
+        +cfGomxAfPjWEhmydEAO86/bFOp9QBHGFNSlnoVAAAAAAABAj0D+LUNTwpWWQOKadp6XUqBAN4Pl
+        R+eXp0BhIdGHKA2xQGhOR82SpbhAwBPX3w3QwUAFFRegSL/JQB/2B9ymm9JAvkLBXpLl2kCLDx7y
+        VnDjQDemqsz/GOxAgsakCIZO9EC/VmsYJ1r9QNZVuqmgNgVBX1QsJaWpDkFPpxU4GCkWQbnbpesO
+        BCBBsTlqJmMmJ0GfcDYyHrswQb0hRTH9LjhB8OSN01l6QUFUan+bZ0NJQRokFjsfQlJByFtjbSlk
+        WkEAAAAA0BJjQaWBo7bPkWtBEcjvFNLsc0GtqkPT7cx8QT7JyvmP0IRBNouVsx0WjkGbC77veL6V
+        QSgtbCcAbp9B8LeXLwG3pkEQdVWWnmqwQRWyjSKiurdBByirIEImwUFuJI2d2snIQceDp1xG6tFB
+        5vUvHy/l2UGVTvALC7fiQZ1udhAqDetBofanNvSM80FMq2QIXEL8QWN0S1xqbARCjeOkElyFDUL3
+        tb6m2lUVQksJUfnH1h5CEYegH7dJJkLF5ANJohswQgAAAOh2SDdC4Us5B7/TQEK5s45yllJIQuwM
+        MigUlFFCqQpswJdoWUI4Btyg/1xiQit9p6ACi2pCkMYPmOMuc0IJtJjyZLp7QmVRg5YmCoRC4vct
+        61L3jEJc7uC4M++UQvnKUl1nQp5CXHwa5HrepUKrC5IFRJyvQu3XEvxw2LZCA0mM7MiCwEKQCLgc
+        kN3HQo1xH6yAP9FCkhuq1Vfu2ELjI2FypQTiQiDNi2hNC+pC7LXrjZfS8kLgdBsK/DT7QsJAIZq7
+        qQNDAAA0JvVrDEM=
+    scaling correction: 6.283185307179586
   atmospheric showers:
     atmosphere: !!python/tuple
     - CORSIKA
@@ -171,7 +171,7 @@ dictitems:
     - 91
     - 1
   general:
-    channel: \[Tau]
+    channel: All
     config location: ../run/config.txt
     debug level: 40
     density: NFW
@@ -310,7 +310,7 @@ dictitems:
   simulation parameters:
     DM type k: 2
     high energy cutoff: 5000000.0
-    low energy cutoff: 500.0
+    low energy cutoff: 1000.0
     mass grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
@@ -321,25 +321,12 @@ dictitems:
       state: !!python/tuple
       - 1
       - !!python/tuple
-        - 10
-      - !!python/object/apply:numpy.dtype
-        args:
-        - i8
-        - false
-        - true
-        state: !!python/tuple
-        - 3
-        - <
-        - null
-        - null
-        - null
-        - -1
-        - -1
-        - 0
+        - 9
+      - *id002
       - false
       - !!binary |
-        IAMAAAAAAACEAwAAAAAAAOgDAAAAAAAAsAQAAAAAAADcBQAAAAAAAKQGAAAAAAAA0AcAAAAAAACI
-        EwAAAAAAABAnAAAAAAAAoIYBAAAAAAA=
+        AAAAAAAAWUBZl/rtpMNzQAAAAAAAQI9ALz15KY60qEAAAAAAAIjDQHqM17Ox4d5AAAAAAABq+EDM
+        t2YQD00TQQAAAACAhC5B
     sv grid: !!python/object/apply:numpy.core.multiarray._reconstruct
       args:
       - *id001
